@@ -4,7 +4,7 @@ export default async (req: any, res: any, next: any) => {
   const { username, email, password, retypePassword } = req.body;
 
   if (retypePassword && password !== retypePassword)
-    return response(res, false, null, "Passwords doesn't match");
+    return response(res, false, null, "Slaptažodžiai nesutampa");
 
   if (email) {
     if (!email.includes("@")) return response(res, false, null, "Neteisingas elektroninis paštas");
