@@ -53,6 +53,28 @@ jobs:
           $vpsIP = $env:VPS_IP
           $projectPath = $env:PROJECT_PATH
 
+          # Update .env file on the VPS with the necessary variables
+          $envFilePath = "$projectPath\.env"
+          $envVariables = @"
+          VPS_USERNAME=$($env:VPS_USERNAME)
+          VPS_PASSWORD=$($env:VPS_PASSWORD)
+          VPS_IP=$($env:VPS_IP)
+          PROJECT_PATH=$($env:PROJECT_PATH)
+          CLOUDINARY_API_KEY=$($env:CLOUDINARY_API_KEY)
+          CLOUDINARY_API_SECRET=$($env:CLOUDINARY_API_SECRET)
+          CLOUDINARY_CLOUD_NAME=$($env:CLOUDINARY_CLOUD_NAME)
+          MONGODB_URI=$($env:MONGODB_URI)
+          NODEMAILER_PASS_ANDRIUS=$($env:NODEMAILER_PASS_ANDRIUS)
+          NODEMAILER_PASS_AUDRIUS=$($env:NODEMAILER_PASS_AUDRIUS)
+          NODEMAILER_PASS_HARIS=$($env:NODEMAILER_PASS_HARIS)
+          SALT=$($env:SALT)
+          TOKEN_SECRET=$($env:TOKEN_SECRET)
+          NODE_ENV=production
+          "@
+
+          # Write the environment variables to the .env file on the VPS
+          echo $envVariables | & "C:\Program Files\PuTTY\plink.exe" -v -pw $vpsPassword $vpsUsername@$vpsIP "Out-File -FilePath $envFilePath -Force"
+
           echo y | & "C:\Program Files\PuTTY\plink.exe" -v -pw $vpsPassword $vpsUsername@$vpsIP "cd $projectPath && git pull"
           echo y | & "C:\Program Files\PuTTY\plink.exe" -v -pw $vpsPassword $vpsUsername@$vpsIP "cd $projectPath && npm install"
           echo y | & "C:\Program Files\PuTTY\plink.exe" -v -pw $vpsPassword $vpsUsername@$vpsIP "cd $projectPath && pm2 stop MTSoftServer"  

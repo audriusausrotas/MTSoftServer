@@ -18,7 +18,6 @@ server.use(
 
 server.use(express.json());
 server.use(cookieParser());
-console.log("veikia!!!!!!");
 mongoose
   .connect(process.env.MONGODB_URI as string)
   .then(() => console.log("connected to MongoDB"))
