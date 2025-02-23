@@ -20,7 +20,7 @@ server.use(express.json());
 server.use(cookieParser());
 
 mongoose
-  .connect(process.env.MONGO_CONNECT as string)
+  .connect(process.env.MONGODB_URI as string)
   .then(() => console.log("connected to MongoDB"))
   .catch((e) => console.log(e));
 
