@@ -53,19 +53,6 @@ jobs:
           $vpsIP = $env:VPS_IP
           $projectPath = $env:PROJECT_PATH
 
-          echo "export CLOUDINARY_API_KEY=${{ secrets.CLOUDINARY_API_KEY }}" >> ~/.bashrc
-          echo "export CLOUDINARY_API_SECRET=${{ secrets.CLOUDINARY_API_SECRET }}" >> ~/.bashrc
-          echo "export CLOUDINARY_CLOUD_NAME=${{ secrets.CLOUDINARY_CLOUD_NAME }}" >> ~/.bashrc
-          echo "export MONGODB_URI=${{ secrets.MONGODB_URI }}" >> ~/.bashrc
-          echo "export NODEMAILER_PASS_ANDRIUS=${{ secrets.NODEMAILER_PASS_ANDRIUS }}" >> ~/.bashrc
-          echo "export NODEMAILER_PASS_AUDRIUS=${{ secrets.NODEMAILER_PASS_AUDRIUS }}" >> ~/.bashrc
-          echo "export NODEMAILER_PASS_HARIS=${{ secrets.NODEMAILER_PASS_HARIS }}" >> ~/.bashrc
-          echo "export SALT=${{ secrets.SALT }}" >> ~/.bashrc
-          echo "export TOKEN_SECRET=${{ secrets.TOKEN_SECRET }}" >> ~/.bashrc
-          echo "export NODE_ENV=production" >> ~/.bashrc
-
-          . ~/.bashrc 
-
           echo y | & "C:\Program Files\PuTTY\plink.exe" -v -pw $vpsPassword $vpsUsername@$vpsIP "cd $projectPath && git pull"
           echo y | & "C:\Program Files\PuTTY\plink.exe" -v -pw $vpsPassword $vpsUsername@$vpsIP "cd $projectPath && npm install"
           echo y | & "C:\Program Files\PuTTY\plink.exe" -v -pw $vpsPassword $vpsUsername@$vpsIP "cd $projectPath && pm2 stop MTSoftServer"  
