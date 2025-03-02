@@ -72,9 +72,9 @@ export default {
 
     res.cookie("mtud", token, {
       maxAge: 7776000 * 1000,
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+      // httpOnly: true,
+      // secure: process.env.NODE_ENV === "production",
+      // sameSite: "strict",
       path: "/",
     });
 
