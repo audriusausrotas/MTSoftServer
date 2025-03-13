@@ -3,18 +3,10 @@ import jwt from "jsonwebtoken";
 import userSchema from "../schemas/userSchema";
 import response from "../modules/response";
 import io from "../sockets/main";
-import { Request, Response } from "express";
-require("dotenv").config();
-
-interface RegisterRequestBody {
-  email: string;
-  password: string;
-  retypePassword: string;
-  username: string;
-}
+import { Response, Request } from "express";
 
 export default {
-  register: async (req: Request<{}, {}, RegisterRequestBody>, res: Response) => {
+  register: async (req: Request, res: Response) => {
     const { email, password, username } = req.body;
 
     const userExists = await userSchema.findOne({ email });
@@ -22,7 +14,10 @@ export default {
       return response(res, false, null, "Vartotojas jau egzistuoja");
     }
 
-    const hashedPassword = await bcrypt.hash(password, parseInt(process.env.SALT as string));
+    const hashedPassword = await bcrypt.hash(
+      password,
+      parseInt(process.env.SALT as string)
+    );
 
     const user = new userSchema({
       username,

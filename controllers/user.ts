@@ -1,6 +1,6 @@
 import response from "../modules/response";
 import deletedSchema from "../schemas/deletedSchema";
-import montavimasSchema from "../schemas/montavimasSchema";
+import montavimasSchema from "../schemas/installationSchema";
 import projectSchema from "../schemas/projectSchema";
 import io from "../sockets/main";
 import { Request, Response } from "express";
@@ -14,7 +14,10 @@ interface RegisterRequestBody {
 }
 
 export default {
-  newProject: async (req: Request<{}, {}, RegisterRequestBody>, res: Response) => {
+  newProject: async (
+    req: Request<{}, {}, RegisterRequestBody>,
+    res: Response
+  ) => {
     try {
       const {} = req.body;
 
@@ -43,7 +46,8 @@ export default {
 
       const deletedProject = new deletedSchema({ ...projectData });
       const deletedData = await deletedProject.save();
-      if (!deletedData) return response(res, false, null, "Klaida trinant projektą");
+      if (!deletedData)
+        return response(res, false, null, "Klaida trinant projektą");
 
       await projectSchema.findByIdAndDelete(_id);
       await montavimasSchema.findByIdAndDelete(_id);
@@ -58,7 +62,8 @@ export default {
   getProjects: async (req: Request, res: Response) => {
     try {
       const projects = await projectSchema.find();
-      if (!projects.length) return response(res, false, null, "Projektai nerasti");
+      if (!projects.length)
+        return response(res, false, null, "Projektai nerasti");
 
       projects.reverse();
       return response(res, true, projects, "Prisijungimas sėkmingas");

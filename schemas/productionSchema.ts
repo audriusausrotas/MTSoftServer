@@ -1,11 +1,9 @@
 import mongoose from "mongoose";
 import {
+  Gamyba,
+  GamybaFence,
+  GamybaMeasure,
   GateInfo,
-  Montavimas,
-  MontavimasFence,
-  MontavimasMeasure,
-  MontavimasResult,
-  MontavimasWorks,
 } from "../data/interfaces";
 
 const gatesSchema = new mongoose.Schema<GateInfo>({
@@ -19,47 +17,32 @@ const gatesSchema = new mongoose.Schema<GateInfo>({
   option: { type: String, default: "" },
 });
 
-const kampasSchema = new mongoose.Schema({
+const cornerSchema = new mongoose.Schema({
   exist: { type: Boolean, default: false },
   value: { type: Number, default: 0 },
   aditional: { type: String, default: "" },
 });
 
-const laiptasSchema = new mongoose.Schema({
+const stepSchema = new mongoose.Schema({
   exist: { type: Boolean, default: false },
   value: { type: Number, default: 0 },
   direction: { type: String, default: "" },
 });
 
-const measureSchema = new mongoose.Schema<MontavimasMeasure>({
+const measureSchema = new mongoose.Schema<GamybaMeasure>({
   length: { type: Number, default: 0 },
   height: { type: Number, default: 0 },
   MeasureSpace: { type: Number, default: 0 },
   elements: { type: Number, default: 0 },
   gates: { type: gatesSchema, default: () => ({}) },
+  cut: { type: Number, default: undefined },
   done: { type: Number, default: undefined },
   postone: { type: Boolean, default: false },
-  kampas: { type: kampasSchema, default: () => ({}) },
-  laiptas: { type: laiptasSchema, default: () => ({}) },
+  kampas: { type: cornerSchema, default: () => ({}) },
+  laiptas: { type: stepSchema, default: () => ({}) },
 });
 
-const resultSchema = new mongoose.Schema<MontavimasResult>({
-  type: { type: String, default: "" },
-  quantity: { type: Number, default: 0 },
-  height: { type: Number, default: 0 },
-  color: { type: String, default: "" },
-  width: { type: Number, default: 0 },
-  category: { type: String, default: "" },
-  delivered: { type: Boolean, required: false, default: false },
-});
-
-const workSchema = new mongoose.Schema<MontavimasWorks>({
-  name: { type: String, default: "" },
-  quantity: { type: Number, default: 0 },
-  delivered: { type: Boolean, required: false, default: false },
-});
-
-const fenceSchema = new mongoose.Schema<MontavimasFence>({
+const fenceSchema = new mongoose.Schema<GamybaFence>({
   id: String,
   side: String,
   type: String,
@@ -80,26 +63,22 @@ const fenceSchema = new mongoose.Schema<MontavimasFence>({
   measures: { type: [measureSchema], default: [] },
 });
 
-const montavimasSchema = new mongoose.Schema<Montavimas>({
+const productionSchema = new mongoose.Schema<Gamyba>({
   client: Object,
   creator: Object,
   orderNumber: String,
-  workers: [String],
   status: {
     type: String,
     required: false,
-    default: "Montuojama",
+    default: "Negaminti",
   },
   fences: {
     type: [fenceSchema],
     default: [],
   },
-  results: {
-    type: [resultSchema],
-    default: [],
-  },
-  works: {
-    type: [workSchema],
+  bindings: {
+    type: [Object],
+    required: false,
     default: [],
   },
   aditional: {
@@ -114,4 +93,4 @@ const montavimasSchema = new mongoose.Schema<Montavimas>({
   },
 });
 
-export default mongoose.model("montavimas", montavimasSchema);
+export default mongoose.model("production", productionSchema);
