@@ -4,16 +4,58 @@ import response from "../modules/response";
 import { Gamyba } from "../data/interfaces";
 import { v4 as uuidv4 } from "uuid";
 import { HydratedDocument } from "mongoose";
+import cloudinaryBachDelete from "../modules/cloudinaryBachDelete";
+import projectSchema from "../schemas/projectSchema";
 
 // pridet checka ar useris yra adminas
 
 export default {
+  getProduction: async (req: Request, res: Response) => {
+    try {
+      const { _id } = req.params;
+
+      const data: Gamyba[] | null = await productionSchema.findById(_id);
+
+      if (!data) return response(res, false, null, "Projektas nerastas");
+
+      return response(res, true, data, "");
+    } catch (error) {
+      console.error("Klaida:", error);
+      return response(res, false, null, "Serverio klaida");
+    }
+  },
+
+  deleteProduction: async (req: Request, res: Response) => {
+    try {
+      const { _id, completed } = req.body;
+
+      const data = await productionSchema.findOneAndDelete(_id);
+
+      if (!data) return response(res, false, null, "Projektas nerastas");
+
+      cloudinaryBachDelete(data.files);
+
+      if (completed) {
+        const project = await projectSchema.findById(_id);
+
+        if (!project) return response(res, false, null, "Projektas nerastas");
+
+        project.status = "Pagamintas";
+        project.save();
+      }
+
+      return response(res, true, null, "Užsakymas ištrintas");
+    } catch (error) {
+      console.error("Klaida:", error);
+      return response(res, false, null, "Serverio klaida");
+    }
+  },
+
   addBinding: async (req: Request, res: Response): Promise<Response> => {
     try {
       const { _id } = req.params;
       // gali reiket konvertuot i objekta
-      const order: HydratedDocument<Gamyba> | null =
-        await productionSchema.findById(_id);
+      const order: HydratedDocument<Gamyba> | null = await productionSchema.findById(_id);
 
       if (!order) return response(res, false, null, "užsakymas nerastas");
 

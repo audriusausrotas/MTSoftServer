@@ -4,8 +4,8 @@ import montavimasSchema from "../schemas/installationSchema";
 import projectSchema from "../schemas/projectSchema";
 import io from "../sockets/main";
 import { Request, Response } from "express";
-import cloudinaryBachDelete from "../utils/cloudinaryBachDelete";
-import deleteProjectVersions from "../utils/deleteProjectVersions";
+import cloudinaryBachDelete from "../modules/cloudinaryBachDelete";
+import deleteProjectVersions from "../modules/deleteProjectVersions";
 
 export default {
   newProject: async (req: Request, res: Response) => {
@@ -37,8 +37,7 @@ export default {
 
       const deletedProject = new deletedSchema({ ...projectData });
       const deletedData = await deletedProject.save();
-      if (!deletedData)
-        return response(res, false, null, "Klaida trinant projektą");
+      if (!deletedData) return response(res, false, null, "Klaida trinant projektą");
 
       await projectSchema.findByIdAndDelete(_id);
       await montavimasSchema.findByIdAndDelete(_id);
@@ -53,8 +52,7 @@ export default {
   getProjects: async (req: Request, res: Response) => {
     try {
       const projects = await projectSchema.find();
-      if (!projects.length)
-        return response(res, false, null, "Projektai nerasti");
+      if (!projects.length) return response(res, false, null, "Projektai nerasti");
 
       projects.reverse();
       return response(res, true, projects, "Prisijungimas sėkmingas");

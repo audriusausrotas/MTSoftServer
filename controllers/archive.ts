@@ -5,8 +5,8 @@ import projectSchema from "../schemas/projectSchema";
 import archiveSchema from "../schemas/archiveSchema";
 import unconfirmedSchema from "../schemas/unconfirmedSchema";
 import montavimasSchema from "../schemas/installationSchema";
-import cloudinaryBachDelete from "../utils/cloudinaryBachDelete";
-import deleteVersions from "../utils/deleteProjectVersions";
+import cloudinaryBachDelete from "../modules/cloudinaryBachDelete";
+import deleteVersions from "../modules/deleteProjectVersions";
 import io from "../sockets/main";
 import { Response, Request } from "express";
 
@@ -59,8 +59,7 @@ export default {
       }
 
       if (!archivedProject)
-        if (!archivedProject)
-          return response(res, false, null, "Projektas nerastas");
+        if (!archivedProject) return response(res, false, null, "Projektas nerastas");
 
       const currentDate = new Date();
       let expirationDate = new Date(currentDate);
@@ -162,6 +161,47 @@ export default {
       return response(res, true, project, "Projektas rastas");
     } catch (error) {
       console.error("Klaida gaunant projektą:", error);
+      return response(res, false, null, "Serverio klaida");
+    }
+  },
+
+  getDeleted: async (req: Request, res: Response) => {
+    try {
+      const data = await deletedSchema.find();
+
+      if (!data.length) return response(res, false, null, "Ištrintų projektų nerasta");
+
+      data.reverse();
+
+      const lightData = data.map((item) => {
+        return {
+          _id: item._id,
+          orderNumber: item.orderNumber,
+          client: item.client,
+          priceVAT: item.priceVAT,
+          priceWithDiscount: item.priceWithDiscount,
+          status: item.status,
+          discount: item.discount,
+        };
+      });
+
+      return response(res, true, lightData, "");
+    } catch (error) {
+      console.error("Klaida:", error);
+      return response(res, false, null, "Serverio klaida");
+    }
+  },
+
+  deleteDeleted: async (req: Request, res: Response) => {
+    try {
+      const { _id } = req.params;
+      const data = await deletedSchema.findByIdAndDelete(_id);
+
+      if (!data) return response(res, false, null, "Projektas nerastas");
+
+      return response(res, true, null, "Projektas ištrintas");
+    } catch (error) {
+      console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");
     }
   },
