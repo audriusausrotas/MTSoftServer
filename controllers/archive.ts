@@ -59,7 +59,8 @@ export default {
       }
 
       if (!archivedProject)
-        if (!archivedProject) return response(res, false, null, "Projektas nerastas");
+        if (!archivedProject)
+          return response(res, false, null, "Projektas nerastas");
 
       const currentDate = new Date();
       let expirationDate = new Date(currentDate);
@@ -130,7 +131,7 @@ export default {
           discount: item.discount,
         };
       });
-      return response(res, true, lightData, "");
+      return response(res, true, lightData);
     } catch (error) {
       console.error("Klaida gaunant projektus:", error);
       return response(res, false, null, "Serverio klaida");
@@ -169,7 +170,8 @@ export default {
     try {
       const data = await deletedSchema.find();
 
-      if (!data.length) return response(res, false, null, "Ištrintų projektų nerasta");
+      if (!data.length)
+        return response(res, false, null, "Ištrintų projektų nerasta");
 
       data.reverse();
 
@@ -185,7 +187,7 @@ export default {
         };
       });
 
-      return response(res, true, lightData, "");
+      return response(res, true, lightData);
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");

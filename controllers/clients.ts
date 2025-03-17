@@ -7,9 +7,10 @@ export default {
     try {
       const clients = await clientSchema.find();
 
-      if (!clients.length) return response(res, false, null, "Klientai nerasti");
+      if (!clients.length)
+        return response(res, false, null, "Klientai nerasti");
 
-      return response(res, true, null, "");
+      return response(res, true);
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");
@@ -22,7 +23,8 @@ export default {
 
       const clientExist = await clientSchema.findOne({ email });
 
-      if (clientExist) return response(res, false, null, "Klientas jau egzistuoja");
+      if (clientExist)
+        return response(res, false, null, "Klientas jau egzistuoja");
 
       const client = new clientSchema({
         username,

@@ -12,7 +12,7 @@ export default {
     try {
       const {} = req.body;
 
-      return response(res, true, null, "");
+      return response(res, true, null);
     } catch (error) {
       console.error("Klaida gaunant projektą:", error);
       return response(res, false, null, "Serverio klaida");
@@ -37,7 +37,8 @@ export default {
 
       const deletedProject = new deletedSchema({ ...projectData });
       const deletedData = await deletedProject.save();
-      if (!deletedData) return response(res, false, null, "Klaida trinant projektą");
+      if (!deletedData)
+        return response(res, false, null, "Klaida trinant projektą");
 
       await projectSchema.findByIdAndDelete(_id);
       await montavimasSchema.findByIdAndDelete(_id);
@@ -52,7 +53,8 @@ export default {
   getProjects: async (req: Request, res: Response) => {
     try {
       const projects = await projectSchema.find();
-      if (!projects.length) return response(res, false, null, "Projektai nerasti");
+      if (!projects.length)
+        return response(res, false, null, "Projektai nerasti");
 
       projects.reverse();
       return response(res, true, projects, "Prisijungimas sėkmingas");

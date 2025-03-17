@@ -11,9 +11,13 @@ export default {
 
       if (!data) return response(res, false, null, "Klaida");
 
-      data.sort((a, b) => new Date(b.dateFinished).getTime() - new Date(a.dateFinished).getTime());
+      data.sort(
+        (a, b) =>
+          new Date(b.dateFinished).getTime() -
+          new Date(a.dateFinished).getTime()
+      );
 
-      return response(res, true, null, "");
+      return response(res, true, null);
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");

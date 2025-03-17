@@ -21,7 +21,7 @@ export default {
     try {
       const {} = req.body;
 
-      return response(res, true, null, "");
+      return response(res, true);
     } catch (error) {
       console.error("Klaida gaunant projektą:", error);
       return response(res, false, null, "Serverio klaida");

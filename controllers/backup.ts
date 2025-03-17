@@ -24,7 +24,7 @@ export default {
           discount: item.discount,
         };
       });
-      if (!data) return response(res, false, data, "");
+      if (!data) return response(res, false, data);
     } catch (error) {
       console.error("Klaida gaunant projektą:", error);
       return response(res, false, null, "Serverio klaida");
