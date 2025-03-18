@@ -67,12 +67,11 @@ export default {
     }
   },
 
-  getDeleted: async (req: Request, res: Response) => {
+  getUnconfirmed: async (req: Request, res: Response) => {
     try {
-      const data = await deletedSchema.find();
+      const data = await unconfirmedSchema.find();
 
-      if (!data.length)
-        return response(res, false, null, "Ištrintų projektų nerasta");
+      if (!data) return response(res, false, null, "Nepatvirtintų projektų nerasta");
 
       data.reverse();
 
@@ -89,6 +88,71 @@ export default {
       });
 
       return response(res, true, lightData);
+    } catch (error) {
+      console.error("Klaida:", error);
+      return response(res, false, null, "Serverio klaida");
+    }
+  },
+
+  getDeleted: async (req: Request, res: Response) => {
+    try {
+      const data = await deletedSchema.find();
+
+      if (!data.length) return response(res, false, null, "Ištrintų projektų nerasta");
+
+      data.reverse();
+
+      const lightData = data.map((item) => {
+        return {
+          _id: item._id,
+          orderNumber: item.orderNumber,
+          client: item.client,
+          priceVAT: item.priceVAT,
+          priceWithDiscount: item.priceWithDiscount,
+          status: item.status,
+          discount: item.discount,
+        };
+      });
+
+      return response(res, true, lightData);
+    } catch (error) {
+      console.error("Klaida:", error);
+      return response(res, false, null, "Serverio klaida");
+    }
+  },
+
+  serviceCheck: async (req: Request, res: Response) => {
+    try {
+      const query = req.query;
+      const search = query.q as string;
+
+      if (!search || search.length < 3) return { results: [] };
+
+      const results = await archiveSchema
+        .find(
+          {
+            $and: [
+              {
+                $or: [
+                  { "client.address": { $regex: search, $options: "i" } },
+                  { "client.username": { $regex: search, $options: "i" } },
+                  { "client.phone": { $regex: search, $options: "i" } },
+                  { "client.email": { $regex: search, $options: "i" } },
+                ],
+              },
+              { gates: { $exists: true, $ne: [] } },
+              { status: "Baigtas" },
+            ],
+          },
+          {
+            "client.address": 1,
+            dateExparation: 1,
+          }
+        )
+        .limit(10)
+        .lean();
+
+      return response(res, true, results);
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");
@@ -132,6 +196,22 @@ export default {
     }
   },
 
+  deleteUnconfirmed: async (req: Request, res: Response) => {
+    try {
+      const { _id } = req.params;
+      const data = await unconfirmedSchema.findByIdAndDelete(_id);
+
+      if (!data) return response(res, false, null, "Projektas nerastas");
+
+      cloudinaryBachDelete(data.files);
+
+      return response(res, true, null, "Projektas ištrintas");
+    } catch (error) {
+      console.error("Klaida:", error);
+      return response(res, false, null, "Serverio klaida");
+    }
+  },
+
   //////////////////// update requests /////////////////////////////////
 
   restoreArchive: async (req: Request, res: Response) => {
@@ -151,8 +231,7 @@ export default {
       }
 
       if (!archivedProject)
-        if (!archivedProject)
-          return response(res, false, null, "Projektas nerastas");
+        if (!archivedProject) return response(res, false, null, "Projektas nerastas");
 
       const currentDate = new Date();
       let expirationDate = new Date(currentDate);
@@ -210,6 +289,32 @@ export default {
       await montavimasSchema.findByIdAndDelete(_id);
 
       return response(res, true, data, "Projektas perkeltas į archyvą");
+    } catch (error) {
+      console.error("Klaida:", error);
+      return response(res, false, null, "Serverio klaida");
+    }
+  },
+
+  addUnconfirmed: async (req: Request, res: Response) => {
+    try {
+      const { _id } = req.params;
+
+      const project = await projectSchema.findById(_id);
+      if (!project) return response(res, false, null, "Projektas nerastas");
+
+      cloudinaryBachDelete(project.files);
+      await deleteVersions(project.versions);
+
+      const projectData = project.toObject();
+      const unconfirmedProject = new unconfirmedSchema({ ...projectData });
+      const savedData = await unconfirmedProject.save();
+
+      if (!savedData) return response(res, false, null, "Klaida perkeliant projektą");
+
+      await projectSchema.findByIdAndDelete(_id);
+      await backupSchema.findByIdAndDelete(_id);
+
+      return response(res, true, savedData, "Projektas perkeltas ");
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");
