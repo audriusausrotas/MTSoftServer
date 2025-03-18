@@ -6,35 +6,20 @@ import io from "../sockets/main";
 import { Response, Request } from "express";
 
 export default {
-  register: async (req: Request, res: Response) => {
-    const { email, password, username } = req.body;
+  //////////////////// get requests ////////////////////////////////////
 
-    const userExists = await userSchema.findOne({ email });
-    if (userExists) {
-      return response(res, false, null, "Vartotojas jau egzistuoja");
-    }
-
-    const hashedPassword = await bcrypt.hash(
-      password,
-      parseInt(process.env.SALT as string)
-    );
-
-    const user = new userSchema({
-      username,
-      email,
-      password: hashedPassword,
-    });
-
-    const newUser: any = await user.save;
-
-    if (newUser) {
-      newUser.password = "";
-      io.emit("newUser", newUser);
-    }
-    return response(res, true, null, "Sėkmingai prisiregistruota");
+  getUser: async (req: Request, res: Response) => {
+    const { user } = req.body;
+    const foundUser = await userSchema.findOne({ username: user });
+    foundUser && (foundUser.password = "");
+    return response(res, true, foundUser, "ok");
   },
 
-  ///////////////////////////////////////////////////////////////////
+  getUsers: async (req: Request, res: Response) => {
+    const users = await userSchema.find();
+    return response(res, true, users, "ok");
+  },
+
   login: async (req: Request, res: Response) => {
     const { email, password } = req.body;
 
@@ -76,22 +61,42 @@ export default {
     return response(res, true, data, "Prisijungimas sėkmingas");
   },
 
-  ///////////////////////////////////////////////////////////////////
-  getUser: async (req: Request, res: Response) => {
-    const { user } = req.body;
-    const foundUser = await userSchema.findOne({ username: user });
-    foundUser && (foundUser.password = "");
-    return response(res, true, foundUser, "ok");
-  },
+  //////////////////// delete requests /////////////////////////////////
 
-  ///////////////////////////////////////////////////////////////////
-  getUsers: async (req: Request, res: Response) => {
-    const users = await userSchema.find();
-    return response(res, true, users, "ok");
-  },
+  //////////////////// update requests /////////////////////////////////
 
   logout: (req: Request, res: Response) => {
     res.clearCookie("token");
     return response(res, true, null, "Logged out successfully");
+  },
+
+  //////////////////// post requests ///////////////////////////////////
+
+  register: async (req: Request, res: Response) => {
+    const { email, password, username } = req.body;
+
+    const userExists = await userSchema.findOne({ email });
+    if (userExists) {
+      return response(res, false, null, "Vartotojas jau egzistuoja");
+    }
+
+    const hashedPassword = await bcrypt.hash(
+      password,
+      parseInt(process.env.SALT as string)
+    );
+
+    const user = new userSchema({
+      username,
+      email,
+      password: hashedPassword,
+    });
+
+    const newUser: any = await user.save;
+
+    if (newUser) {
+      newUser.password = "";
+      io.emit("newUser", newUser);
+    }
+    return response(res, true, null, "Sėkmingai prisiregistruota");
   },
 };

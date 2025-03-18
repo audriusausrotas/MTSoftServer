@@ -3,6 +3,8 @@ import response from "../modules/response";
 import defaultValuesSchema from "../schemas/defaultValuesSchema";
 
 export default {
+  //////////////////// get requests ////////////////////////////////////
+
   getDefaultValues: async (req: Request, res: Response) => {
     try {
       const data = await defaultValuesSchema.find();
@@ -13,6 +15,12 @@ export default {
       return response(res, false, null, "Serverio klaida");
     }
   },
+
+  //////////////////// delete requests /////////////////////////////////
+
+  //////////////////// update requests /////////////////////////////////
+
+  //////////////////// post requests ///////////////////////////////////
 
   newDefaultValue: async (req: Request, res: Response) => {
     try {

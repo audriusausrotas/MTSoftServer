@@ -4,6 +4,8 @@ import io from "../sockets/main";
 import { Request, Response } from "express";
 
 export default {
+  //////////////////// get requests ////////////////////////////////////
+
   getBackup: async (req: Request, res: Response) => {
     try {
       const backup = await backupSchema.find();
@@ -30,4 +32,10 @@ export default {
       return response(res, false, null, "Serverio klaida");
     }
   },
+
+  //////////////////// delete requests /////////////////////////////////
+
+  //////////////////// update requests /////////////////////////////////
+
+  //////////////////// post requests ///////////////////////////////////
 };

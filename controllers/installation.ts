@@ -3,6 +3,12 @@ import installationSchema from "../schemas/installationSchema";
 import response from "../modules/response";
 
 export default {
+  //////////////////// get requests ////////////////////////////////////
+
+  //////////////////// delete requests /////////////////////////////////
+
+  //////////////////// update requests /////////////////////////////////
+
   partsDelivered: async (req: Request, res: Response) => {
     try {
       const { _id, measureIndex, value } = req.body;
@@ -21,4 +27,6 @@ export default {
       return response(res, false, null, "Serverio klaida");
     }
   },
+
+  //////////////////// post requests ///////////////////////////////////
 };

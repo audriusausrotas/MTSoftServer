@@ -5,6 +5,8 @@ import response from "../modules/response";
 import { HydratedDocument } from "mongoose";
 
 export default {
+  //////////////////// get requests ////////////////////////////////////
+
   getBonus: async (req: Request, res: Response) => {
     try {
       const data: HydratedDocument<Bonus>[] | null = await bonusSchema.find();
@@ -23,4 +25,10 @@ export default {
       return response(res, false, null, "Serverio klaida");
     }
   },
+
+  //////////////////// delete requests /////////////////////////////////
+
+  //////////////////// update requests /////////////////////////////////
+
+  //////////////////// post requests ///////////////////////////////////
 };
