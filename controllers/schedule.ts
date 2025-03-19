@@ -62,7 +62,7 @@ export default {
 
       if (workerFound.accountType !== "Gamyba") {
         selectedJobs.forEach(async (job: Job) => {
-          await processJob(job._id.toString(), worker.lastName, res);
+          await processJob(job._id, worker.lastName, res);
         });
       }
 
