@@ -24,13 +24,13 @@ const router = express.Router();
 
 /////////////////////// Auth /////////////////////////////
 
-router.get("/getUsers", authMiddleware, auth.getUsers);
+router.get("/getUsers", authMiddleware.checkUser, auth.getUsers);
 
 router.patch("/logout", auth.logout);
 
 router.post("/register", inputVerification, auth.register);
 router.post("/login", inputVerification, auth.login);
-router.post("/getUser", authMiddleware, auth.getUser);
+router.post("/getUser", authMiddleware.checkUser, auth.getUser);
 
 /////////////////////// Archive //////////////////////////
 
