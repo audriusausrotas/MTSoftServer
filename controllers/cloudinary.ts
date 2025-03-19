@@ -1,11 +1,11 @@
-import { Request, Response } from "express";
-import { v2 as cloudinary } from "cloudinary";
-import response from "../modules/response";
-import projectSchema from "../schemas/projectSchema";
 import installationSchema from "../schemas/installationSchema";
 import productionSchema from "../schemas/productionSchema";
-import { Photo } from "../data/interfaces";
+import projectSchema from "../schemas/projectSchema";
 import userSchema from "../schemas/userSchema";
+import { v2 as cloudinary } from "cloudinary";
+import { Request, Response } from "express";
+import response from "../modules/response";
+import { Photo } from "../data/interfaces";
 require("dotenv").config();
 
 export default {

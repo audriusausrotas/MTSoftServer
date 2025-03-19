@@ -1,8 +1,8 @@
-import { Request, Response } from "express";
-import response from "../modules/response";
-import gateSchema from "../schemas/gateSchema";
 import projectSchema from "../schemas/projectSchema";
 import type { Comment } from "../data/interfaces";
+import gateSchema from "../schemas/gateSchema";
+import { Request, Response } from "express";
+import response from "../modules/response";
 
 export default {
   //////////////////// get requests ////////////////////////////////////

@@ -1,9 +1,9 @@
-import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
 import userSchema from "../schemas/userSchema";
+import { Response, Request } from "express";
 import response from "../modules/response";
 import io from "../sockets/main";
-import { Response, Request } from "express";
+import jwt from "jsonwebtoken";
+import bcrypt from "bcrypt";
 
 export default {
   //////////////////// get requests ////////////////////////////////////
@@ -29,6 +29,22 @@ export default {
       return response(res, false, null, "Serverio klaida");
     }
   },
+
+  //////////////////// delete requests /////////////////////////////////
+
+  //////////////////// update requests /////////////////////////////////
+
+  logout: (req: Request, res: Response) => {
+    try {
+      res.clearCookie("token");
+      return response(res, true, null, "Logged out successfully");
+    } catch (error) {
+      console.error("Klaida:", error);
+      return response(res, false, null, "Serverio klaida");
+    }
+  },
+
+  //////////////////// post requests ///////////////////////////////////
 
   login: async (req: Request, res: Response) => {
     try {
@@ -76,22 +92,6 @@ export default {
     }
   },
 
-  //////////////////// delete requests /////////////////////////////////
-
-  //////////////////// update requests /////////////////////////////////
-
-  logout: (req: Request, res: Response) => {
-    try {
-      res.clearCookie("token");
-      return response(res, true, null, "Logged out successfully");
-    } catch (error) {
-      console.error("Klaida:", error);
-      return response(res, false, null, "Serverio klaida");
-    }
-  },
-
-  //////////////////// post requests ///////////////////////////////////
-
   register: async (req: Request, res: Response) => {
     try {
       const { email, password, username } = req.body;
@@ -101,7 +101,10 @@ export default {
         return response(res, false, null, "Vartotojas jau egzistuoja");
       }
 
-      const hashedPassword = await bcrypt.hash(password, parseInt(process.env.SALT as string));
+      const hashedPassword = await bcrypt.hash(
+        password,
+        parseInt(process.env.SALT as string)
+      );
 
       const user = new userSchema({
         username,

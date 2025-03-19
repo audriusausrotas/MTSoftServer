@@ -1,12 +1,9 @@
-import response from "../modules/response";
-import deletedSchema from "../schemas/deletedSchema";
-import montavimasSchema from "../schemas/installationSchema";
-import projectSchema from "../schemas/projectSchema";
 import userSchema from "../schemas/userSchema";
-import io from "../sockets/main";
 import { Request, Response } from "express";
-import bcrypt from "bcrypt";
+import response from "../modules/response";
 import { User } from "../data/interfaces";
+import io from "../sockets/main";
+import bcrypt from "bcrypt";
 require("dotenv").config();
 
 export default {
@@ -47,7 +44,8 @@ export default {
 
       const selectedUser: any = await userSchema.findById(selectedUserId);
 
-      if (!selectedUser) return response(res, false, null, "Pasirinktas vartotojas nerastas");
+      if (!selectedUser)
+        return response(res, false, null, "Pasirinktas vartotojas nerastas");
 
       const isPasswordValid = await bcrypt.compare(password, data.password);
 
@@ -103,7 +101,8 @@ export default {
 
       const selectedUser: any = await userSchema.findById(selectedUserId);
 
-      if (!selectedUser) return response(res, false, null, "Pasirinktas vartotojas nerastas");
+      if (!selectedUser)
+        return response(res, false, null, "Pasirinktas vartotojas nerastas");
 
       if (changeType === "admin") {
         selectedUser.accountType = value;

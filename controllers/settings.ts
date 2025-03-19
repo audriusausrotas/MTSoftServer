@@ -1,9 +1,9 @@
-import { Request, Response } from "express";
-import response from "../modules/response";
 import defaultValuesSchema from "../schemas/defaultValuesSchema";
+import userRightsSchema from "../schemas/userRightsSchema";
 import productSchema from "../schemas/productSchema";
 import selectSchema from "../schemas/selectSchema";
-import userRightsSchema from "../schemas/userRightsSchema";
+import { Request, Response } from "express";
+import response from "../modules/response";
 
 export default {
   //////////////////// get requests ////////////////////////////////////
@@ -23,7 +23,8 @@ export default {
     try {
       const data = await selectSchema.find();
 
-      if (data.length === 0) return response(res, false, null, "Nustatymai nerasti");
+      if (data.length === 0)
+        return response(res, false, null, "Nustatymai nerasti");
 
       return response(res, true, data[0]);
     } catch (error) {
@@ -36,7 +37,8 @@ export default {
     try {
       const data = await userRightsSchema.find();
 
-      if (data.length === 0) return response(res, false, null, "Nustatymai nerasti");
+      if (data.length === 0)
+        return response(res, false, null, "Nustatymai nerasti");
 
       return response(res, true, data);
     } catch (error) {
@@ -68,7 +70,8 @@ export default {
 
   updateFenceData: async (req: Request, res: Response) => {
     try {
-      const { _id, width, height, isFenceBoard, defaultDirection, seeThrough } = req.body;
+      const { _id, width, height, isFenceBoard, defaultDirection, seeThrough } =
+        req.body;
 
       const updatedData = {
         width,
@@ -133,9 +136,17 @@ export default {
     }
   },
 
-  addUserRights: async (req: Request, res: Response) => {
+  newUserRights: async (req: Request, res: Response) => {
     try {
-      const { accountType, project, schedule, production, installation, gate, admin } = req.body;
+      const {
+        accountType,
+        project,
+        schedule,
+        production,
+        installation,
+        gate,
+        admin,
+      } = req.body;
 
       let doesExist = await userRightsSchema.findOne({ accountType });
       if (doesExist) {

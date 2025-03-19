@@ -59,7 +59,7 @@ export default {
         ...vartai,
       ];
 
-      return response(res, true, data);
+      return response(res, true, sortedData);
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");
@@ -117,7 +117,8 @@ export default {
 
       const doesExist = await productSchema.findOne({ name });
 
-      if (doesExist) return response(res, false, null, "Produktas jau egzistuoja");
+      if (doesExist)
+        return response(res, false, null, "Produktas jau egzistuoja");
 
       const product = new productSchema({
         name,

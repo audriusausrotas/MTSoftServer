@@ -1,11 +1,11 @@
-import { Response, Request } from "express";
-import productionSchema from "../schemas/productionSchema";
-import response from "../modules/response";
 import { Bindings, Gamyba, GamybaFence, Project } from "../data/interfaces";
-import { v4 as uuidv4, v4 } from "uuid";
-import { HydratedDocument } from "mongoose";
 import cloudinaryBachDelete from "../modules/cloudinaryBachDelete";
+import productionSchema from "../schemas/productionSchema";
 import projectSchema from "../schemas/projectSchema";
+import { HydratedDocument } from "mongoose";
+import { Response, Request } from "express";
+import response from "../modules/response";
+import { v4 as uuidv4, v4 } from "uuid";
 
 // pridet checka ar useris yra adminas
 
@@ -241,7 +241,7 @@ export default {
     }
   },
 
-  addBinding: async (req: Request, res: Response): Promise<Response> => {
+  addBinding: async (req: Request, res: Response) => {
     try {
       const { _id } = req.params;
       // gali reiket konvertuot i objekta

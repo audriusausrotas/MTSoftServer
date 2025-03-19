@@ -1,10 +1,10 @@
-import { Request, Response } from "express";
-import response from "../modules/response";
-import productionSchema from "../schemas/productionSchema";
 import { Comment, Gamyba, Montavimas, Project } from "../data/interfaces";
-import { HydratedDocument } from "mongoose";
 import installationSchema from "../schemas/installationSchema";
+import productionSchema from "../schemas/productionSchema";
 import projectSchema from "../schemas/projectSchema";
+import { Request, Response } from "express";
+import { HydratedDocument } from "mongoose";
+import response from "../modules/response";
 
 export default {
   //////////////////// get requests ////////////////////////////////////
@@ -58,7 +58,8 @@ export default {
 
       const data = await projectSchema.findById(_id);
 
-      if (!data) return { success: false, data: null, message: "užsakymas nerastas" };
+      if (!data)
+        return { success: false, data: null, message: "užsakymas nerastas" };
 
       data.comments = data.comments.filter(
         (item) => item.date !== comment.date && item.comment !== comment.comment
@@ -80,7 +81,8 @@ export default {
     try {
       const { _id, comment, username } = req.body;
 
-      const data: HydratedDocument<Gamyba> | null = await productionSchema.findById(_id);
+      const data: HydratedDocument<Gamyba> | null =
+        await productionSchema.findById(_id);
 
       if (!data) return response(res, false, null, "Projektas nerastas");
 
@@ -104,7 +106,8 @@ export default {
     try {
       const { _id, comment, username } = req.body;
 
-      const data: HydratedDocument<Montavimas> | null = await installationSchema.findById(_id);
+      const data: HydratedDocument<Montavimas> | null =
+        await installationSchema.findById(_id);
 
       if (!data) return response(res, false, null, "Montavimas nerastas");
 
@@ -129,7 +132,8 @@ export default {
     try {
       const { _id, comment, username } = req.body;
 
-      const data: HydratedDocument<Project> | null = await projectSchema.findById(_id);
+      const data: HydratedDocument<Project> | null =
+        await projectSchema.findById(_id);
 
       if (!data) return response(res, false, null, "Projektas nerastas");
 

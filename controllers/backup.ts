@@ -1,7 +1,7 @@
-import response from "../modules/response";
 import backupSchema from "../schemas/backupSchema";
-import io from "../sockets/main";
 import { Request, Response } from "express";
+import response from "../modules/response";
+import io from "../sockets/main";
 
 export default {
   //////////////////// get requests ////////////////////////////////////

@@ -1,14 +1,14 @@
-import response from "../modules/response";
-import deletedSchema from "../schemas/deletedSchema";
-import backupSchema from "../schemas/backupSchema";
-import projectSchema from "../schemas/projectSchema";
-import archiveSchema from "../schemas/archiveSchema";
-import unconfirmedSchema from "../schemas/unconfirmedSchema";
-import montavimasSchema from "../schemas/installationSchema";
 import cloudinaryBachDelete from "../modules/cloudinaryBachDelete";
 import deleteVersions from "../modules/deleteProjectVersions";
-import io from "../sockets/main";
+import unconfirmedSchema from "../schemas/unconfirmedSchema";
+import montavimasSchema from "../schemas/installationSchema";
+import deletedSchema from "../schemas/deletedSchema";
+import projectSchema from "../schemas/projectSchema";
+import archiveSchema from "../schemas/archiveSchema";
+import backupSchema from "../schemas/backupSchema";
 import { Response, Request } from "express";
+import response from "../modules/response";
+import io from "../sockets/main";
 
 export default {
   //////////////////// get requests ////////////////////////////////////
@@ -71,7 +71,8 @@ export default {
     try {
       const data = await unconfirmedSchema.find();
 
-      if (!data) return response(res, false, null, "Nepatvirtintų projektų nerasta");
+      if (!data)
+        return response(res, false, null, "Nepatvirtintų projektų nerasta");
 
       data.reverse();
 
@@ -98,7 +99,8 @@ export default {
     try {
       const data = await deletedSchema.find();
 
-      if (!data.length) return response(res, false, null, "Ištrintų projektų nerasta");
+      if (!data.length)
+        return response(res, false, null, "Ištrintų projektų nerasta");
 
       data.reverse();
 
@@ -231,7 +233,8 @@ export default {
       }
 
       if (!archivedProject)
-        if (!archivedProject) return response(res, false, null, "Projektas nerastas");
+        if (!archivedProject)
+          return response(res, false, null, "Projektas nerastas");
 
       const currentDate = new Date();
       let expirationDate = new Date(currentDate);
@@ -309,7 +312,8 @@ export default {
       const unconfirmedProject = new unconfirmedSchema({ ...projectData });
       const savedData = await unconfirmedProject.save();
 
-      if (!savedData) return response(res, false, null, "Klaida perkeliant projektą");
+      if (!savedData)
+        return response(res, false, null, "Klaida perkeliant projektą");
 
       await projectSchema.findByIdAndDelete(_id);
       await backupSchema.findByIdAndDelete(_id);

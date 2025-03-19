@@ -1,6 +1,6 @@
-import response from "../modules/response";
 import clientSchema from "../schemas/clientSchema";
 import { Request, Response } from "express";
+import response from "../modules/response";
 
 export default {
   //////////////////// get requests ////////////////////////////////////

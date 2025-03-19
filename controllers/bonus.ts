@@ -1,8 +1,8 @@
-import { Response, Request } from "express";
-import { Bonus } from "../data/interfaces";
 import bonusSchema from "../schemas/bonusSchema";
-import response from "../modules/response";
+import { Response, Request } from "express";
 import { HydratedDocument } from "mongoose";
+import { Bonus } from "../data/interfaces";
+import response from "../modules/response";
 
 export default {
   //////////////////// get requests ////////////////////////////////////

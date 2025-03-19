@@ -1,20 +1,20 @@
-import response from "../modules/response";
-import deletedSchema from "../schemas/deletedSchema";
-import montavimasSchema from "../schemas/installationSchema";
-import projectSchema from "../schemas/projectSchema";
-import io from "../sockets/main";
-import { Request, Response } from "express";
-import cloudinaryBachDelete from "../modules/cloudinaryBachDelete";
 import deleteProjectVersions from "../modules/deleteProjectVersions";
-import backupSchema from "../schemas/backupSchema";
-import { sendEmail } from "../modules/helpers";
-import bonusSchema from "../schemas/bonusSchema";
-import { Project } from "../data/interfaces";
-import versionsSchema from "../schemas/versionsSchema";
-import userSchema from "../schemas/userSchema";
-import { HydratedDocument } from "mongoose";
-import unconfirmedSchema from "../schemas/unconfirmedSchema";
+import cloudinaryBachDelete from "../modules/cloudinaryBachDelete";
 import deleteVersions from "../modules/deleteProjectVersions";
+import unconfirmedSchema from "../schemas/unconfirmedSchema";
+import montavimasSchema from "../schemas/installationSchema";
+import versionsSchema from "../schemas/versionsSchema";
+import deletedSchema from "../schemas/deletedSchema";
+import projectSchema from "../schemas/projectSchema";
+import backupSchema from "../schemas/backupSchema";
+import bonusSchema from "../schemas/bonusSchema";
+import { sendEmail } from "../modules/helpers";
+import userSchema from "../schemas/userSchema";
+import { Project } from "../data/interfaces";
+import { HydratedDocument } from "mongoose";
+import { Request, Response } from "express";
+import response from "../modules/response";
+import io from "../sockets/main";
 
 export default {
   //////////////////// get requests ////////////////////////////////////
@@ -22,7 +22,8 @@ export default {
   getProjects: async (req: Request, res: Response) => {
     try {
       const projects = await projectSchema.find();
-      if (!projects.length) return response(res, false, null, "Projektai nerasti");
+      if (!projects.length)
+        return response(res, false, null, "Projektai nerasti");
 
       projects.reverse();
       return response(res, true, projects, "Prisijungimas sėkmingas");
@@ -65,7 +66,8 @@ export default {
 
       const deletedProject = new deletedSchema({ ...projectData });
       const deletedData = await deletedProject.save();
-      if (!deletedData) return response(res, false, null, "Klaida trinant projektą");
+      if (!deletedData)
+        return response(res, false, null, "Klaida trinant projektą");
 
       await projectSchema.findByIdAndDelete(_id);
       await montavimasSchema.findByIdAndDelete(_id);
@@ -85,7 +87,10 @@ export default {
       const currentDate = new Date();
 
       const deletionPromises = projects.map(async (project) => {
-        if (project.status === "Nepatvirtintas" || project.status === "Netinkamas") {
+        if (
+          project.status === "Nepatvirtintas" ||
+          project.status === "Netinkamas"
+        ) {
           const expirationDate = new Date(project.dateExparation);
 
           if (currentDate > expirationDate) {
@@ -93,7 +98,9 @@ export default {
             await deleteVersions(project.versions);
 
             const projectData = project.toObject();
-            const unconfirmedProject = new unconfirmedSchema({ ...projectData });
+            const unconfirmedProject = new unconfirmedSchema({
+              ...projectData,
+            });
             await unconfirmedProject.save();
 
             await projectSchema.findByIdAndDelete(project._id);
@@ -183,7 +190,8 @@ export default {
     try {
       const { _id } = req.params;
 
-      const project: HydratedDocument<Project> | null = await projectSchema.findById(_id);
+      const project: HydratedDocument<Project> | null =
+        await projectSchema.findById(_id);
 
       if (!project) return response(res, false, null, "Projektas nerastas");
 
@@ -213,7 +221,8 @@ export default {
 
       const rollbackVersion = await versionsSchema.findById(_id);
 
-      if (!rollbackVersion) return response(res, false, null, "Projektas nerastas");
+      if (!rollbackVersion)
+        return response(res, false, null, "Projektas nerastas");
 
       rollbackVersion.versions = [...project.versions];
 
@@ -463,7 +472,8 @@ export default {
           });
 
           const bonusData = await bonus.save();
-          if (!bonusData) return response(res, true, null, "Klaida išsaugant bonusus");
+          if (!bonusData)
+            return response(res, true, null, "Klaida išsaugant bonusus");
         }
       }
 
@@ -502,7 +512,8 @@ export default {
 
       const orderExist = await projectSchema.findById(_id);
 
-      if (!orderExist) return { success: false, data: null, message: "Projektas nerastas" };
+      if (!orderExist)
+        return { success: false, data: null, message: "Projektas nerastas" };
 
       const versionObject: Project = orderExist.toObject();
       delete versionObject._id;
@@ -510,7 +521,8 @@ export default {
       const newVersion = new versionsSchema(versionObject);
       const version = await newVersion.save();
 
-      if (!version) return response(res, false, null, "Klaida išsaugant versiją");
+      if (!version)
+        return response(res, false, null, "Klaida išsaugant versiją");
 
       orderExist.versions?.push({
         id: version._id,
@@ -569,7 +581,9 @@ export default {
 
       if (_id) projectExist = await projectSchema.findById(_id);
 
-      const creatorUsername = projectExist ? projectExist.creator.username : creator.username;
+      const creatorUsername = projectExist
+        ? projectExist.creator.username
+        : creator.username;
 
       const currentDate = new Date();
 
@@ -599,7 +613,8 @@ export default {
           (a, b) => extractOrderNumber(a) - extractOrderNumber(b)
         );
 
-        let lastOrder = sortedOrderNumbers[sortedOrderNumbers.length - 1]?.orderNumber;
+        let lastOrder =
+          sortedOrderNumbers[sortedOrderNumbers.length - 1]?.orderNumber;
 
         let orderNumbers = parseInt(lastOrder.split("-")[1]);
         orderNumbers++;

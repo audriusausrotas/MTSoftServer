@@ -1,15 +1,11 @@
 import { Job, Schedule, SelectValues } from "../data/interfaces";
-import { processJob } from "../modules/helpers";
-import response from "../modules/response";
-import deletedSchema from "../schemas/deletedSchema";
-import montavimasSchema from "../schemas/installationSchema";
-import projectSchema from "../schemas/projectSchema";
 import scheduleSchema from "../schemas/scheduleSchema";
-import selectSchema from "../schemas/selectSchema";
+import { processJob } from "../modules/helpers";
 import userSchema from "../schemas/userSchema";
-import io from "../sockets/main";
 import { Request, Response } from "express";
 import { HydratedDocument } from "mongoose";
+import response from "../modules/response";
+import io from "../sockets/main";
 
 export default {
   //////////////////// get requests ////////////////////////////////////
@@ -31,10 +27,13 @@ export default {
       ) {
         schedule = await scheduleSchema.find();
       } else if (user.accountType === "Montavimas") {
-        schedule = await scheduleSchema.find({ "worker.lastName": user.lastName });
+        schedule = await scheduleSchema.find({
+          "worker.lastName": user.lastName,
+        });
       }
 
-      if (schedule.length === 0) return response(res, false, null, "Grafikas nerastas");
+      if (schedule.length === 0)
+        return response(res, false, null, "Grafikas nerastas");
 
       return response(res, true, schedule);
     } catch (error) {
@@ -63,7 +62,8 @@ export default {
       }
 
       const workerFound = await userSchema.findById(worker._id);
-      if (!workerFound) return response(res, false, null, "Darbuotojas nerastas");
+      if (!workerFound)
+        return response(res, false, null, "Darbuotojas nerastas");
 
       if (workerFound.accountType !== "Gamyba") {
         selectedJobs.forEach(async (job: Job) => {

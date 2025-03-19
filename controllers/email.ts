@@ -1,11 +1,11 @@
-import response from "../modules/response";
-import io from "../sockets/main";
-import { Request, Response } from "express";
-import { sendEmail } from "../modules/helpers";
-import type { User } from "../data/interfaces";
-import formidable from "formidable";
-import fs from "fs";
 import userSchema from "../schemas/userSchema";
+import type { User } from "../data/interfaces";
+import { sendEmail } from "../modules/helpers";
+import { Request, Response } from "express";
+import response from "../modules/response";
+import formidable from "formidable";
+import io from "../sockets/main";
+import fs from "fs";
 
 export default {
   sendRetailOffers: async (req: Request, res: Response) => {
@@ -29,8 +29,12 @@ export default {
       );
 
       const userId = res.locals.userId;
-      const title = Array.isArray(fields.title) ? fields.title[0] : fields.title;
-      const message = Array.isArray(fields.message) ? fields.message[0] : fields.message;
+      const title = Array.isArray(fields.title)
+        ? fields.title[0]
+        : fields.title;
+      const message = Array.isArray(fields.message)
+        ? fields.message[0]
+        : fields.message;
 
       if (!userId) throw new Error("Missing userId");
       if (!fields.to) throw new Error("Missing recipients");

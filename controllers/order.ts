@@ -1,6 +1,6 @@
+import projectSchema from "../schemas/projectSchema";
 import { Request, Response } from "express";
 import response from "../modules/response";
-import projectSchema from "../schemas/projectSchema";
 
 export default {
   //////////////////// get requests ////////////////////////////////////

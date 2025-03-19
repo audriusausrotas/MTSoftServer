@@ -1,9 +1,9 @@
-import { Request, Response } from "express";
-import installationSchema from "../schemas/installationSchema";
-import response from "../modules/response";
-import { Montavimas } from "../data/interfaces";
 import cloudinaryBachDelete from "../modules/cloudinaryBachDelete";
+import installationSchema from "../schemas/installationSchema";
+import { Montavimas } from "../data/interfaces";
 import { processJob } from "../modules/helpers";
+import { Request, Response } from "express";
+import response from "../modules/response";
 
 export default {
   //////////////////// get requests ////////////////////////////////////
@@ -119,7 +119,9 @@ export default {
 
       const project = await installationSchema.findOneAndUpdate(
         { _id },
-        { $set: { [`fences.${index}.measures.${measureIndex}.postone`]: value } },
+        {
+          $set: { [`fences.${index}.measures.${measureIndex}.postone`]: value },
+        },
         { new: true }
       );
 
