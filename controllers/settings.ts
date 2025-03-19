@@ -23,8 +23,7 @@ export default {
     try {
       const data = await selectSchema.find();
 
-      if (data.length === 0)
-        return response(res, false, null, "Nustatymai nerasti");
+      if (data.length === 0) return response(res, false, null, "Nustatymai nerasti");
 
       return response(res, true, data[0]);
     } catch (error) {
@@ -37,8 +36,7 @@ export default {
     try {
       const data = await userRightsSchema.find();
 
-      if (data.length === 0)
-        return response(res, false, null, "Nustatymai nerasti");
+      if (data.length === 0) return response(res, false, null, "Nustatymai nerasti");
 
       return response(res, true, data);
     } catch (error) {
@@ -70,8 +68,7 @@ export default {
 
   updateFenceData: async (req: Request, res: Response) => {
     try {
-      const { _id, width, height, isFenceBoard, defaultDirection, seeThrough } =
-        req.body;
+      const { _id, width, height, isFenceBoard, defaultDirection, seeThrough } = req.body;
 
       const updatedData = {
         width,
@@ -81,7 +78,7 @@ export default {
         seeThrough,
       };
 
-      const data = await productSchema.findOneAndUpdate({ _id }, updatedData, {
+      const data = await productSchema.findByIdAndUpdate(_id, updatedData, {
         new: true,
       });
 
@@ -138,15 +135,7 @@ export default {
 
   newUserRights: async (req: Request, res: Response) => {
     try {
-      const {
-        accountType,
-        project,
-        schedule,
-        production,
-        installation,
-        gate,
-        admin,
-      } = req.body;
+      const { accountType, project, schedule, production, installation, gate, admin } = req.body;
 
       let doesExist = await userRightsSchema.findOne({ accountType });
       if (doesExist) {

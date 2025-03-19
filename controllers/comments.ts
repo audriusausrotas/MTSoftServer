@@ -14,7 +14,7 @@ export default {
   deleteProductionComment: async (req: Request, res: Response) => {
     try {
       const { _id, comment } = req.body;
-      // gali reiket konvertuot
+
       const data = await productionSchema.findOne(_id);
 
       if (!data) return response(res, false, null, "Projektas nerastas");
@@ -58,8 +58,7 @@ export default {
 
       const data = await projectSchema.findById(_id);
 
-      if (!data)
-        return { success: false, data: null, message: "užsakymas nerastas" };
+      if (!data) return { success: false, data: null, message: "užsakymas nerastas" };
 
       data.comments = data.comments.filter(
         (item) => item.date !== comment.date && item.comment !== comment.comment
@@ -79,17 +78,18 @@ export default {
   //////////////////// post requests ///////////////////////////////////
   addProductionComment: async (req: Request, res: Response) => {
     try {
-      const { _id, comment, username } = req.body;
+      const { _id, comment } = req.body;
 
-      const data: HydratedDocument<Gamyba> | null =
-        await productionSchema.findById(_id);
+      const user = res.locals.user;
+
+      const data: HydratedDocument<Gamyba> | null = await productionSchema.findById(_id);
 
       if (!data) return response(res, false, null, "Projektas nerastas");
 
       const newComment: Comment = {
         comment,
         date: new Date().toISOString(),
-        creator: username,
+        creator: user.username,
       };
 
       data.aditional.unshift(newComment);
@@ -104,17 +104,18 @@ export default {
 
   addInstallationComment: async (req: Request, res: Response) => {
     try {
-      const { _id, comment, username } = req.body;
+      const { _id, comment } = req.body;
 
-      const data: HydratedDocument<Montavimas> | null =
-        await installationSchema.findById(_id);
+      const user = res.locals.user;
+
+      const data: HydratedDocument<Montavimas> | null = await installationSchema.findById(_id);
 
       if (!data) return response(res, false, null, "Montavimas nerastas");
 
       const newComment: Comment = {
         comment,
         date: new Date().toISOString(),
-        creator: username,
+        creator: user.username,
       };
 
       data.aditional.unshift(newComment);
@@ -130,17 +131,18 @@ export default {
 
   addProjectComment: async (req: Request, res: Response) => {
     try {
-      const { _id, comment, username } = req.body;
+      const { _id, comment } = req.body;
 
-      const data: HydratedDocument<Project> | null =
-        await projectSchema.findById(_id);
+      const user = res.locals.user;
+
+      const data: HydratedDocument<Project> | null = await projectSchema.findById(_id);
 
       if (!data) return response(res, false, null, "Projektas nerastas");
 
       const newComment: Comment = {
         comment,
         date: new Date().toISOString(),
-        creator: username,
+        creator: user.username,
       };
 
       data.comments.unshift(newComment);

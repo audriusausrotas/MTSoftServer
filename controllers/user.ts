@@ -31,27 +31,22 @@ export default {
 
   deleteUser: async (req: Request, res: Response) => {
     try {
-      const { selectedUserId, password, userId } = req.body;
+      const { selectedUserId, password } = req.body;
 
-      // perdaryt kad middleware tikrintu
+      const user = res.locals.user;
 
-      const data: User | null = await userSchema.findById(userId);
-
-      if (data?.accountType !== "Administratorius")
-        return response(res, false, null, "Vartotojas neturi teisių");
+      const data: User | null = await userSchema.findById(user._id);
 
       if (!data) return response(res, false, null, "Vartotojas nerastas");
 
       const selectedUser: any = await userSchema.findById(selectedUserId);
 
-      if (!selectedUser)
-        return response(res, false, null, "Pasirinktas vartotojas nerastas");
+      if (!selectedUser) return response(res, false, null, "Pasirinktas vartotojas nerastas");
 
       const isPasswordValid = await bcrypt.compare(password, data.password);
 
       if (isPasswordValid) {
         await userSchema.findByIdAndDelete(selectedUserId);
-
         return response(res, true, selectedUserId, "Pakeitimai atlikti");
       } else return response(res, false, null, "Klaidingas slaptažodis");
     } catch (error) {
@@ -90,19 +85,11 @@ export default {
 
   updateUser: async (req: Request, res: Response) => {
     try {
-      const { selectedUserId, value, userId, changeType } = req.body;
-
-      const data: User | null = await userSchema.findById(userId);
-
-      if (data?.accountType !== "Administratorius")
-        return response(res, false, null, "Vartotojas neturi teisių");
-
-      if (!data) return response(res, false, null, "Vartotojas nerastas");
+      const { selectedUserId, value, changeType } = req.body;
 
       const selectedUser: any = await userSchema.findById(selectedUserId);
 
-      if (!selectedUser)
-        return response(res, false, null, "Pasirinktas vartotojas nerastas");
+      if (!selectedUser) return response(res, false, null, "Pasirinktas vartotojas nerastas");
 
       if (changeType === "admin") {
         selectedUser.accountType = value;

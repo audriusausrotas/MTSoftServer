@@ -66,15 +66,9 @@ export default {
     try {
       const { _id } = req.params;
 
-      await projectSchema.findOneAndUpdate(
-        { _id },
-        { status: "Vartai Sumontuoti" }
-      );
+      await projectSchema.findByIdAndUpdate(_id, { status: "Vartai Sumontuoti" });
 
-      const data = await gateSchema.findOneAndUpdate(
-        { _id: _id },
-        { measure: "Baigtas" }
-      );
+      const data = await gateSchema.findByIdAndUpdate(_id, { measure: "Baigtas" });
 
       if (!data) return response(res, false, null, "Serverio klaida");
 
@@ -87,7 +81,9 @@ export default {
 
   updateOrder: async (req: Request, res: Response) => {
     try {
-      const { _id, change, value, username } = req.body;
+      const { _id, change, value } = req.body;
+
+      const user = res.locals.user;
 
       const data = await gateSchema.findById(_id);
 
@@ -107,7 +103,7 @@ export default {
           const newComment: Comment = {
             comment: value as string,
             date: new Date().toISOString(),
-            creator: username,
+            creator: user.username,
           };
           data.comments.unshift(newComment);
           break;
@@ -139,14 +135,11 @@ export default {
 
       if (!project) return response(res, false, null, "Projektas nerastas");
 
-      if (project.gates.length === 0)
-        return response(res, false, null, "Projektas vartų neturi");
+      if (project.gates.length === 0) return response(res, false, null, "Projektas vartų neturi");
 
       const gates = await gateSchema.find();
 
-      const gatesExist = gates.some(
-        (item) => item._id.toString() === project._id.toString()
-      );
+      const gatesExist = gates.some((item) => item._id.toString() === project._id.toString());
 
       if (gatesExist) return response(res, false, null, "Vartai jau užsakyti");
 

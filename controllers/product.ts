@@ -72,7 +72,7 @@ export default {
     try {
       const { _id } = req.params;
 
-      const data = await productSchema.findOneAndDelete({ _id });
+      const data = await productSchema.findByIdAndDelete(_id);
 
       if (!data) return response(res, false, null, "Produktas nerastas");
 
@@ -96,7 +96,7 @@ export default {
         category,
       };
 
-      const data = await productSchema.findOneAndUpdate({ _id }, updatedData, {
+      const data = await productSchema.findByIdAndUpdate(_id, updatedData, {
         new: true,
       });
 
@@ -117,8 +117,7 @@ export default {
 
       const doesExist = await productSchema.findOne({ name });
 
-      if (doesExist)
-        return response(res, false, null, "Produktas jau egzistuoja");
+      if (doesExist) return response(res, false, null, "Produktas jau egzistuoja");
 
       const product = new productSchema({
         name,

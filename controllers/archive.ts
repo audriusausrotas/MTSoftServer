@@ -71,8 +71,7 @@ export default {
     try {
       const data = await unconfirmedSchema.find();
 
-      if (!data)
-        return response(res, false, null, "Nepatvirtintų projektų nerasta");
+      if (!data) return response(res, false, null, "Nepatvirtintų projektų nerasta");
 
       data.reverse();
 
@@ -99,8 +98,7 @@ export default {
     try {
       const data = await deletedSchema.find();
 
-      if (!data.length)
-        return response(res, false, null, "Ištrintų projektų nerasta");
+      if (!data.length) return response(res, false, null, "Ištrintų projektų nerasta");
 
       data.reverse();
 
@@ -168,13 +166,13 @@ export default {
       const { _id, location } = await req.body;
 
       if (location === "archive") {
-        await archiveSchema.findOneAndDelete({ _id });
+        await archiveSchema.findByIdAndDelete(_id);
       } else if (location === "unconfirmed") {
-        await unconfirmedSchema.findOneAndDelete({ _id });
+        await unconfirmedSchema.findByIdAndDelete(_id);
       } else if (location === "deleted") {
-        await deletedSchema.findOneAndDelete({ _id });
+        await deletedSchema.findByIdAndDelete(_id);
       } else if (location === "backup") {
-        await deletedSchema.findOneAndDelete({ _id });
+        await deletedSchema.findByIdAndDelete(_id);
       }
 
       return response(res, true, null, "Projektas ištrintas");
@@ -233,8 +231,7 @@ export default {
       }
 
       if (!archivedProject)
-        if (!archivedProject)
-          return response(res, false, null, "Projektas nerastas");
+        if (!archivedProject) return response(res, false, null, "Projektas nerastas");
 
       const currentDate = new Date();
       let expirationDate = new Date(currentDate);
@@ -249,13 +246,13 @@ export default {
       const data = await project.save();
 
       if (location === "archive") {
-        await archiveSchema.findByIdAndDelete({ _id });
+        await archiveSchema.findByIdAndDelete(_id);
       } else if (location === "unconfirmed") {
-        await unconfirmedSchema.findByIdAndDelete({ _id });
+        await unconfirmedSchema.findByIdAndDelete(_id);
       } else if (location === "deleted") {
-        await deletedSchema.findByIdAndDelete({ _id });
+        await deletedSchema.findByIdAndDelete(_id);
       } else if (location === "backup") {
-        await backupSchema.findByIdAndDelete({ _id });
+        await backupSchema.findByIdAndDelete(_id);
       }
 
       return response(res, true, data, "Projektas perkeltas į projektus");
@@ -267,11 +264,11 @@ export default {
 
   //////////////////// post requests ///////////////////////////////////
 
-  newArchive: async (req: Request, res: Response) => {
+  addArchive: async (req: Request, res: Response) => {
     try {
       const { _id } = req.params;
 
-      const project = await projectSchema.findById({ _id });
+      const project = await projectSchema.findById(_id);
 
       if (!project) return response(res, false, null, "Projektas nerastas");
 
@@ -312,8 +309,7 @@ export default {
       const unconfirmedProject = new unconfirmedSchema({ ...projectData });
       const savedData = await unconfirmedProject.save();
 
-      if (!savedData)
-        return response(res, false, null, "Klaida perkeliant projektą");
+      if (!savedData) return response(res, false, null, "Klaida perkeliant projektą");
 
       await projectSchema.findByIdAndDelete(_id);
       await backupSchema.findByIdAndDelete(_id);

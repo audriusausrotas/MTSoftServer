@@ -14,7 +14,7 @@ export interface Calculations {
 }
 
 export interface Project {
-  _id?: string;
+  _id?: Types.ObjectId;
   creator: Creator;
   client: Client;
   retail: boolean;
@@ -39,7 +39,7 @@ export interface Project {
   versions: Version[];
 }
 export interface Version {
-  _id?: string;
+  _id?: Types.ObjectId;
   id: string;
   date: string;
 }
@@ -154,7 +154,7 @@ export interface Fences {
 }
 
 export interface Gate {
-  _id: string;
+  _id: Types.ObjectId;
   type: string;
   auto: string;
   width: number;
@@ -170,7 +170,7 @@ export interface Gate {
 }
 
 export interface GateSchema {
-  _id: string;
+  _id: Types.ObjectId;
   measure: string;
   client: Client;
   orderNr: string;
@@ -248,7 +248,7 @@ export interface ArchivesState {
 }
 
 export interface Product {
-  _id: string;
+  _id: Types.ObjectId;
   name: string;
   price: number;
   cost: number;
@@ -337,7 +337,7 @@ export interface FenceMeasure {
 }
 
 export interface Montavimas {
-  _id: string;
+  _id: Types.ObjectId;
   client: Client;
   creator: Creator;
   orderNumber: string;
@@ -371,7 +371,7 @@ export interface MontavimasMeasure {
 }
 
 export interface Gamyba {
-  _id: string;
+  _id: Types.ObjectId;
   client: Client;
   creator: Creator;
   orderNumber: string;
@@ -470,17 +470,17 @@ export interface BindingItem {
 }
 
 export interface WorkerInfo {
-  _id: string;
+  _id: Types.ObjectId;
   lastName: string;
 }
 
 export interface Job {
-  _id: string;
+  _id: Types.ObjectId;
   address: string;
 }
 
 export interface Schedule {
-  _id: string;
+  _id: Types.ObjectId;
   date: string;
   worker: WorkerInfo;
   jobs: [Job];
@@ -561,7 +561,7 @@ export interface UserRights {
 }
 
 export interface PotentialClient {
-  _id?: string;
+  _id?: Types.ObjectId;
   name: string;
   email: string;
   phone: string;

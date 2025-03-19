@@ -12,10 +12,7 @@ export default {
 
   getSchedules: async (req: Request, res: Response) => {
     try {
-      // reikia ID is middleware
-      let _id;
-
-      const user = await userSchema.findById(_id);
+      const user = res.locals.user;
 
       if (!user) return response(res, false, null, "Klaidingas varotojas");
 
@@ -32,8 +29,7 @@ export default {
         });
       }
 
-      if (schedule.length === 0)
-        return response(res, false, null, "Grafikas nerastas");
+      if (schedule.length === 0) return response(res, false, null, "Grafikas nerastas");
 
       return response(res, true, schedule);
     } catch (error) {
@@ -62,8 +58,7 @@ export default {
       }
 
       const workerFound = await userSchema.findById(worker._id);
-      if (!workerFound)
-        return response(res, false, null, "Darbuotojas nerastas");
+      if (!workerFound) return response(res, false, null, "Darbuotojas nerastas");
 
       if (workerFound.accountType !== "Gamyba") {
         selectedJobs.forEach(async (job: Job) => {

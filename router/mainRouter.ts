@@ -1,9 +1,10 @@
 import inputVerification from "../middleware/inputVerification";
 import potentialClient from "../controllers/potentialClient";
-import authMiddleware from "../middleware/authMiddleware";
 import installation from "../controllers/installation";
 import cloudinary from "../controllers/cloudinary";
 import production from "../controllers/production";
+import checkAdmin from "../middleware/checkAdmin";
+import checkUser from "../middleware/checkUser";
 import comments from "../controllers/comments";
 import settings from "../controllers/settings";
 import schedule from "../controllers/schedule";
@@ -24,95 +25,96 @@ const router = express.Router();
 
 /////////////////////// Auth /////////////////////////////
 
-router.get("/getUsers", authMiddleware.checkUser, auth.getUsers);
+router.get("/getUsers", checkUser, auth.getUsers);
+router.get("/getUser", checkUser, auth.getUser);
 
-router.patch("/logout", auth.logout);
+router.patch("/logout", checkUser, auth.logout);
 
 router.post("/register", inputVerification, auth.register);
 router.post("/login", inputVerification, auth.login);
-router.post("/getUser", authMiddleware.checkUser, auth.getUser);
 
 /////////////////////// Archive //////////////////////////
 
-router.get("/getArchives", archive.getArchives);
-router.get("/getArchive", archive.getArchive);
-router.get("/getUnconfirmed", archive.getUnconfirmed);
-router.get("/getDeleted", archive.getDeleted);
+router.get("/getUnconfirmed", checkAdmin, archive.getUnconfirmed);
+router.get("/getArchives", checkAdmin, archive.getArchives);
+router.get("/getArchive", checkAdmin, archive.getArchive);
+router.get("/getDeleted", checkAdmin, archive.getDeleted);
 router.get("/serviceCheck", archive.serviceCheck);
 
-router.delete("/deleteArchive", archive.deleteArchive);
-router.delete("/deleteDeleted", archive.deleteDeleted);
-router.delete("/deleteUnconfirmed", archive.deleteUnconfirmed);
+router.delete("/deleteUnconfirmed", checkAdmin, archive.deleteUnconfirmed);
+router.delete("/deleteArchive", checkAdmin, archive.deleteArchive);
+router.delete("/deleteDeleted", checkAdmin, archive.deleteDeleted);
 
-router.patch("/restoreArchive", archive.restoreArchive);
-router.post("/newArchive", archive.newArchive);
-router.post("/addUnconfirmed", archive.addUnconfirmed);
+router.patch("/restoreArchive", checkAdmin, archive.restoreArchive);
+
+router.post("/addUnconfirmed", checkAdmin, archive.addUnconfirmed);
+router.post("/addArchive", checkAdmin, archive.addArchive);
 
 /////////////////////// Backup ///////////////////////////
 
-router.get("/getBackup", backup.getBackup);
+router.get("/getBackup", checkAdmin, backup.getBackup);
 
 /////////////////////// Bonus ////////////////////////////
 
-router.get("/getBonus", bonus.getBonus);
+router.get("/getBonus", checkAdmin, bonus.getBonus);
 
 /////////////////////// Clients //////////////////////////
 
-router.get("/getClients", clients.getClients);
+router.get("/getClients", checkAdmin, clients.getClients);
 
-router.delete("/deleteClient", clients.deleteClient);
+router.delete("/deleteClient", checkAdmin, clients.deleteClient);
 
-router.post("/newClient", clients.newClient);
+router.post("/newClient", checkAdmin, clients.newClient);
 
 /////////////////////// Cloudinary ///////////////////////
 
-router.delete("/imageDelete", cloudinary.imageDelete);
-router.delete("/deletePhoto", cloudinary.deletePhoto);
+router.delete("/imageDelete", checkUser, cloudinary.imageDelete);
+router.delete("/deletePhoto", checkUser, cloudinary.deletePhoto);
 
-router.post("/addPhoto", cloudinary.addPhoto);
+router.post("/addPhoto", checkUser, cloudinary.addPhoto);
 
 /////////////////////// Comments /////////////////////////
 
-router.delete("/deleteProductionComment", comments.deleteProductionComment);
-router.delete("/deleteInstallationComment", comments.deleteInstallationComment);
-router.delete("/deleteProjectComment", comments.deleteProjectComment);
+router.delete("/deleteInstallationComment", checkUser, comments.deleteInstallationComment);
+router.delete("/deleteProductionComment", checkUser, comments.deleteProductionComment);
+router.delete("/deleteProjectComment", checkUser, comments.deleteProjectComment);
 
-router.post("/addProductionComment", comments.addProductionComment);
-router.post("/addInstallationComment", comments.addInstallationComment);
-router.post("/addProjectComment", comments.addProjectComment);
+router.post("/addInstallationComment", checkUser, comments.addInstallationComment);
+router.post("/addProductionComment", checkUser, comments.addProductionComment);
+router.post("/addProjectComment", checkUser, comments.addProjectComment);
 
 /////////////////////// Email ////////////////////////////
 
-router.post("/sendRetailOffers", email.sendRetailOffers);
-router.post("/sendOffer", email.sendOffer);
-router.post("/sendGateInfo", email.sendGateInfo);
+router.post("/sendRetailOffers", checkAdmin, email.sendRetailOffers);
+router.post("/sendGateInfo", checkAdmin, email.sendGateInfo);
+router.post("/sendOffer", checkAdmin, email.sendOffer);
 
 /////////////////////// Gates ////////////////////////////
 
-router.get("/getGates", gates.getGates);
-router.get("/getGate", gates.getGate);
+router.get("/getGates", checkUser, gates.getGates);
+router.get("/getGate", checkUser, gates.getGate);
 
-router.delete("/cancelOrder", gates.cancelOrder);
+router.delete("/cancelOrder", checkAdmin, gates.cancelOrder);
 
-router.patch("/finishOrder", gates.finishOrder);
-router.patch("/updateOrder", gates.updateOrder);
+router.patch("/finishOrder", checkUser, gates.finishOrder);
+router.patch("/updateOrder", checkUser, gates.updateOrder);
 
-router.post("/newOrder", gates.newOrder);
+router.post("/newOrder", checkAdmin, gates.newOrder);
 
 /////////////////////// Installation /////////////////////
 
-router.get("/getWorks", installation.getWorks);
-router.get("/getWork", installation.getWork);
+router.get("/getWorks", checkUser, installation.getWorks);
+router.get("/getWork", checkUser, installation.getWork);
 
-router.delete("/deleteWork", installation.deleteWork);
-router.delete("/deleteWorker", installation.deleteWorker);
+router.delete("/deleteWorker", checkAdmin, installation.deleteWorker);
+router.delete("/deleteWork", checkAdmin, installation.deleteWork);
 
-router.patch("/partsDelivered", installation.partsDelivered);
-router.patch("/updatePostone", installation.updatePostone);
-router.patch("/updateInstallation", installation.updateInstallation);
-router.patch("/updateStatus", installation.updateStatus);
+router.patch("/updateInstallation", checkUser, installation.updateInstallation);
+router.patch("/partsDelivered", checkUser, installation.partsDelivered);
+router.patch("/updatePostone", checkUser, installation.updatePostone);
+router.patch("/updateStatus", checkUser, installation.updateStatus);
 
-router.post("/addInstallation", installation.addInstallation);
+router.post("/addInstallation", checkAdmin, installation.addInstallation);
 
 /////////////////////// Orders ///////////////////////////
 
@@ -123,88 +125,88 @@ router.patch("/declineOrder", order.declineOrder);
 
 /////////////////////// Potential Clients ////////////////
 
-router.get("/getUsers", potentialClient.getUsers);
+router.get("/getUsers", checkAdmin, potentialClient.getUsers);
 
-router.delete("/deleteClient", potentialClient.deleteClient);
+router.delete("/deleteClient", checkAdmin, potentialClient.deleteClient);
 
-router.patch("/selectClients", potentialClient.selectClients);
-router.patch("/updateClient", potentialClient.updateClient);
+router.patch("/selectClients", checkAdmin, potentialClient.selectClients);
+router.patch("/updateClient", checkAdmin, potentialClient.updateClient);
 
-router.post("/newClient", potentialClient.newClient);
+router.post("/newClient", checkAdmin, potentialClient.newClient);
 
 /////////////////////// Products /////////////////////////
 
-router.get("/getProducts", product.getProducts);
+router.get("/getProducts", checkAdmin, product.getProducts);
 
-router.delete("/deleteProduct", product.deleteProduct);
+router.delete("/deleteProduct", checkAdmin, product.deleteProduct);
 
-router.patch("/updateProduct", product.updateProduct);
+router.patch("/updateProduct", checkAdmin, product.updateProduct);
 
-router.post("/newProduct", product.newProduct);
+router.post("/newProduct", checkAdmin, product.newProduct);
 
 /////////////////////// Production ///////////////////////
 
-router.get("/getProductions", production.getProductions);
-router.get("/getProduction", production.getProduction);
+router.get("/getProductions", checkUser, production.getProductions);
+router.get("/getProduction", checkUser, production.getProduction);
 
-router.delete("/deleteProduction", production.deleteProduction);
-router.delete("/deleteBindings", production.deleteBindings);
-router.delete("/deleteMeasure", production.deleteMeasure);
-router.delete("/deleteFence", production.deleteFence);
+router.delete("/deleteProduction", checkAdmin, production.deleteProduction);
+router.delete("/deleteBindings", checkAdmin, production.deleteBindings);
+router.delete("/deleteMeasure", checkAdmin, production.deleteMeasure);
+router.delete("/deleteFence", checkAdmin, production.deleteFence);
 
-router.patch("/updatePostone", production.updatePostone);
-router.patch("/updateStatus", production.updateStatus);
-router.patch("/updateMeasure", production.updateMeasure);
+router.patch("/updatePostone", checkAdmin, production.updatePostone);
+router.patch("/updateMeasure", checkAdmin, production.updateMeasure);
+router.patch("/updateStatus", checkUser, production.updateStatus);
 
-router.post("/newProduction", production.newProduction);
-router.post("/addNewGamyba", production.addNewGamyba);
-router.post("/addBinding", production.addBinding);
-router.post("/addMeasure", production.addMeasure);
+router.post("/newProduction", checkUser, production.newProduction);
+router.post("/addNewGamyba", checkUser, production.addNewGamyba);
+router.post("/addBinding", checkAdmin, production.addBinding);
+router.post("/addMeasure", checkAdmin, production.addMeasure);
 
 /////////////////////// Project //////////////////////////
 
-router.get("/getProjects", project.getProjects);
-router.get("/getProject", project.getProject);
+router.get("/getProjects", checkUser, project.getProjects);
+router.get("/getProject", checkUser, project.getProject);
 
-router.delete("/deleteProject", project.deleteProject);
-router.delete("/removeUnconfirmed", project.removeUnconfirmed);
-router.delete("/deleteVersion", project.deleteVersion);
+router.delete("/removeUnconfirmed", checkAdmin, project.removeUnconfirmed);
+router.delete("/deleteProject", checkAdmin, project.deleteProject);
+router.delete("/deleteVersion", checkAdmin, project.deleteVersion);
 
-router.patch("/changeAdvance", project.changeAdvance);
-router.patch("/changeManager", project.changeManager);
-router.patch("/extendExparationDate", project.extendExparationDate);
-router.patch("/versionRollback", project.versionRollback);
-router.patch("/updateStatus", project.updateStatus);
-router.patch("/updateProject", project.updateProject);
-router.patch("/newProject", project.newProject);
+router.patch("/extendExparationDate", checkAdmin, project.extendExparationDate);
+router.patch("/versionRollback", checkAdmin, project.versionRollback);
+router.patch("/changeAdvance", checkAdmin, project.changeAdvance);
+router.patch("/changeManager", checkAdmin, project.changeManager);
+router.patch("/updateProject", checkAdmin, project.updateProject);
+router.patch("/updateStatus", checkUser, project.updateStatus);
+router.patch("/newProject", checkAdmin, project.newProject);
 
 /////////////////////// Schedule /////////////////////////
 
-router.get("/getSchedules", schedule.getSchedules);
+router.get("/getSchedules", checkUser, schedule.getSchedules);
 
-router.post("/addSchedule", schedule.addSchedule);
+router.post("/addSchedule", checkAdmin, schedule.addSchedule);
 
 /////////////////////// Settings /////////////////////////
 
-router.get("/getDefaultValues", settings.getDefaultValues);
-router.get("/getSelects", settings.getSelects);
-router.get("/getUserRights", settings.getUserRights);
+router.get("/getDefaultValues", checkUser, settings.getDefaultValues);
+router.get("/getUserRights", checkUser, settings.getUserRights);
+router.get("/getSelects", checkUser, settings.getSelects);
 
-router.delete("/deleteSelect", settings.deleteSelect);
+router.delete("/deleteSelect", checkAdmin, settings.deleteSelect);
 
-router.patch("/updateFenceData", settings.updateFenceData);
+router.patch("/updateFenceData", checkAdmin, settings.updateFenceData);
 
-router.post("/newDefaultValue", settings.newDefaultValue);
-router.post("/newSelect", settings.newSelect);
-router.post("/newUserRights", settings.newUserRights);
+router.post("/newDefaultValue", checkAdmin, settings.newDefaultValue);
+router.post("/newUserRights", checkAdmin, settings.newUserRights);
+router.post("/newSelect", checkAdmin, settings.newSelect);
 
 /////////////////////// User /////////////////////////////
 
-router.get("/getUsers", user.getUsers);
+router.get("/getUsers", checkUser, user.getUsers);
 
-router.delete("/deleteUser", user.deleteUser);
+router.delete("/deleteUser", checkAdmin, user.deleteUser);
 
-router.patch("/updateProfile", user.updateProfile);
-router.patch("/updateUser", user.updateUser);
+router.patch("/updateProfile", checkUser, user.updateProfile);
+router.patch("/updateUser", checkUser, user.updateUser);
 
 export default router;

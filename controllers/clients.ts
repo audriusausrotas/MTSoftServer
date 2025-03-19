@@ -9,8 +9,7 @@ export default {
     try {
       const clients = await clientSchema.find();
 
-      if (!clients.length)
-        return response(res, false, null, "Klientai nerasti");
+      if (!clients.length) return response(res, false, null, "Klientai nerasti");
 
       return response(res, true);
     } catch (error) {
@@ -25,7 +24,7 @@ export default {
     try {
       const { _id } = req.params;
 
-      const client = await clientSchema.findOneAndDelete({ _id });
+      const client = await clientSchema.findByIdAndDelete(_id);
 
       if (!client) return response(res, false, null, "Klientas nerastas");
 
@@ -46,8 +45,7 @@ export default {
 
       const clientExist = await clientSchema.findOne({ email });
 
-      if (clientExist)
-        return response(res, false, null, "Klientas jau egzistuoja");
+      if (clientExist) return response(res, false, null, "Klientas jau egzistuoja");
 
       const client = new clientSchema({
         username,

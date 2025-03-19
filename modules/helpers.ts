@@ -1,10 +1,10 @@
-import nodemailer from "nodemailer";
 import installationSchema from "../schemas/installationSchema";
 import { MontavimasFence, Project } from "../data/interfaces";
 import projectSchema from "../schemas/projectSchema";
-import response from "./response";
+import { HydratedDocument, Types } from "mongoose";
+import nodemailer from "nodemailer";
 import { Response } from "express";
-import { HydratedDocument } from "mongoose";
+import response from "./response";
 
 export async function sendEmail({ to, subject, html, user, attachments }: any) {
   let fromPass: string = "";
@@ -45,12 +45,12 @@ export async function sendEmail({ to, subject, html, user, attachments }: any) {
   }
 }
 
-export async function processJob(_id: string, worker: string, res: Response) {
+export async function processJob(_id: Types.ObjectId, worker: string, res: Response) {
   const project: HydratedDocument<Project> | null = await projectSchema.findById(_id);
 
   if (!project) return response(res, false, null, "Projektas nerastas");
 
-  const montavimas = await installationSchema.findOne({ _id: project._id });
+  const montavimas = await installationSchema.findById(project._id);
 
   const newFences: MontavimasFence[] = project.fenceMeasures.map((item) => {
     return {

@@ -10,10 +10,10 @@ export default {
 
   getUser: async (req: Request, res: Response) => {
     try {
-      const { user } = req.body;
-      const foundUser = await userSchema.findOne({ username: user });
-      foundUser && (foundUser.password = "");
-      return response(res, true, foundUser, "ok");
+      const { username } = req.body;
+      const data = await userSchema.findOne({ username });
+      data && (data.password = "");
+      return response(res, true, data, "ok");
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");
@@ -79,9 +79,10 @@ export default {
 
       res.cookie("mtud", token, {
         maxAge: 7776000 * 1000,
-        // httpOnly: true,
-        // secure: process.env.NODE_ENV === "production",
-        // sameSite: "strict",
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
+
         path: "/",
       });
 
@@ -101,10 +102,7 @@ export default {
         return response(res, false, null, "Vartotojas jau egzistuoja");
       }
 
-      const hashedPassword = await bcrypt.hash(
-        password,
-        parseInt(process.env.SALT as string)
-      );
+      const hashedPassword = await bcrypt.hash(password, parseInt(process.env.SALT as string));
 
       const user = new userSchema({
         username,

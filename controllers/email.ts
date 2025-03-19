@@ -9,13 +9,8 @@ import fs from "fs";
 
 export default {
   sendRetailOffers: async (req: Request, res: Response) => {
-    ///////////////////////////////////////////////////////////////////////////////////////
-    // res.locals.userId = userId; // Store it in res.locals (temporary for this request)
-    ///////////////////////////////////////////////////////////////////////////////////////
-
     try {
       const form = formidable({ multiples: true, keepExtensions: true });
-      // Parse form data and handle the file uploads
       const { fields, files } = await new Promise<{ fields: any; files: any }>(
         (resolve, reject) => {
           form.parse(req, (err, fields, files) => {
@@ -28,19 +23,12 @@ export default {
         }
       );
 
-      const userId = res.locals.userId;
-      const title = Array.isArray(fields.title)
-        ? fields.title[0]
-        : fields.title;
-      const message = Array.isArray(fields.message)
-        ? fields.message[0]
-        : fields.message;
+      const user = res.locals.userId;
 
-      if (!userId) throw new Error("Missing userId");
+      const title = Array.isArray(fields.title) ? fields.title[0] : fields.title;
+      const message = Array.isArray(fields.message) ? fields.message[0] : fields.message;
+
       if (!fields.to) throw new Error("Missing recipients");
-
-      const user: User | null = await userSchema.findById(userId);
-      if (!user) return response(res, false, null, "Vartotojas nerastas");
 
       const recipients = JSON.parse(fields.to as string);
 
@@ -82,11 +70,9 @@ export default {
 
   sendOffer: async (req: Request, res: Response) => {
     try {
-      const { userId, to, link, title } = req.body;
+      const { to, link, title } = req.body;
 
-      const user: User | null = await userSchema.findById(userId);
-
-      if (!user) return response(res, false, null, "Vartotojas nerastas");
+      const user = res.locals.user;
 
       let html = `
       <html>
@@ -153,11 +139,9 @@ export default {
 
   sendGateInfo: async (req: Request, res: Response) => {
     try {
-      const { userId, to, message, title } = req.body;
+      const { to, message, title } = req.body;
 
-      const user: User | null = await userSchema.findById(userId);
-
-      if (!user) return response(res, false, null, "Vartotojas nerastas");
+      const user = res.locals.user;
 
       let html = `
       <html>

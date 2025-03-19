@@ -117,8 +117,8 @@ export default {
     try {
       const { _id, index, measureIndex, value } = req.body;
 
-      const project = await installationSchema.findOneAndUpdate(
-        { _id },
+      const project = await installationSchema.findByIdAndUpdate(
+        _id,
         {
           $set: { [`fences.${index}.measures.${measureIndex}.postone`]: value },
         },
@@ -138,8 +138,8 @@ export default {
     try {
       const { _id, index, measureIndex, value } = req.body;
 
-      const project = await installationSchema.findOneAndUpdate(
-        { _id },
+      const project = await installationSchema.findByIdAndUpdate(
+        _id,
         { $set: { [`fences.${index}.measures.${measureIndex}.done`]: value } },
         { new: true }
       );
@@ -157,8 +157,8 @@ export default {
     try {
       const { _id, status } = req.body;
 
-      const data: Montavimas | null = await installationSchema.findOneAndUpdate(
-        { _id },
+      const data: Montavimas | null = await installationSchema.findByIdAndUpdate(
+        _id,
         { $set: { status: status } },
         { new: true }
       );

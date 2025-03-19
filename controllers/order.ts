@@ -27,7 +27,7 @@ export default {
     try {
       const { _id } = req.params;
 
-      const order: any = await projectSchema.findById({ _id });
+      const order: any = await projectSchema.findById(_id);
 
       if (!order) return response(res, false, null, "Užsakymas nerastas");
 
