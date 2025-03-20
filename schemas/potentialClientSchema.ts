@@ -34,4 +34,4 @@ const potentialClientSchema = new mongoose.Schema<PotentialClient>({
   },
 });
 
-export default mongoose.model("potentialClients", potentialClientSchema);
+export default mongoose.model("potentialClients", potentialClientSchema, "potentialClients");

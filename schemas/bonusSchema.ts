@@ -11,4 +11,4 @@ const bonusSchema = new mongoose.Schema<Bonus>({
   bonus: Number,
 });
 
-export default mongoose.model("bonus", bonusSchema);
+export default mongoose.model("bonus", bonusSchema, "bonus");

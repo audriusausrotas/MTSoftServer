@@ -52,4 +52,4 @@ const defaultValuesSchema = new mongoose.Schema<DefaultValues>({
   dileCork: { type: String, required: false, default: "" },
 });
 
-export default mongoose.model("defaultValues", defaultValuesSchema);
+export default mongoose.model("defaultValues", defaultValuesSchema, "defaultValues");

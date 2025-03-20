@@ -25,4 +25,4 @@ const gateSchema = new mongoose.Schema<GateSchema>({
   dateCreated: String,
 });
 
-export default mongoose.model("gates", gateSchema);
+export default mongoose.model("gates", gateSchema, "gates");

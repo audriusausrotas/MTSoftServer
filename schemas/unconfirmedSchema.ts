@@ -67,4 +67,4 @@ const unconfirmedSchema = new mongoose.Schema<Project>({
   dateExparation: String,
 });
 
-export default mongoose.model("projectsUnconfirmed", unconfirmedSchema);
+export default mongoose.model("projectsUnconfirmed", unconfirmedSchema, "projectsUnconfirmed");

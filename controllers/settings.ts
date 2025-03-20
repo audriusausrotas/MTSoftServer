@@ -12,7 +12,7 @@ export default {
     try {
       const data = await defaultValuesSchema.find();
 
-      return response(res, true, data);
+      return response(res, true, data[0]);
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");

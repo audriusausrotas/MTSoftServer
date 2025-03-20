@@ -11,38 +11,28 @@ import { v4 as uuidv4, v4 } from "uuid";
 
 export default {
   //////////////////// get requests ///////////////////////////////////
+  // getProduction: async (req: Request, res: Response) => {
+  //   try {
+  //     const { _id } = req.params;
+
+  //     const data: Gamyba | null = await productionSchema.findById(_id);
+
+  //     if (!data) return response(res, false, null, "Projektas nerastas");
+
+  //     return response(res, true, data);
+  //   } catch (error) {
+  //     console.error("Klaida:", error);
+  //     return response(res, false, null, "Serverio klaida");
+  //   }
+  // },
+
   getProduction: async (req: Request, res: Response) => {
-    try {
-      const { _id } = req.params;
-
-      const data: Gamyba | null = await productionSchema.findById(_id);
-
-      if (!data) return response(res, false, null, "Projektas nerastas");
-
-      return response(res, true, data);
-    } catch (error) {
-      console.error("Klaida:", error);
-      return response(res, false, null, "Serverio klaida");
-    }
-  },
-
-  getProductions: async (req: Request, res: Response) => {
     try {
       const data: Gamyba[] | null = await productionSchema.find();
 
       if (!data.length) return response(res, false, null, "Projektai nerasti");
 
-      const lightData = data.map((item) => {
-        return {
-          _id: item._id,
-          client: { address: item.client.address },
-          creator: { username: item.creator.username },
-          orderNumber: item.orderNumber,
-          status: item.status,
-        };
-      });
-
-      return response(res, true, lightData);
+      return response(res, true, data);
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");
@@ -535,7 +525,7 @@ export default {
 
         await project.save();
 
-        return response(res, true, newGamyba, "Perduota gamybai");
+        return response(res, true, data, "Perduota gamybai");
       }
     } catch (error) {
       console.error("Klaida:", error);

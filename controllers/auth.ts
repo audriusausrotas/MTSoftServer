@@ -10,20 +10,15 @@ export default {
 
   getUser: async (req: Request, res: Response) => {
     try {
-      const { username } = req.body;
-      const data = await userSchema.findOne({ username });
-      data && (data.password = "");
-      return response(res, true, data, "ok");
-    } catch (error) {
-      console.error("Klaida:", error);
-      return response(res, false, null, "Serverio klaida");
-    }
-  },
+      const user = res.locals.user;
 
-  getUsers: async (req: Request, res: Response) => {
-    try {
-      const users = await userSchema.find();
-      return response(res, true, users, "ok");
+      const data = await userSchema.findById(user.id);
+
+      data && (data.password = "");
+
+      if (!data) return response(res, false, null, "Vartotojas nerastas");
+
+      return response(res, true, data);
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");
@@ -82,7 +77,6 @@ export default {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
-
         path: "/",
       });
 

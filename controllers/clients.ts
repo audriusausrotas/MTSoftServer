@@ -11,7 +11,7 @@ export default {
 
       if (!clients.length) return response(res, false, null, "Klientai nerasti");
 
-      return response(res, true);
+      return response(res, true, clients);
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");

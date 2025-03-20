@@ -38,4 +38,4 @@ const userRightsSchema = new mongoose.Schema<UserRights>({
   },
 });
 
-export default mongoose.model("userRights", userRightsSchema);
+export default mongoose.model("userRights", userRightsSchema, "userRights");

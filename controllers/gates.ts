@@ -13,37 +13,27 @@ export default {
 
       if (!data) return response(res, false, null, "Vartai nerasti");
 
-      const lightData = data.map((item) => {
-        return {
-          _id: item._id,
-          client: { address: item.client.address },
-          measure: item.measure,
-          manager: item.manager,
-          orderNr: item.orderNr,
-        };
-      });
-
-      return response(res, true, lightData);
+      return response(res, true, data);
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");
     }
   },
 
-  getGate: async (req: Request, res: Response) => {
-    try {
-      const { _id } = req.params;
+  // getGate: async (req: Request, res: Response) => {
+  //   try {
+  //     const { _id } = req.params;
 
-      const gate = await gateSchema.findById(_id);
+  //     const gate = await gateSchema.findById(_id);
 
-      if (!gate) return response(res, false, null, "Užsakymas nerastas");
+  //     if (!gate) return response(res, false, null, "Užsakymas nerastas");
 
-      return response(res, true, gate);
-    } catch (error) {
-      console.error("Klaida:", error);
-      return response(res, false, null, "Serverio klaida");
-    }
-  },
+  //     return response(res, true, gate);
+  //   } catch (error) {
+  //     console.error("Klaida:", error);
+  //     return response(res, false, null, "Serverio klaida");
+  //   }
+  // },
 
   //////////////////// delete requests /////////////////////////////////
   cancelOrder: async (req: Request, res: Response) => {

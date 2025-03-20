@@ -15,52 +15,50 @@ export default {
 
   getArchives: async (req: Request, res: Response) => {
     try {
-      const data = await archiveSchema.find();
+      const data = await archiveSchema.aggregate([
+        { $sort: { createdAt: -1 } },
+        {
+          $project: {
+            _id: 1,
+            orderNumber: 1,
+            client: 1,
+            priceVAT: 1,
+            priceWithDiscount: 1,
+            status: 1,
+            discount: 1,
+          },
+        },
+      ]);
 
       if (!data) return response(res, false, null, "Projektai nerasti");
 
-      data.reverse();
-
-      const lightData = data.map((item) => {
-        return {
-          _id: item._id,
-          orderNumber: item.orderNumber,
-          client: item.client,
-          priceVAT: item.priceVAT,
-          priceWithDiscount: item.priceWithDiscount,
-          status: item.status,
-          discount: item.discount,
-        };
-      });
-      return response(res, true, lightData);
+      return response(res, true, data);
     } catch (error) {
       console.error("Klaida gaunant projektus:", error);
       return response(res, false, null, "Serverio klaida");
     }
   },
 
-  getArchive: async (req: Request, res: Response) => {
+  getBackup: async (req: Request, res: Response) => {
     try {
-      const { _id } = req.params;
-      if (!_id) return response(res, false, null, "Trūksta projekto ID");
+      const data = await backupSchema.aggregate([
+        { $sort: { createdAt: -1 } },
+        {
+          $project: {
+            _id: 1,
+            orderNumber: 1,
+            client: 1,
+            priceVAT: 1,
+            priceWithDiscount: 1,
+            status: 1,
+            discount: 1,
+          },
+        },
+      ]);
 
-      let project = await archiveSchema.findById(_id);
+      if (!data) return response(res, false, null, "Projektai nerasti");
 
-      if (!project) {
-        project = await unconfirmedSchema.findById(_id);
-      }
-
-      if (!project) {
-        project = await deletedSchema.findById(_id);
-      }
-
-      if (!project) {
-        project = await backupSchema.findById(_id);
-      }
-
-      if (!project) return response(res, false, null, "Projektas nerastas");
-
-      return response(res, true, project, "Projektas rastas");
+      return response(res, true, data);
     } catch (error) {
       console.error("Klaida gaunant projektą:", error);
       return response(res, false, null, "Serverio klaida");
@@ -69,25 +67,24 @@ export default {
 
   getUnconfirmed: async (req: Request, res: Response) => {
     try {
-      const data = await unconfirmedSchema.find();
+      const data = await unconfirmedSchema.aggregate([
+        { $sort: { createdAt: -1 } },
+        {
+          $project: {
+            _id: 1,
+            orderNumber: 1,
+            client: 1,
+            priceVAT: 1,
+            priceWithDiscount: 1,
+            status: 1,
+            discount: 1,
+          },
+        },
+      ]);
 
-      if (!data) return response(res, false, null, "Nepatvirtintų projektų nerasta");
+      if (!data) return response(res, false, null, "Projektai nerasti");
 
-      data.reverse();
-
-      const lightData = data.map((item) => {
-        return {
-          _id: item._id,
-          orderNumber: item.orderNumber,
-          client: item.client,
-          priceVAT: item.priceVAT,
-          priceWithDiscount: item.priceWithDiscount,
-          status: item.status,
-          discount: item.discount,
-        };
-      });
-
-      return response(res, true, lightData);
+      return response(res, true, data);
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");
@@ -96,25 +93,24 @@ export default {
 
   getDeleted: async (req: Request, res: Response) => {
     try {
-      const data = await deletedSchema.find();
+      const data = await deletedSchema.aggregate([
+        { $sort: { createdAt: -1 } },
+        {
+          $project: {
+            _id: 1,
+            orderNumber: 1,
+            client: 1,
+            priceVAT: 1,
+            priceWithDiscount: 1,
+            status: 1,
+            discount: 1,
+          },
+        },
+      ]);
 
-      if (!data.length) return response(res, false, null, "Ištrintų projektų nerasta");
+      if (!data) return response(res, false, null, "Projektai nerasti");
 
-      data.reverse();
-
-      const lightData = data.map((item) => {
-        return {
-          _id: item._id,
-          orderNumber: item.orderNumber,
-          client: item.client,
-          priceVAT: item.priceVAT,
-          priceWithDiscount: item.priceWithDiscount,
-          status: item.status,
-          discount: item.discount,
-        };
-      });
-
-      return response(res, true, lightData);
+      return response(res, true, data);
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");

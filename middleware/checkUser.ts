@@ -7,9 +7,7 @@ require("dotenv").config();
 export default (req: Request, res: Response, next: NextFunction) => {
   const token = req.cookies?.mtud;
 
-  if (!token) {
-    return response(res, false, null, "Žetonas nerastas");
-  }
+  if (!token) return response(res, false, null, "Žetonas nerastas");
 
   try {
     const user = jwt.verify(token, process.env.TOKEN_SECRET as string) as User;

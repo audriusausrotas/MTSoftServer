@@ -27,6 +27,18 @@ export default {
     }
   },
 
+  // getUser: async (req: Request, res: Response) => {
+  //   try {
+  //     const { username } = req.body;
+  //     const data = await userSchema.findOne({ username });
+  //     data && (data.password = "");
+  //     return response(res, true, data, "ok");
+  //   } catch (error) {
+  //     console.error("Klaida:", error);
+  //     return response(res, false, null, "Serverio klaida");
+  //   }
+  // },
+
   //////////////////// delete requests /////////////////////////////////
 
   deleteUser: async (req: Request, res: Response) => {

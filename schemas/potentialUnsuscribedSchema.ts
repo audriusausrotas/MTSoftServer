@@ -34,4 +34,8 @@ const potentialUnsuscribedSchema = new mongoose.Schema<PotentialClient>({
   },
 });
 
-export default mongoose.model("potentialClientsUnsuscribed", potentialUnsuscribedSchema);
+export default mongoose.model(
+  "potentialClientsUnsuscribed",
+  potentialUnsuscribedSchema,
+  "potentialClientsUnsuscribed"
+);

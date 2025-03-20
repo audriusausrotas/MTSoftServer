@@ -12,4 +12,4 @@ const scheduleSchema = new mongoose.Schema<Schedule>({
   },
 });
 
-export default mongoose.model("schedule", scheduleSchema);
+export default mongoose.model("schedule", scheduleSchema, "schedule");

@@ -13,4 +13,4 @@ const selectSchema = new mongoose.Schema<SelectValues>({
   accountTypes: { type: [String], required: false, default: [] },
 });
 
-export default mongoose.model("selectData", selectSchema);
+export default mongoose.model("selectData", selectSchema, "selectData");

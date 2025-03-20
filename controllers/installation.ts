@@ -14,43 +14,27 @@ export default {
 
       if (!data) return response(res, false, null, "Montavimo nėra");
 
-      const lightData = data.map((item) => {
-        return {
-          _id: item._id,
-          client: { address: item.client.address },
-          creator: { username: item.creator.username },
-          orderNumber: item.orderNumber,
-          status: item.status,
-          workers: [...item.workers],
-          fences: {},
-          results: {},
-          works: {},
-          aditional: {},
-          files: {},
-        };
-      });
-
-      return response(res, false, lightData);
-    } catch (error) {
-      console.error("Klaida:", error);
-      return response(res, false, null, "Serverio klaida");
-    }
-  },
-
-  getWork: async (req: Request, res: Response) => {
-    try {
-      const { _id } = req.params;
-
-      const data: Montavimas | null = await installationSchema.findById(_id);
-
-      if (!data) return response(res, false, null, "Darbų nėra");
-
       return response(res, true, data);
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");
     }
   },
+
+  // getWork: async (req: Request, res: Response) => {
+  //   try {
+  //     const { _id } = req.params;
+
+  //     const data: Montavimas | null = await installationSchema.findById(_id);
+
+  //     if (!data) return response(res, false, null, "Darbų nėra");
+
+  //     return response(res, true, data);
+  //   } catch (error) {
+  //     console.error("Klaida:", error);
+  //     return response(res, false, null, "Serverio klaida");
+  //   }
+  // },
 
   //////////////////// delete requests /////////////////////////////////
 

@@ -32,20 +32,20 @@ export default {
     }
   },
 
-  getProject: async (req: Request, res: Response) => {
-    try {
-      const { _id } = req.params;
-      if (!_id) return response(res, false, null, "Trūksta projekto ID");
+  // getProject: async (req: Request, res: Response) => {
+  //   try {
+  //     const { _id } = req.params;
+  //     if (!_id) return response(res, false, null, "Trūksta projekto ID");
 
-      const project = await projectSchema.findById(_id);
-      if (!project) return response(res, false, null, "Projektas nerastas");
+  //     const project = await projectSchema.findById(_id);
+  //     if (!project) return response(res, false, null, "Projektas nerastas");
 
-      return response(res, true, project, "Projektas rastas");
-    } catch (error) {
-      console.error("Klaida gaunant projektą:", error);
-      return response(res, false, null, "Serverio klaida");
-    }
-  },
+  //     return response(res, true, project, "Projektas rastas");
+  //   } catch (error) {
+  //     console.error("Klaida gaunant projektą:", error);
+  //     return response(res, false, null, "Serverio klaida");
+  //   }
+  // },
 
   //////////////////// delete requests /////////////////////////////////
 

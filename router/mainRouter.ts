@@ -12,7 +12,6 @@ import product from "../controllers/product";
 import project from "../controllers/project";
 import clients from "../controllers/clients";
 import archive from "../controllers/archive";
-import backup from "../controllers/backup";
 import bonus from "../controllers/bonus";
 import email from "../controllers/email";
 import gates from "../controllers/gates";
@@ -25,7 +24,6 @@ const router = express.Router();
 
 /////////////////////// Auth /////////////////////////////
 
-router.get("/getUsers", checkUser, auth.getUsers);
 router.get("/getUser", checkUser, auth.getUser);
 
 router.patch("/logout", checkUser, auth.logout);
@@ -37,7 +35,8 @@ router.post("/login", inputVerification, auth.login);
 
 router.get("/getUnconfirmed", checkAdmin, archive.getUnconfirmed);
 router.get("/getArchives", checkAdmin, archive.getArchives);
-router.get("/getArchive", checkAdmin, archive.getArchive);
+// router.get("/getArchive", checkAdmin, archive.getArchive);
+router.get("/getBackup", checkAdmin, archive.getBackup);
 router.get("/getDeleted", checkAdmin, archive.getDeleted);
 router.get("/serviceCheck", archive.serviceCheck);
 
@@ -49,10 +48,6 @@ router.patch("/restoreArchive", checkAdmin, archive.restoreArchive);
 
 router.post("/addUnconfirmed", checkAdmin, archive.addUnconfirmed);
 router.post("/addArchive", checkAdmin, archive.addArchive);
-
-/////////////////////// Backup ///////////////////////////
-
-router.get("/getBackup", checkAdmin, backup.getBackup);
 
 /////////////////////// Bonus ////////////////////////////
 
@@ -92,7 +87,7 @@ router.post("/sendOffer", checkAdmin, email.sendOffer);
 /////////////////////// Gates ////////////////////////////
 
 router.get("/getGates", checkUser, gates.getGates);
-router.get("/getGate", checkUser, gates.getGate);
+// router.get("/getGate", checkUser, gates.getGate);
 
 router.delete("/cancelOrder", checkAdmin, gates.cancelOrder);
 
@@ -104,7 +99,7 @@ router.post("/newOrder", checkAdmin, gates.newOrder);
 /////////////////////// Installation /////////////////////
 
 router.get("/getWorks", checkUser, installation.getWorks);
-router.get("/getWork", checkUser, installation.getWork);
+// router.get("/getWork", checkUser, installation.getWork);
 
 router.delete("/deleteWorker", checkAdmin, installation.deleteWorker);
 router.delete("/deleteWork", checkAdmin, installation.deleteWork);
@@ -125,7 +120,7 @@ router.patch("/declineOrder", order.declineOrder);
 
 /////////////////////// Potential Clients ////////////////
 
-router.get("/getUsers", checkAdmin, potentialClient.getUsers);
+router.get("/getpotentialClients", checkAdmin, potentialClient.getUsers);
 
 router.delete("/deleteClient", checkAdmin, potentialClient.deleteClient);
 
@@ -146,8 +141,8 @@ router.post("/newProduct", checkAdmin, product.newProduct);
 
 /////////////////////// Production ///////////////////////
 
-router.get("/getProductions", checkUser, production.getProductions);
 router.get("/getProduction", checkUser, production.getProduction);
+// router.get("/getProduction", checkUser, production.getProduction);
 
 router.delete("/deleteProduction", checkAdmin, production.deleteProduction);
 router.delete("/deleteBindings", checkAdmin, production.deleteBindings);
@@ -166,7 +161,7 @@ router.post("/addMeasure", checkAdmin, production.addMeasure);
 /////////////////////// Project //////////////////////////
 
 router.get("/getProjects", checkUser, project.getProjects);
-router.get("/getProject", checkUser, project.getProject);
+// router.get("/getProject", checkUser, project.getProject);
 
 router.delete("/removeUnconfirmed", checkAdmin, project.removeUnconfirmed);
 router.delete("/deleteProject", checkAdmin, project.deleteProject);
@@ -203,6 +198,9 @@ router.post("/newSelect", checkAdmin, settings.newSelect);
 /////////////////////// User /////////////////////////////
 
 router.get("/getUsers", checkUser, user.getUsers);
+// router.get("/getUser", checkUser, user.getUser);
+
+router.patch("/updateUser", checkUser, user.updateUser);
 
 router.delete("/deleteUser", checkAdmin, user.deleteUser);
 

@@ -23,4 +23,4 @@ const productSchema = new mongoose.Schema<Product>({
   seeThrough: { type: seeThroughSchema, required: false },
 });
 
-export default mongoose.model("products", productSchema);
+export default mongoose.model("products", productSchema, "products");

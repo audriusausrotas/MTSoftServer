@@ -55,4 +55,4 @@ const archiveSchema = new mongoose.Schema<Project>({
   dateExparation: String,
 });
 
-export default mongoose.model("archive", archiveSchema);
+export default mongoose.model("archive", archiveSchema, "archive");

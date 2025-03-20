@@ -67,4 +67,4 @@ const projectSchema = new mongoose.Schema<Project>({
   dateExparation: String,
 });
 
-export default mongoose.model("projects", projectSchema);
+export default mongoose.model("projects", projectSchema, "projects");

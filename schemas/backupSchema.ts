@@ -60,4 +60,4 @@ const backupSchema = new mongoose.Schema<Project>({
   dateExparation: String,
 });
 
-export default mongoose.model("backup", backupSchema);
+export default mongoose.model("backup", backupSchema, "backup");

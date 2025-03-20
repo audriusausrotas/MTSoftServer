@@ -67,4 +67,4 @@ const deletedSchema = new mongoose.Schema<Project>({
   dateExparation: String,
 });
 
-export default mongoose.model("projectsDeleted", deletedSchema);
+export default mongoose.model("projectsDeleted", deletedSchema, "projectsDeleted");
