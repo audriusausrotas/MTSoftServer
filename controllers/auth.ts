@@ -31,7 +31,7 @@ export default {
 
   logout: (req: Request, res: Response) => {
     try {
-      res.clearCookie("token");
+      res.clearCookie("mtud");
       return response(res, true, null, "Logged out successfully");
     } catch (error) {
       console.error("Klaida:", error);
@@ -62,7 +62,10 @@ export default {
       const token = jwt.sign(
         {
           id: data._id,
+          username: data.username,
+          lastName: data.lastName,
           email: data.email,
+          phone: data.phone,
           verified: data.verified,
           accountType: data.accountType,
         },
@@ -104,11 +107,11 @@ export default {
         password: hashedPassword,
       });
 
-      const newUser: any = await user.save;
+      const newUser: any = await user.save();
 
       if (newUser) {
         newUser.password = "";
-        io.emit("newUser", newUser);
+        // io.emit("newUser", newUser);
       }
       return response(res, true, null, "Sėkmingai prisiregistruota");
     } catch (error) {

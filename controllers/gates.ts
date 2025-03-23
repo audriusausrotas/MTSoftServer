@@ -20,21 +20,6 @@ export default {
     }
   },
 
-  // getGate: async (req: Request, res: Response) => {
-  //   try {
-  //     const { _id } = req.params;
-
-  //     const gate = await gateSchema.findById(_id);
-
-  //     if (!gate) return response(res, false, null, "Užsakymas nerastas");
-
-  //     return response(res, true, gate);
-  //   } catch (error) {
-  //     console.error("Klaida:", error);
-  //     return response(res, false, null, "Serverio klaida");
-  //   }
-  // },
-
   //////////////////// delete requests /////////////////////////////////
   cancelOrder: async (req: Request, res: Response) => {
     try {
@@ -50,7 +35,6 @@ export default {
       return response(res, false, null, "Serverio klaida");
     }
   },
-  //////////////////// update requests /////////////////////////////////
 
   finishOrder: async (req: Request, res: Response) => {
     try {
@@ -68,6 +52,7 @@ export default {
       return response(res, false, null, "Serverio klaida");
     }
   },
+  //////////////////// update requests /////////////////////////////////
 
   updateOrder: async (req: Request, res: Response) => {
     try {

@@ -25,8 +25,7 @@ const router = express.Router();
 /////////////////////// Auth /////////////////////////////
 
 router.get("/getUser", checkUser, auth.getUser);
-
-router.patch("/logout", checkUser, auth.logout);
+router.get("/logout", checkUser, auth.logout);
 
 router.post("/register", inputVerification, auth.register);
 router.post("/login", inputVerification, auth.login);
@@ -35,19 +34,19 @@ router.post("/login", inputVerification, auth.login);
 
 router.get("/getUnconfirmed", checkAdmin, archive.getUnconfirmed);
 router.get("/getArchives", checkAdmin, archive.getArchives);
-// router.get("/getArchive", checkAdmin, archive.getArchive);
-router.get("/getBackup", checkAdmin, archive.getBackup);
 router.get("/getDeleted", checkAdmin, archive.getDeleted);
-router.get("/serviceCheck", archive.serviceCheck);
+router.get("/getBackup", checkAdmin, archive.getBackup);
+router.get("/serviceSearch", archive.serviceSearch);
+router.get("/getArchive/:_id", archive.getArchive);
 
-router.delete("/deleteUnconfirmed", checkAdmin, archive.deleteUnconfirmed);
+router.delete("/deleteUnconfirmed/:_id", checkAdmin, archive.deleteUnconfirmed);
+router.delete("/deleteDeleted/:_id", checkAdmin, archive.deleteDeleted);
 router.delete("/deleteArchive", checkAdmin, archive.deleteArchive);
-router.delete("/deleteDeleted", checkAdmin, archive.deleteDeleted);
 
 router.patch("/restoreArchive", checkAdmin, archive.restoreArchive);
 
-router.post("/addUnconfirmed", checkAdmin, archive.addUnconfirmed);
-router.post("/addArchive", checkAdmin, archive.addArchive);
+router.post("/addUnconfirmed/:_id", checkAdmin, archive.addUnconfirmed);
+router.post("/addArchive/:_id", checkAdmin, archive.addArchive);
 
 /////////////////////// Bonus ////////////////////////////
 
@@ -57,13 +56,13 @@ router.get("/getBonus", checkAdmin, bonus.getBonus);
 
 router.get("/getClients", checkAdmin, clients.getClients);
 
-router.delete("/deleteClient", checkAdmin, clients.deleteClient);
+router.delete("/deleteClient/:_id", checkAdmin, clients.deleteClient);
 
 router.post("/newClient", checkAdmin, clients.newClient);
 
 /////////////////////// Cloudinary ///////////////////////
 
-router.delete("/imageDelete", checkUser, cloudinary.imageDelete);
+router.delete("/imageDelete/:_id", checkUser, cloudinary.imageDelete);
 router.delete("/deletePhoto", checkUser, cloudinary.deletePhoto);
 
 router.post("/addPhoto", checkUser, cloudinary.addPhoto);
@@ -87,11 +86,10 @@ router.post("/sendOffer", checkAdmin, email.sendOffer);
 /////////////////////// Gates ////////////////////////////
 
 router.get("/getGates", checkUser, gates.getGates);
-// router.get("/getGate", checkUser, gates.getGate);
 
-router.delete("/cancelOrder", checkAdmin, gates.cancelOrder);
+router.delete("/cancelOrder/:_id", checkAdmin, gates.cancelOrder);
+router.delete("/finishOrder/:_id", checkUser, gates.finishOrder);
 
-router.patch("/finishOrder", checkUser, gates.finishOrder);
 router.patch("/updateOrder", checkUser, gates.updateOrder);
 
 router.post("/newOrder", checkAdmin, gates.newOrder);
@@ -99,30 +97,28 @@ router.post("/newOrder", checkAdmin, gates.newOrder);
 /////////////////////// Installation /////////////////////
 
 router.get("/getWorks", checkUser, installation.getWorks);
-// router.get("/getWork", checkUser, installation.getWork);
 
+router.delete("/deleteInstallation/:_id", checkAdmin, installation.deleteInstallation);
 router.delete("/deleteWorker", checkAdmin, installation.deleteWorker);
-router.delete("/deleteWork", checkAdmin, installation.deleteWork);
 
 router.patch("/updateInstallation", checkUser, installation.updateInstallation);
 router.patch("/partsDelivered", checkUser, installation.partsDelivered);
 router.patch("/updatePostone", checkUser, installation.updatePostone);
-router.patch("/updateStatus", checkUser, installation.updateStatus);
+router.patch("/updateInstallationStatus", checkUser, installation.updateStatus);
 
 router.post("/addInstallation", checkAdmin, installation.addInstallation);
 
 /////////////////////// Orders ///////////////////////////
 
-router.get("/getOrder", order.getOrder);
+router.get("/getOrder/:_id", order.getOrder);
 
-router.patch("/confirmOrder", order.confirmOrder);
-router.patch("/declineOrder", order.declineOrder);
+router.patch("/changeOrderStatus", order.changeOrderStatus);
 
 /////////////////////// Potential Clients ////////////////
 
 router.get("/getpotentialClients", checkAdmin, potentialClient.getUsers);
 
-router.delete("/deleteClient", checkAdmin, potentialClient.deleteClient);
+router.delete("/deleteClient/:_id", checkAdmin, potentialClient.deleteClient);
 
 router.patch("/selectClients", checkAdmin, potentialClient.selectClients);
 router.patch("/updateClient", checkAdmin, potentialClient.updateClient);
@@ -133,7 +129,7 @@ router.post("/newClient", checkAdmin, potentialClient.newClient);
 
 router.get("/getProducts", checkAdmin, product.getProducts);
 
-router.delete("/deleteProduct", checkAdmin, product.deleteProduct);
+router.delete("/deleteProduct/:_id", checkAdmin, product.deleteProduct);
 
 router.patch("/updateProduct", checkAdmin, product.updateProduct);
 
@@ -142,7 +138,6 @@ router.post("/newProduct", checkAdmin, product.newProduct);
 /////////////////////// Production ///////////////////////
 
 router.get("/getProduction", checkUser, production.getProduction);
-// router.get("/getProduction", checkUser, production.getProduction);
 
 router.delete("/deleteProduction", checkAdmin, production.deleteProduction);
 router.delete("/deleteBindings", checkAdmin, production.deleteBindings);
@@ -151,9 +146,9 @@ router.delete("/deleteFence", checkAdmin, production.deleteFence);
 
 router.patch("/updatePostone", checkAdmin, production.updatePostone);
 router.patch("/updateMeasure", checkAdmin, production.updateMeasure);
-router.patch("/updateStatus", checkUser, production.updateStatus);
+router.patch("/updateProductionStatus", checkUser, production.updateStatus);
 
-router.post("/newProduction", checkUser, production.newProduction);
+router.post("/newProduction/:_id", checkUser, production.newProduction);
 router.post("/addNewGamyba", checkUser, production.addNewGamyba);
 router.post("/addBinding", checkAdmin, production.addBinding);
 router.post("/addMeasure", checkAdmin, production.addMeasure);
@@ -161,19 +156,20 @@ router.post("/addMeasure", checkAdmin, production.addMeasure);
 /////////////////////// Project //////////////////////////
 
 router.get("/getProjects", checkUser, project.getProjects);
-// router.get("/getProject", checkUser, project.getProject);
+router.get("/getProject", checkUser, project.getProjects);
 
 router.delete("/removeUnconfirmed", checkAdmin, project.removeUnconfirmed);
-router.delete("/deleteProject", checkAdmin, project.deleteProject);
+router.delete("/deleteProject/:_id", checkAdmin, project.deleteProject);
 router.delete("/deleteVersion", checkAdmin, project.deleteVersion);
 
-router.patch("/extendExparationDate", checkAdmin, project.extendExparationDate);
+router.patch("/extendExparationDate/:_id", checkAdmin, project.extendExparationDate);
 router.patch("/versionRollback", checkAdmin, project.versionRollback);
 router.patch("/changeAdvance", checkAdmin, project.changeAdvance);
 router.patch("/changeManager", checkAdmin, project.changeManager);
 router.patch("/updateProject", checkAdmin, project.updateProject);
-router.patch("/updateStatus", checkUser, project.updateStatus);
-router.patch("/newProject", checkAdmin, project.newProject);
+router.patch("/updateProjectStatus", checkUser, project.updateStatus);
+
+router.post("/newProject", checkAdmin, project.newProject);
 
 /////////////////////// Schedule /////////////////////////
 
@@ -198,7 +194,6 @@ router.post("/newSelect", checkAdmin, settings.newSelect);
 /////////////////////// User /////////////////////////////
 
 router.get("/getUsers", checkUser, user.getUsers);
-// router.get("/getUser", checkUser, user.getUser);
 
 router.patch("/updateUser", checkUser, user.updateUser);
 

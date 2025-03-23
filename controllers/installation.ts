@@ -38,7 +38,7 @@ export default {
 
   //////////////////// delete requests /////////////////////////////////
 
-  deleteWork: async (req: Request, res: Response) => {
+  deleteInstallation: async (req: Request, res: Response) => {
     try {
       const { _id } = req.params;
 

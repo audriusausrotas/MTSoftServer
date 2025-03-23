@@ -315,7 +315,7 @@ export default {
     ];
 
     try {
-      const { _id } = req.body;
+      const { _id } = req.params;
 
       const project: HydratedDocument<Project> | null = await projectSchema.findById(_id);
 

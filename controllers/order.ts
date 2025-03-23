@@ -23,40 +23,20 @@ export default {
   //////////////////// delete requests /////////////////////////////////
   //////////////////// update requests /////////////////////////////////
 
-  confirmOrder: async (req: Request, res: Response) => {
+  changeOrderStatus: async (req: Request, res: Response) => {
     try {
-      const { _id } = req.params;
+      const { _id, value } = req.params;
 
       const order: any = await projectSchema.findById(_id);
 
       if (!order) return response(res, false, null, "Užsakymas nerastas");
 
-      order.confirmed = true;
-      order.status = "Tinkamas";
+      order.confirmed = value;
+      order.status = value ? "Tinkamas" : "Netinkamas";
 
       const data = await order.save();
 
-      return response(res, true, data, "Užsakymas patvirtintas");
-    } catch (error) {
-      console.error("Klaida:", error);
-      return response(res, false, null, "Serverio klaida");
-    }
-  },
-
-  declineOrder: async (req: Request, res: Response) => {
-    try {
-      const { _id } = req.params;
-
-      const order: any = await projectSchema.findById(_id);
-
-      if (!order) return response(res, false, null, "Užsakymas nerastas");
-
-      order.confirmed = false;
-      order.status = "Netinkamas";
-
-      const data = await order.save();
-
-      return response(res, true, data, "Užsakymas atšauktas");
+      return response(res, true, data, value ? "Užsakymas patvirtintas" : "Užsakymas atšauktas");
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");

@@ -27,18 +27,6 @@ export default {
     }
   },
 
-  // getUser: async (req: Request, res: Response) => {
-  //   try {
-  //     const { username } = req.body;
-  //     const data = await userSchema.findOne({ username });
-  //     data && (data.password = "");
-  //     return response(res, true, data, "ok");
-  //   } catch (error) {
-  //     console.error("Klaida:", error);
-  //     return response(res, false, null, "Serverio klaida");
-  //   }
-  // },
-
   //////////////////// delete requests /////////////////////////////////
 
   deleteUser: async (req: Request, res: Response) => {
@@ -59,7 +47,7 @@ export default {
 
       if (isPasswordValid) {
         await userSchema.findByIdAndDelete(selectedUserId);
-        return response(res, true, selectedUserId, "Pakeitimai atlikti");
+        return response(res, true, null, "Pakeitimai atlikti");
       } else return response(res, false, null, "Klaidingas slaptažodis");
     } catch (error) {
       console.error("Klaida:", error);

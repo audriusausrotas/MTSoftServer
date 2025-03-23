@@ -13,10 +13,27 @@ import io from "../sockets/main";
 export default {
   //////////////////// get requests ////////////////////////////////////
 
+  getArchive: async (req: Request, res: Response) => {
+    try {
+      const { _id } = req.params;
+
+      let data = await archiveSchema.findById(_id);
+      if (!data) data = await unconfirmedSchema.findById(_id);
+      if (!data) data = await deletedSchema.findById(_id);
+
+      if (!data) return response(res, false, null, "Projektai nerasti");
+
+      return response(res, true, data);
+    } catch (error) {
+      console.error("Klaida gaunant projektus:", error);
+      return response(res, false, null, "Serverio klaida");
+    }
+  },
+
   getArchives: async (req: Request, res: Response) => {
     try {
       const data = await archiveSchema.aggregate([
-        { $sort: { createdAt: -1 } },
+        { $sort: { dateExparation: -1 } },
         {
           $project: {
             _id: 1,
@@ -42,7 +59,7 @@ export default {
   getBackup: async (req: Request, res: Response) => {
     try {
       const data = await backupSchema.aggregate([
-        { $sort: { createdAt: -1 } },
+        { $sort: { dateExparation: -1 } },
         {
           $project: {
             _id: 1,
@@ -68,7 +85,7 @@ export default {
   getUnconfirmed: async (req: Request, res: Response) => {
     try {
       const data = await unconfirmedSchema.aggregate([
-        { $sort: { createdAt: -1 } },
+        { $sort: { dateExparation: -1 } },
         {
           $project: {
             _id: 1,
@@ -94,7 +111,7 @@ export default {
   getDeleted: async (req: Request, res: Response) => {
     try {
       const data = await deletedSchema.aggregate([
-        { $sort: { createdAt: -1 } },
+        { $sort: { dateExparation: -1 } },
         {
           $project: {
             _id: 1,
@@ -117,7 +134,7 @@ export default {
     }
   },
 
-  serviceCheck: async (req: Request, res: Response) => {
+  serviceSearch: async (req: Request, res: Response) => {
     try {
       const query = req.query;
       const search = query.q as string;
@@ -298,7 +315,7 @@ export default {
       const project = await projectSchema.findById(_id);
       if (!project) return response(res, false, null, "Projektas nerastas");
 
-      cloudinaryBachDelete(project.files);
+      await cloudinaryBachDelete(project.files);
       await deleteVersions(project.versions);
 
       const projectData = project.toObject();

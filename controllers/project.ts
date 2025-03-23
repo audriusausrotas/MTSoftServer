@@ -32,21 +32,6 @@ export default {
     }
   },
 
-  // getProject: async (req: Request, res: Response) => {
-  //   try {
-  //     const { _id } = req.params;
-  //     if (!_id) return response(res, false, null, "Trūksta projekto ID");
-
-  //     const project = await projectSchema.findById(_id);
-  //     if (!project) return response(res, false, null, "Projektas nerastas");
-
-  //     return response(res, true, project, "Projektas rastas");
-  //   } catch (error) {
-  //     console.error("Klaida gaunant projektą:", error);
-  //     return response(res, false, null, "Serverio klaida");
-  //   }
-  // },
-
   //////////////////// delete requests /////////////////////////////////
 
   deleteProject: async (req: Request, res: Response) => {
@@ -61,6 +46,7 @@ export default {
       await deleteProjectVersions(project.versions);
 
       const projectData = project.toObject();
+
       projectData.dateExparation = new Date().toISOString();
 
       const deletedProject = new deletedSchema({ ...projectData });
@@ -611,7 +597,7 @@ export default {
 
         let lastOrder = sortedOrderNumbers[sortedOrderNumbers.length - 1]?.orderNumber;
 
-        let orderNumbers = parseInt(lastOrder.split("-")[1]);
+        let orderNumbers = +lastOrder.split("-")[1];
         orderNumbers++;
 
         newOrderNumbers = orderNumbers.toString().padStart(4, "0");
