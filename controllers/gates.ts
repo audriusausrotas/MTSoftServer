@@ -4,6 +4,8 @@ import gateSchema from "../schemas/gateSchema";
 import { Request, Response } from "express";
 import response from "../modules/response";
 
+import mongoose from "mongoose";
+
 export default {
   //////////////////// get requests ////////////////////////////////////
 
@@ -62,7 +64,7 @@ export default {
 
       const data = await gateSchema.findById(_id);
 
-      if (!data) return response(res, false, null, "Serverio klaida");
+      if (!data) return response(res, false, null, "Užsakymas nerastas");
 
       switch (change) {
         case "status":
@@ -93,7 +95,7 @@ export default {
 
       await data.save();
 
-      return response(res, false, null, "Būsena atnaujinta");
+      return response(res, true, data, "Būsena atnaujinta");
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");

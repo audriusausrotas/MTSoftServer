@@ -40,7 +40,7 @@ const projectSchema = new mongoose.Schema<Project>({
     default: "Nepatvirtintas",
   },
   files: {
-    type: [Object],
+    type: [String],
     required: false,
     default: [],
   },
@@ -54,15 +54,36 @@ const projectSchema = new mongoose.Schema<Project>({
     required: false,
     default: [],
   },
+  totalPrice: {
+    type: Number,
+    required: true,
+  },
+  totalCost: {
+    type: Number,
+    required: true,
+  },
+  totalProfit: {
+    type: Number,
+    required: true,
+  },
+  totalMargin: {
+    type: Number,
+    required: true,
+  },
+  priceVAT: {
+    type: Number,
+    required: true,
+  },
+  priceWithDiscount: {
+    type: Number,
+    required: true,
+  },
+  discount: {
+    type: Boolean,
+    required: true,
+  },
   creator: Object,
   orderNumber: String,
-  totalPrice: Number,
-  totalCost: Number,
-  totalProfit: Number,
-  totalMargin: Number,
-  priceVAT: Number,
-  priceWithDiscount: Number,
-  discount: Boolean,
   dateCreated: String,
   dateExparation: String,
 });

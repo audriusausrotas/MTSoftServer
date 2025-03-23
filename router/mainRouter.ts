@@ -1,7 +1,6 @@
 import inputVerification from "../middleware/inputVerification";
 import potentialClient from "../controllers/potentialClient";
 import installation from "../controllers/installation";
-import cloudinary from "../controllers/cloudinary";
 import production from "../controllers/production";
 import checkAdmin from "../middleware/checkAdmin";
 import checkUser from "../middleware/checkUser";
@@ -10,6 +9,7 @@ import settings from "../controllers/settings";
 import schedule from "../controllers/schedule";
 import product from "../controllers/product";
 import project from "../controllers/project";
+import uploads from "../controllers/uploads";
 import clients from "../controllers/clients";
 import archive from "../controllers/archive";
 import bonus from "../controllers/bonus";
@@ -60,13 +60,6 @@ router.delete("/deleteClient/:_id", checkAdmin, clients.deleteClient);
 
 router.post("/newClient", checkAdmin, clients.newClient);
 
-/////////////////////// Cloudinary ///////////////////////
-
-router.delete("/imageDelete/:_id", checkUser, cloudinary.imageDelete);
-router.delete("/deletePhoto", checkUser, cloudinary.deletePhoto);
-
-router.post("/addPhoto", checkUser, cloudinary.addPhoto);
-
 /////////////////////// Comments /////////////////////////
 
 router.delete("/deleteInstallationComment", checkUser, comments.deleteInstallationComment);
@@ -103,7 +96,7 @@ router.delete("/deleteWorker", checkAdmin, installation.deleteWorker);
 
 router.patch("/updateInstallation", checkUser, installation.updateInstallation);
 router.patch("/partsDelivered", checkUser, installation.partsDelivered);
-router.patch("/updatePostone", checkUser, installation.updatePostone);
+router.patch("/updateInstallationPostone", checkUser, installation.updatePostone);
 router.patch("/updateInstallationStatus", checkUser, installation.updateStatus);
 
 router.post("/addInstallation", checkAdmin, installation.addInstallation);
@@ -139,18 +132,18 @@ router.post("/newProduct", checkAdmin, product.newProduct);
 
 router.get("/getProduction", checkUser, production.getProduction);
 
-router.delete("/deleteProduction", checkAdmin, production.deleteProduction);
+router.delete("/deleteProduction/:_id", checkAdmin, production.deleteProduction);
 router.delete("/deleteBindings", checkAdmin, production.deleteBindings);
 router.delete("/deleteMeasure", checkAdmin, production.deleteMeasure);
 router.delete("/deleteFence", checkAdmin, production.deleteFence);
 
-router.patch("/updatePostone", checkAdmin, production.updatePostone);
+router.patch("/updateProductionPostone", checkAdmin, production.updatePostone);
 router.patch("/updateMeasure", checkAdmin, production.updateMeasure);
 router.patch("/updateProductionStatus", checkUser, production.updateStatus);
 
 router.post("/newProduction/:_id", checkUser, production.newProduction);
 router.post("/addNewGamyba", checkUser, production.addNewGamyba);
-router.post("/addBinding", checkAdmin, production.addBinding);
+router.post("/addBinding/:_id", checkAdmin, production.addBinding);
 router.post("/addMeasure", checkAdmin, production.addMeasure);
 
 /////////////////////// Project //////////////////////////
@@ -168,6 +161,7 @@ router.patch("/changeAdvance", checkAdmin, project.changeAdvance);
 router.patch("/changeManager", checkAdmin, project.changeManager);
 router.patch("/updateProject", checkAdmin, project.updateProject);
 router.patch("/updateProjectStatus", checkUser, project.updateStatus);
+router.patch("/addFileProject", checkUser, project.addFiles);
 
 router.post("/newProject", checkAdmin, project.newProject);
 
@@ -201,5 +195,11 @@ router.delete("/deleteUser", checkAdmin, user.deleteUser);
 
 router.patch("/updateProfile", checkUser, user.updateProfile);
 router.patch("/updateUser", checkUser, user.updateUser);
+
+/////////////////////// Uploads //////////////////////////
+
+router.post("/uploadFiles", checkUser, uploads.uploadFiles);
+
+router.delete("/deleteFiles", checkAdmin, uploads.deleteFiles);
 
 export default router;

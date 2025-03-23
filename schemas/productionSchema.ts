@@ -82,7 +82,7 @@ const productionSchema = new mongoose.Schema<Gamyba>({
     default: [],
   },
   files: {
-    type: [Object],
+    type: [String],
     required: false,
     default: [],
   },

@@ -26,9 +26,9 @@ const userSchema = new mongoose.Schema<User>({
     default: "Paprastas vartotojas",
   },
   photo: {
-    type: Object,
+    type: String,
     required: false,
-    default: {},
+    default: "",
   },
 });
 

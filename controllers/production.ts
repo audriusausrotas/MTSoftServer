@@ -1,5 +1,5 @@
 import { Bindings, Gamyba, GamybaFence, Project } from "../data/interfaces";
-import cloudinaryBachDelete from "../modules/cloudinaryBachDelete";
+
 import productionSchema from "../schemas/productionSchema";
 import projectSchema from "../schemas/projectSchema";
 import { HydratedDocument } from "mongoose";
@@ -43,22 +43,11 @@ export default {
 
   deleteProduction: async (req: Request, res: Response) => {
     try {
-      const { _id, completed } = req.body;
+      const { _id } = req.params;
 
-      const data = await productionSchema.findOneAndDelete(_id);
+      const data = await productionSchema.findByIdAndDelete(_id);
 
       if (!data) return response(res, false, null, "Projektas nerastas");
-
-      cloudinaryBachDelete(data.files);
-
-      if (completed) {
-        const project = await projectSchema.findById(_id);
-
-        if (!project) return response(res, false, null, "Projektas nerastas");
-
-        project.status = "Pagamintas";
-        project.save();
-      }
 
       return response(res, true, null, "Užsakymas ištrintas");
     } catch (error) {
@@ -67,7 +56,7 @@ export default {
     }
   },
 
-  deleteBindings: async (res: Response, req: Request) => {
+  deleteBindings: async (req: Request, res: Response) => {
     try {
       const { _id, bindingId } = req.body;
 
@@ -127,7 +116,7 @@ export default {
 
   //////////////////// update requests ///////////////////////////////////
 
-  updatePostone: async (res: Response, req: Request) => {
+  updatePostone: async (req: Request, res: Response) => {
     try {
       const { _id, index, measureIndex, value, option } = req.body;
 
@@ -143,7 +132,7 @@ export default {
 
       if (!project) return response(res, false, null, "Projektas nerastas");
 
-      return response(res, true, project);
+      return response(res, true, project, "Išsaugota");
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");
@@ -169,7 +158,7 @@ export default {
     }
   },
 
-  updateMeasure: async (res: Response, req: Request) => {
+  updateMeasure: async (req: Request, res: Response) => {
     try {
       const { _id, index, measureIndex, value, field, option } = req.body;
 

@@ -108,7 +108,7 @@ const installationSchema = new mongoose.Schema<Montavimas>({
     default: [],
   },
   files: {
-    type: [Object],
+    type: [String],
     required: false,
     default: [],
   },

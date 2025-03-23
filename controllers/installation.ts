@@ -1,4 +1,3 @@
-import cloudinaryBachDelete from "../modules/cloudinaryBachDelete";
 import installationSchema from "../schemas/installationSchema";
 import { Montavimas } from "../data/interfaces";
 import { processJob } from "../modules/helpers";
@@ -45,8 +44,6 @@ export default {
       const data = await installationSchema.findByIdAndDelete(_id);
 
       if (!data) return response(res, false, null, "užsakymas nerastas");
-
-      cloudinaryBachDelete(data.files);
 
       return response(res, true, null, "Užsakymas ištrintas");
     } catch (error) {

@@ -1,5 +1,5 @@
 import deleteProjectVersions from "../modules/deleteProjectVersions";
-import cloudinaryBachDelete from "../modules/cloudinaryBachDelete";
+
 import deleteVersions from "../modules/deleteProjectVersions";
 import unconfirmedSchema from "../schemas/unconfirmedSchema";
 import montavimasSchema from "../schemas/installationSchema";
@@ -42,7 +42,6 @@ export default {
       const project = await projectSchema.findById(_id);
       if (!project) return response(res, false, null, "Projektas nerastas");
 
-      cloudinaryBachDelete(project.files);
       await deleteProjectVersions(project.versions);
 
       const projectData = project.toObject();
@@ -75,7 +74,6 @@ export default {
           const expirationDate = new Date(project.dateExparation);
 
           if (currentDate > expirationDate) {
-            await cloudinaryBachDelete(project.files);
             await deleteVersions(project.versions);
 
             const projectData = project.toObject();
@@ -133,14 +131,15 @@ export default {
         return {
           success: false,
           data: null,
-          message: "Projektas nerastas.",
+          message: "Projektas nerastas",
         };
 
       project.advance = advance;
       project.status = "Patvirtintas";
 
       const data = await project.save();
-      return response(res, false, data, "Avansas atnaujintas");
+
+      return response(res, true, data, "Avansas atnaujintas");
     } catch (error) {
       console.error("Klaida atnaujinant projektą:", error);
       return response(res, false, null, "Serverio klaida");
@@ -206,6 +205,25 @@ export default {
       rollbackVersion.versions = [...project.versions];
 
       return response(res, true, rollbackVersion);
+    } catch (error) {
+      console.error("Klaida:", error);
+      return response(res, false, null, "Serverio klaida");
+    }
+  },
+
+  addFiles: async (req: Request, res: Response) => {
+    try {
+      const { _id, files } = req.body;
+
+      const project = await projectSchema.findById(_id);
+
+      if (!project) return response(res, false, null, "Projektas nerastas");
+
+      project.files.push(...files);
+
+      const data = await project.save();
+
+      return response(res, true, data, "Failai sėkmingai įkelti");
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");
@@ -552,10 +570,6 @@ export default {
         retail,
       } = await req.body;
 
-      let projectExist = null;
-
-      if (_id) projectExist = await projectSchema.findById(_id);
-
       const user = res.locals.user;
 
       const creator = {
@@ -564,6 +578,10 @@ export default {
         email: user.email,
         phone: user.phone,
       };
+
+      let projectExist = null;
+
+      if (_id) projectExist = await projectSchema.findById(_id);
 
       const creatorUsername = projectExist ? projectExist.creator.username : creator.username;
 

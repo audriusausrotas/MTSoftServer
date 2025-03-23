@@ -2,7 +2,6 @@ import mongoose from "mongoose";
 import { GateSchema } from "../data/interfaces";
 
 const gateSchema = new mongoose.Schema<GateSchema>({
-  _id: Object,
   client: Object,
   creator: Object,
   manager: String,

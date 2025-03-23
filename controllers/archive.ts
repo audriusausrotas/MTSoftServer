@@ -1,4 +1,3 @@
-import cloudinaryBachDelete from "../modules/cloudinaryBachDelete";
 import deleteVersions from "../modules/deleteProjectVersions";
 import unconfirmedSchema from "../schemas/unconfirmedSchema";
 import montavimasSchema from "../schemas/installationSchema";
@@ -216,8 +215,6 @@ export default {
 
       if (!data) return response(res, false, null, "Projektas nerastas");
 
-      cloudinaryBachDelete(data.files);
-
       return response(res, true, null, "Projektas ištrintas");
     } catch (error) {
       console.error("Klaida:", error);
@@ -285,7 +282,6 @@ export default {
 
       if (!project) return response(res, false, null, "Projektas nerastas");
 
-      cloudinaryBachDelete(project.files);
       await deleteVersions(project.versions);
 
       project.versions = [];
@@ -315,7 +311,6 @@ export default {
       const project = await projectSchema.findById(_id);
       if (!project) return response(res, false, null, "Projektas nerastas");
 
-      await cloudinaryBachDelete(project.files);
       await deleteVersions(project.versions);
 
       const projectData = project.toObject();

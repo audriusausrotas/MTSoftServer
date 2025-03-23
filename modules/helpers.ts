@@ -10,11 +10,11 @@ export async function sendEmail({ to, subject, html, user, attachments }: any) {
   let fromPass: string = "";
 
   if (user.email.includes("audrius")) {
-    fromPass = process.env.nodemailerPassAudrius!;
+    fromPass = process.env.NODEMAILER_PASS_AUDRIUS!;
   } else if (user.email.includes("andrius")) {
-    fromPass = process.env.nodemailerPassAndrius!;
+    fromPass = process.env.NODEMAILER_PASS_ANDRIUS!;
   } else if (user.email.includes("pardavimai")) {
-    fromPass = process.env.nodemailerPassHaris!;
+    fromPass = process.env.NODEMAILER_PASS_HARIS!;
   }
 
   const transporter = nodemailer.createTransport({
@@ -48,7 +48,7 @@ export async function sendEmail({ to, subject, html, user, attachments }: any) {
 export async function processJob(_id: Types.ObjectId, worker: string, res: Response) {
   const project: HydratedDocument<Project> | null = await projectSchema.findById(_id);
 
-  if (!project) return response(res, false, null, "Projektas nerastas");
+  if (!project) return { success: false, data: null, message: "Projektas nerastas" };
 
   const montavimas = await installationSchema.findById(project._id);
 
@@ -65,11 +65,11 @@ export async function processJob(_id: Types.ObjectId, worker: string, res: Respo
 
   if (montavimas) {
     if (montavimas.workers.includes(worker))
-      return response(res, false, null, "Objektas jau montuojamas");
+      return { success: false, data: null, message: "Objektas jau montuojamas" };
     else {
       montavimas.workers.push(worker);
       const data = await montavimas.save();
-      return response(res, true, data, "Montavimas priskirtas");
+      return { success: true, data, message: "Montavimas priskirtas" };
     }
   } else {
     const newResults = project.results.map((item) => {
@@ -105,12 +105,11 @@ export async function processJob(_id: Types.ObjectId, worker: string, res: Respo
     });
 
     const data = await newMontavimas.save();
-    if (!data) return response(res, false, null, "Įvyko klaida");
+    if (!data) return { success: false, data: null, message: "Įvyko klaida" };
 
     project.status = "Montuojama";
 
     await project.save();
-
-    return response(res, true, newMontavimas, "Perduota montavimui");
+    return { success: true, data: newMontavimas, message: "Perduota montavimui" };
   }
 }

@@ -40,7 +40,7 @@ const deletedSchema = new mongoose.Schema<Project>({
     default: "Nepatvirtintas",
   },
   files: {
-    type: [Object],
+    type: [String],
     required: false,
     default: [],
   },
