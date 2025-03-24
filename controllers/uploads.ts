@@ -86,9 +86,9 @@ export default {
 
       data.files = data.files.filter((file: string) => !files.includes(file));
 
-      await data.save();
+      const newData = await data.save();
 
-      return response(res, true, null, "Failai sėkmingai ištrinti");
+      return response(res, true, newData, "Failai sėkmingai ištrinti");
     } catch (error) {
       console.log("Klaida", error);
       return response(res, false, null, "Serverio klaida");

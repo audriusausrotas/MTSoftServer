@@ -1,5 +1,3 @@
-import userSchema from "../schemas/userSchema";
-import type { User } from "../data/interfaces";
 import { sendEmail } from "../modules/helpers";
 import { Request, Response } from "express";
 import response from "../modules/response";
@@ -11,6 +9,7 @@ export default {
   sendRetailOffers: async (req: Request, res: Response) => {
     try {
       const form = formidable({ multiples: true, keepExtensions: true });
+
       const { fields, files } = await new Promise<{ fields: any; files: any }>(
         (resolve, reject) => {
           form.parse(req, (err, fields, files) => {
@@ -23,7 +22,7 @@ export default {
         }
       );
 
-      const user = res.locals.userId;
+      const user = res.locals.user;
 
       const title = Array.isArray(fields.title) ? fields.title[0] : fields.title;
       const message = Array.isArray(fields.message) ? fields.message[0] : fields.message;
