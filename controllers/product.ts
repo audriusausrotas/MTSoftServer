@@ -2,7 +2,7 @@ import productSchema from "../schemas/productSchema";
 import { Product } from "../data/interfaces";
 import { Request, Response } from "express";
 import response from "../modules/response";
-import io from "../sockets/main";
+import emit from "../sockets/emits";
 
 export default {
   //////////////////// get requests ////////////////////////////////////

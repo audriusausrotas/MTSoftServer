@@ -1,30 +1,16 @@
 import { Bindings, Gamyba, GamybaFence, Project } from "../data/interfaces";
-
 import productionSchema from "../schemas/productionSchema";
 import projectSchema from "../schemas/projectSchema";
 import { HydratedDocument } from "mongoose";
 import { Response, Request } from "express";
 import response from "../modules/response";
 import { v4 as uuidv4, v4 } from "uuid";
+import emit from "../sockets/emits";
 
 // pridet checka ar useris yra adminas
 
 export default {
   //////////////////// get requests ///////////////////////////////////
-  // getProduction: async (req: Request, res: Response) => {
-  //   try {
-  //     const { _id } = req.params;
-
-  //     const data: Gamyba | null = await productionSchema.findById(_id);
-
-  //     if (!data) return response(res, false, null, "Projektas nerastas");
-
-  //     return response(res, true, data);
-  //   } catch (error) {
-  //     console.error("Klaida:", error);
-  //     return response(res, false, null, "Serverio klaida");
-  //   }
-  // },
 
   getProduction: async (req: Request, res: Response) => {
     try {

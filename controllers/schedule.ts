@@ -5,7 +5,7 @@ import userSchema from "../schemas/userSchema";
 import { Request, Response } from "express";
 import { HydratedDocument } from "mongoose";
 import response from "../modules/response";
-import io from "../sockets/main";
+import emit from "../sockets/emits";
 
 export default {
   //////////////////// get requests ////////////////////////////////////

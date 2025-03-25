@@ -2,7 +2,7 @@ import { sendEmail } from "../modules/helpers";
 import { Request, Response } from "express";
 import response from "../modules/response";
 import formidable from "formidable";
-import io from "../sockets/main";
+import emit from "../sockets/emits";
 import fs from "fs";
 
 export default {

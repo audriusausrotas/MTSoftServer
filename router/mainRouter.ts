@@ -39,8 +39,6 @@ router.get("/getBackup", checkAdmin, archive.getBackup);
 router.get("/serviceSearch", archive.serviceSearch);
 router.get("/getArchive/:_id", archive.getArchive);
 
-router.delete("/deleteUnconfirmed/:_id", checkAdmin, archive.deleteUnconfirmed);
-router.delete("/deleteDeleted/:_id", checkAdmin, archive.deleteDeleted);
 router.delete("/deleteArchive", checkAdmin, archive.deleteArchive);
 
 router.patch("/restoreArchive", checkAdmin, archive.restoreArchive);

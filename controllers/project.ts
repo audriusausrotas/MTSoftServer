@@ -1,5 +1,4 @@
 import deleteProjectVersions from "../modules/deleteProjectVersions";
-
 import deleteVersions from "../modules/deleteProjectVersions";
 import unconfirmedSchema from "../schemas/unconfirmedSchema";
 import montavimasSchema from "../schemas/installationSchema";
@@ -14,7 +13,7 @@ import { Project } from "../data/interfaces";
 import { HydratedDocument } from "mongoose";
 import { Request, Response } from "express";
 import response from "../modules/response";
-import io from "../sockets/main";
+import emit from "../sockets/emits";
 
 export default {
   //////////////////// get requests ////////////////////////////////////

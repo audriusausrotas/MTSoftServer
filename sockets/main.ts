@@ -1,53 +1,27 @@
-import jwt, { JwtPayload } from "jsonwebtoken";
-import DB from "../modules/socketDB";
-import { Server } from "socket.io";
-import cookie from "cookie";
-require("dotenv").config();
+import authMiddleware from "./authMiddleware";
+import { Server, Socket } from "socket.io";
+import DB from "./socketDB";
 import http from "http";
+require("dotenv").config();
 
 const server = http.createServer();
 
 const io = new Server(server, {
   cors: {
-    origin: "*",
+    origin: ["http://localhost:3000", "http://localhost:3001"],
+    credentials: true,
   },
 });
 
-io.on("connection", (socket) => {
-  const cookies = cookie.parse(socket.handshake.headers.cookie || "");
-  const token = cookies.mtud;
-  const secret = process.env.TOKEN_SECRET;
-  if (!secret) {
-    console.error(" TOKEN_SECRET is not defined in environment variables.");
-    return;
-  }
+io.on("connection", async (socket: Socket) => {
+  console.log(`New connection attempt: ${socket.id}`);
 
-  if (token) {
-    try {
-      const user = jwt.verify(token, secret) as JwtPayload;
+  const isAuthenticated = await authMiddleware(socket);
+  if (!isAuthenticated) return;
 
-      DB.saveNewUser({
-        userID: user.id,
-        socketID: socket.id,
-        accountType: user.accountType,
-        username: user.username,
-        email: user.email,
-      });
-      console.log(`New socket connected: ${user.email}`);
-    } catch (error) {
-      console.log("Invalid or expired token:", error);
-
-      return socket.disconnect(true);
-    }
-  } else {
-    console.log("No token found in cookies");
-
-    return socket.disconnect(true);
-  }
-
-  socket.on("disconnect", () => {
+  socket.on("disconnect", async () => {
     console.log(`Socket disconnected: ${socket.id}`);
-    DB.deleteUser(socket.id);
+    await DB.deleteUser(socket.id);
   });
 });
 
@@ -56,4 +30,15 @@ server.listen(port, () => {
   console.log(`Socket.io server is running on port ${port}`);
 });
 
-export default io;
+export { io };
+
+// socket.emit(): Send to the sender (the client).
+// socket.broadcast.emit(): Send to everyone except the sender.
+// io.emit(): Send to everyone (including the sender).
+// socket.to(<socketId>).emit(): Send to a specific client by their socket ID.
+
+// Room Management:
+// socket.join(<room>)
+// socket.leave(<room>)
+// socket.in(<room>).emit(): Send to all clients in a specific room.
+// socket.broadcast.to(<room>).emit(): Send to all clients in a room, except the sender.

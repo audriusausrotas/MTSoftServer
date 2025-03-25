@@ -1,7 +1,7 @@
 import userSchema from "../schemas/userSchema";
 import { Response, Request } from "express";
 import response from "../modules/response";
-import io from "../sockets/main";
+import emit from "../sockets/emits";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 

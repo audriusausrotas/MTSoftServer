@@ -4,7 +4,6 @@ import projectSchema from "../schemas/projectSchema";
 import { HydratedDocument, Types } from "mongoose";
 import nodemailer from "nodemailer";
 import { Response } from "express";
-import response from "./response";
 
 export async function sendEmail({ to, subject, html, user, attachments }: any) {
   let fromPass: string = "";

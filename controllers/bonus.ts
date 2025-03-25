@@ -3,6 +3,7 @@ import { Response, Request } from "express";
 import { HydratedDocument } from "mongoose";
 import { Bonus } from "../data/interfaces";
 import response from "../modules/response";
+import emit from "../sockets/emits";
 
 export default {
   //////////////////// get requests ////////////////////////////////////

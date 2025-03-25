@@ -7,7 +7,16 @@ import archiveSchema from "../schemas/archiveSchema";
 import backupSchema from "../schemas/backupSchema";
 import { Response, Request } from "express";
 import response from "../modules/response";
-import io from "../sockets/main";
+import emit from "../sockets/emits";
+
+const schemaMap = {
+  archive: archiveSchema,
+  unconfirmed: unconfirmedSchema,
+  deleted: deletedSchema,
+  backup: backupSchema,
+};
+
+type Location = keyof typeof schemaMap;
 
 export default {
   //////////////////// get requests ////////////////////////////////////
@@ -175,49 +184,22 @@ export default {
 
   deleteArchive: async (req: Request, res: Response) => {
     try {
-      const { _id, location } = await req.body;
+      const { _id, location }: { _id: string; location: Location } = req.body;
 
-      if (location === "archive") {
-        await archiveSchema.findByIdAndDelete(_id);
-      } else if (location === "unconfirmed") {
-        await unconfirmedSchema.findByIdAndDelete(_id);
-      } else if (location === "deleted") {
-        await deletedSchema.findByIdAndDelete(_id);
-      } else if (location === "backup") {
-        await deletedSchema.findByIdAndDelete(_id);
+      const schema = schemaMap[location];
+      if (!schema) {
+        return response(res, false, null, "Klaidinga lokacija");
       }
 
-      return response(res, true, null, "Projektas ištrintas");
+      const data = await schema.findByIdAndDelete(_id);
+
+      if (!data) return response(res, false, null, "Projektas nerastas");
+
+      emit.toAdmin("archiveDeleted", { _id, location });
+
+      return response(res, true, { _id }, "Projektas ištrintas");
     } catch (error) {
       console.error("Klaida gaunant projektus:", error);
-      return response(res, false, null, "Serverio klaida");
-    }
-  },
-
-  deleteDeleted: async (req: Request, res: Response) => {
-    try {
-      const { _id } = req.params;
-      const data = await deletedSchema.findByIdAndDelete(_id);
-
-      if (!data) return response(res, false, null, "Projektas nerastas");
-
-      return response(res, true, null, "Projektas ištrintas");
-    } catch (error) {
-      console.error("Klaida:", error);
-      return response(res, false, null, "Serverio klaida");
-    }
-  },
-
-  deleteUnconfirmed: async (req: Request, res: Response) => {
-    try {
-      const { _id } = req.params;
-      const data = await unconfirmedSchema.findByIdAndDelete(_id);
-
-      if (!data) return response(res, false, null, "Projektas nerastas");
-
-      return response(res, true, null, "Projektas ištrintas");
-    } catch (error) {
-      console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");
     }
   },
@@ -226,22 +208,16 @@ export default {
 
   restoreArchive: async (req: Request, res: Response) => {
     try {
-      const { _id, location } = await req.body;
+      const { _id, location }: { _id: string; location: Location } = req.body;
 
-      let archivedProject = null;
-
-      if (location === "archive") {
-        archivedProject = await archiveSchema.findById(_id);
-      } else if (location === "unconfirmed") {
-        archivedProject = await unconfirmedSchema.findById(_id);
-      } else if (location === "deleted") {
-        archivedProject = await deletedSchema.findById(_id);
-      } else if (location === "backup") {
-        archivedProject = await backupSchema.findById(_id);
+      const schema = schemaMap[location];
+      if (!schema) {
+        return response(res, false, null, "Klaidinga lokacija");
       }
 
-      if (!archivedProject)
-        if (!archivedProject) return response(res, false, null, "Projektas nerastas");
+      const archivedProject = await schema.findById(_id);
+
+      if (!archivedProject) return response(res, false, null, "Projektas nerastas");
 
       const currentDate = new Date();
       let expirationDate = new Date(currentDate);
@@ -255,15 +231,14 @@ export default {
 
       const data = await project.save();
 
-      if (location === "archive") {
-        await archiveSchema.findByIdAndDelete(_id);
-      } else if (location === "unconfirmed") {
-        await unconfirmedSchema.findByIdAndDelete(_id);
-      } else if (location === "deleted") {
-        await deletedSchema.findByIdAndDelete(_id);
-      } else if (location === "backup") {
-        await backupSchema.findByIdAndDelete(_id);
+      const deleteSchema = schemaMap[location];
+      if (!schema) {
+        return response(res, false, null, "Klaidinga lokacija");
       }
+
+      await deleteSchema.findByIdAndDelete(_id);
+
+      emit.toAdmin("archiveDeleted", { _id, location });
 
       return response(res, true, data, "Projektas perkeltas į projektus");
     } catch (error) {
@@ -297,6 +272,8 @@ export default {
       await projectSchema.findByIdAndDelete(_id);
       await montavimasSchema.findByIdAndDelete(_id);
 
+      emit.toAdmin("addArchive", data);
+
       return response(res, true, data, "Projektas perkeltas į archyvą");
     } catch (error) {
       console.error("Klaida:", error);
@@ -315,14 +292,16 @@ export default {
 
       const projectData = project.toObject();
       const unconfirmedProject = new unconfirmedSchema({ ...projectData });
-      const savedData = await unconfirmedProject.save();
+      const data = await unconfirmedProject.save();
 
-      if (!savedData) return response(res, false, null, "Klaida perkeliant projektą");
+      if (!data) return response(res, false, null, "Klaida perkeliant projektą");
 
       await projectSchema.findByIdAndDelete(_id);
       await backupSchema.findByIdAndDelete(_id);
 
-      return response(res, true, savedData, "Projektas perkeltas ");
+      emit.toAdmin("addUnconfirmed", data);
+
+      return response(res, true, data, "Projektas perkeltas ");
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");

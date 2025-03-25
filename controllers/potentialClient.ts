@@ -2,7 +2,7 @@ import potentialUnsuscribedSchema from "../schemas/potentialUnsuscribedSchema";
 import potentialClientSchema from "../schemas/potentialClientSchema";
 import { Request, Response } from "express";
 import response from "../modules/response";
-import io from "../sockets/main";
+import emit from "../sockets/emits";
 
 export default {
   //////////////////// get requests ////////////////////////////////////
@@ -11,8 +11,7 @@ export default {
     try {
       const users = await potentialClientSchema.find();
 
-      if (users.length === 0)
-        return response(res, false, null, "Vartotojai nerasti");
+      if (users.length === 0) return response(res, false, null, "Vartotojai nerasti");
 
       const statusOrder = ["Nežinoma", "Domina", "Nelabai domina", "Nedomina"];
 
@@ -42,12 +41,7 @@ export default {
       await new potentialUnsuscribedSchema(user.toObject()).save();
       await potentialClientSchema.findByIdAndDelete(_id);
 
-      return response(
-        res,
-        true,
-        null,
-        "Klientas perkeltas į atsisakiusiųjų sąrašą"
-      );
+      return response(res, true, null, "Klientas perkeltas į atsisakiusiųjų sąrašą");
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");
@@ -66,8 +60,7 @@ export default {
         { new: true }
       );
 
-      if (!user)
-        return response(res, false, null, "Klaida atnaujinant duomenis");
+      if (!user) return response(res, false, null, "Klaida atnaujinant duomenis");
 
       return response(res, true, user, "Klientas atnaujintas");
     } catch (error) {
@@ -81,23 +74,14 @@ export default {
       const { _id, send, all, value } = req.body;
 
       if (all) {
-        const data = await potentialClientSchema.updateMany(
-          {},
-          { send: value }
-        );
+        const data = await potentialClientSchema.updateMany({}, { send: value });
 
-        if (data.modifiedCount > 0)
-          return response(res, true, response, "Atnaujinta");
+        if (data.modifiedCount > 0) return response(res, true, response, "Atnaujinta");
         else return response(res, false, null, "Klaida atnaujinant duomenis");
       } else {
-        const user = await potentialClientSchema.findByIdAndUpdate(
-          _id,
-          { send },
-          { new: true }
-        );
+        const user = await potentialClientSchema.findByIdAndUpdate(_id, { send }, { new: true });
 
-        if (!user)
-          return response(res, false, null, "Klaida atnaujinant duomenis");
+        if (!user) return response(res, false, null, "Klaida atnaujinant duomenis");
 
         return response(res, true, user, "Atnaujinta");
       }
@@ -120,8 +104,7 @@ export default {
 
       if (user) return response(res, false, null, "Klientas jau egzistuoja");
 
-      if (userUnsuscribed)
-        return response(res, false, null, "Klientas atsisakė prenumeratos");
+      if (userUnsuscribed) return response(res, false, null, "Klientas atsisakė prenumeratos");
 
       const newUser = new potentialClientSchema({
         name,

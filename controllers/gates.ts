@@ -3,8 +3,7 @@ import type { Comment } from "../data/interfaces";
 import gateSchema from "../schemas/gateSchema";
 import { Request, Response } from "express";
 import response from "../modules/response";
-
-import mongoose from "mongoose";
+import emit from "../sockets/emits";
 
 export default {
   //////////////////// get requests ////////////////////////////////////

@@ -3,6 +3,7 @@ import { Montavimas } from "../data/interfaces";
 import { processJob } from "../modules/helpers";
 import { Request, Response } from "express";
 import response from "../modules/response";
+import emit from "../sockets/emits";
 
 export default {
   //////////////////// get requests ////////////////////////////////////
@@ -19,21 +20,6 @@ export default {
       return response(res, false, null, "Serverio klaida");
     }
   },
-
-  // getWork: async (req: Request, res: Response) => {
-  //   try {
-  //     const { _id } = req.params;
-
-  //     const data: Montavimas | null = await installationSchema.findById(_id);
-
-  //     if (!data) return response(res, false, null, "Darbų nėra");
-
-  //     return response(res, true, data);
-  //   } catch (error) {
-  //     console.error("Klaida:", error);
-  //     return response(res, false, null, "Serverio klaida");
-  //   }
-  // },
 
   //////////////////// delete requests /////////////////////////////////
 

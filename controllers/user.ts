@@ -2,7 +2,7 @@ import userSchema from "../schemas/userSchema";
 import { Request, Response } from "express";
 import response from "../modules/response";
 import { User } from "../data/interfaces";
-import io from "../sockets/main";
+import emit from "../sockets/emits";
 import bcrypt from "bcrypt";
 require("dotenv").config();
 
