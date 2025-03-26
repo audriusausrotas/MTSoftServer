@@ -76,7 +76,9 @@ export default {
 
       if (!data) return response(res, false, null, "Produktas nerastas");
 
-      return response(res, true, null, "Produktas ištrintas");
+      emit.toAdmin("deleteProduct", { _id });
+
+      return response(res, true, { _id }, "Produktas ištrintas");
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");
@@ -96,13 +98,20 @@ export default {
         category,
       };
 
-      const data = await productSchema.findByIdAndUpdate(_id, updatedData, {
-        new: true,
-      });
+      const responseData = await productSchema.findByIdAndUpdate(
+        _id,
+        updatedData,
+        {
+          new: true,
+        }
+      );
 
-      if (!data) return response(res, false, null, "Produktas neegzistuoja");
+      if (!responseData)
+        return response(res, false, null, "Produktas neegzistuoja");
 
-      return response(res, true, data, "Pakeitimai atlikti");
+      emit.toAdmin("updateProduct", responseData);
+
+      return response(res, true, responseData, "Pakeitimai atlikti");
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");
@@ -117,7 +126,8 @@ export default {
 
       const doesExist = await productSchema.findOne({ name });
 
-      if (doesExist) return response(res, false, null, "Produktas jau egzistuoja");
+      if (doesExist)
+        return response(res, false, null, "Produktas jau egzistuoja");
 
       const product = new productSchema({
         name,
@@ -127,9 +137,11 @@ export default {
         category: category || "Kita",
       });
 
-      const data = await product.save();
+      const responseData = await product.save();
 
-      return response(res, true, data, "Pakeitimai atlikti");
+      emit.toAdmin("newProduct", responseData);
+
+      return response(res, true, responseData, "Pakeitimai atlikti");
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");

@@ -24,7 +24,8 @@ export default {
     try {
       const data = await selectSchema.find();
 
-      if (data.length === 0) return response(res, false, null, "Nustatymai nerasti");
+      if (data.length === 0)
+        return response(res, false, null, "Nustatymai nerasti");
 
       return response(res, true, data[0]);
     } catch (error) {
@@ -37,7 +38,8 @@ export default {
     try {
       const data = await userRightsSchema.find();
 
-      if (data.length === 0) return response(res, false, null, "Nustatymai nerasti");
+      if (data.length === 0)
+        return response(res, false, null, "Nustatymai nerasti");
 
       return response(res, true, data);
     } catch (error) {
@@ -56,9 +58,12 @@ export default {
       if (!data) return response(res, false, null, "Serverio klaida");
 
       data[field].splice(index, 1);
-      await data.save();
 
-      return response(res, true, data, "Išsaugota");
+      const responseData = await data.save();
+
+      emit.toAdmin("deleteSelect", responseData);
+
+      return response(res, true, responseData, "Išsaugota");
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");
@@ -69,7 +74,8 @@ export default {
 
   updateFenceData: async (req: Request, res: Response) => {
     try {
-      const { _id, width, height, isFenceBoard, defaultDirection, seeThrough } = req.body;
+      const { _id, width, height, isFenceBoard, defaultDirection, seeThrough } =
+        req.body;
 
       const updatedData = {
         width,
@@ -79,13 +85,20 @@ export default {
         seeThrough,
       };
 
-      const data = await productSchema.findByIdAndUpdate(_id, updatedData, {
-        new: true,
-      });
+      const responseData = await productSchema.findByIdAndUpdate(
+        _id,
+        updatedData,
+        {
+          new: true,
+        }
+      );
 
-      if (!data) return response(res, false, null, "Produktas neegzistuoja");
+      if (!responseData)
+        return response(res, false, null, "Produktas neegzistuoja");
 
-      return response(res, true, data, "Pakeitimai atlikti");
+      emit.toAdmin("updateFenceSettings", responseData);
+
+      return response(res, true, responseData, "Pakeitimai atlikti");
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");
@@ -102,13 +115,15 @@ export default {
         return response(res, false, null, `Netinkamas laukas "${field}"`);
       }
 
-      const data = await defaultValuesSchema.findOneAndUpdate(
+      const responseData = await defaultValuesSchema.findOneAndUpdate(
         {},
         { [field]: value },
         { new: true, upsert: true }
       );
 
-      return response(res, true, data, "Pakeitimai atlikti");
+      emit.toAdmin("newDefaultValue", responseData);
+
+      return response(res, true, responseData, "Pakeitimai atlikti");
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");
@@ -119,15 +134,17 @@ export default {
     try {
       const { field, value } = req.body;
 
-      const data = await selectSchema.findOneAndUpdate(
+      const responseData = await selectSchema.findOneAndUpdate(
         {},
         { $push: { [field]: value } },
         { new: true, upsert: true }
       );
 
-      if (!data) return response(res, false, null, "Serverio klaida");
+      if (!responseData) return response(res, false, null, "Serverio klaida");
 
-      return response(res, true, data, "Išsaugota");
+      emit.toAdmin("newSelectValue", responseData);
+
+      return response(res, true, responseData, "Išsaugota");
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");
@@ -136,7 +153,15 @@ export default {
 
   newUserRights: async (req: Request, res: Response) => {
     try {
-      const { accountType, project, schedule, production, installation, gate, admin } = req.body;
+      const {
+        accountType,
+        project,
+        schedule,
+        production,
+        installation,
+        gate,
+        admin,
+      } = req.body;
 
       let doesExist = await userRightsSchema.findOne({ accountType });
       if (doesExist) {
@@ -157,9 +182,11 @@ export default {
           admin,
         });
 
-      const data = await doesExist.save();
+      const responseData = await doesExist.save();
 
-      return response(res, true, data, "Išsaugota");
+      emit.toEveryone("newUserRights", responseData);
+
+      return response(res, true, responseData, "Išsaugota");
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");

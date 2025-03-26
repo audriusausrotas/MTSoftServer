@@ -35,7 +35,11 @@ export default {
 
       if (!data) return response(res, false, null, "Projektas nerastas");
 
-      return response(res, true, null, "Užsakymas ištrintas");
+      emit.toAdmin("deleteProduction", { _id });
+      emit.toProduction("deleteProduction", { _id });
+      emit.toWarehouse("deleteProduction", { _id });
+
+      return response(res, true, { _id }, "Užsakymas ištrintas");
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");
@@ -52,9 +56,15 @@ export default {
 
       order!.bindings = order.bindings!.filter((item) => item.id !== bindingId);
 
-      const data = await order.save();
+      await order.save();
 
-      return response(res, true, data, "Apkaustas ištrintas");
+      const responseData = { _id, bindingId };
+
+      emit.toAdmin("deleteProductionBinding", responseData);
+      emit.toProduction("deleteProductionBinding", responseData);
+      emit.toWarehouse("deleteProductionBinding", responseData);
+
+      return response(res, true, responseData, "Apkaustas ištrintas");
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");
@@ -71,8 +81,15 @@ export default {
 
       project.fences = project.fences.filter((fence, i) => i !== index);
 
-      const data = await project.save();
-      return response(res, true, data, "Išsaugota");
+      await project.save();
+
+      const responseData = { _id, index };
+
+      emit.toAdmin("deleteProductionFence", responseData);
+      emit.toProduction("deleteProductionFence", responseData);
+      emit.toWarehouse("deleteProductionFence", responseData);
+
+      return response(res, true, responseData, "Išsaugota");
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");
@@ -93,7 +110,13 @@ export default {
 
       const data = await project.save();
 
-      return response(res, true, data, "Išsaugota");
+      const responseData = { _id, index, measureIndex };
+
+      emit.toAdmin("deleteProductionMeasure", responseData);
+      emit.toProduction("deleteProductionMeasure", responseData);
+      emit.toWarehouse("deleteProductionMeasure", responseData);
+
+      return response(res, true, responseData, "Išsaugota");
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");
@@ -118,7 +141,13 @@ export default {
 
       if (!project) return response(res, false, null, "Projektas nerastas");
 
-      return response(res, true, project, "Išsaugota");
+      const responseData = { _id, index, measureIndex, value, option };
+
+      emit.toAdmin("updateProductionPostone", responseData);
+      emit.toProduction("updateProductionPostone", responseData);
+      emit.toWarehouse("updateProductionPostone", responseData);
+
+      return response(res, true, responseData, "Išsaugota");
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");
@@ -137,7 +166,13 @@ export default {
 
       if (!data) return response(res, false, null, "Serverio klaida");
 
-      return response(res, true, data, "Statusas pakeistas");
+      const responseData = { _id, status };
+
+      emit.toAdmin("updateProductionStatus", responseData);
+      emit.toProduction("updateProductionStatus", responseData);
+      emit.toWarehouse("updateProductionStatus", responseData);
+
+      return response(res, true, responseData, "Statusas pakeistas");
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");
@@ -161,7 +196,13 @@ export default {
 
       if (!project) return response(res, false, null, "Projektas nerastas");
 
-      return response(res, true, project, "issaugota");
+      const responseData = { _id, index, measureIndex, value, field, option };
+
+      emit.toAdmin("updateProductionMeasure", responseData);
+      emit.toProduction("updateProductionMeasure", responseData);
+      emit.toWarehouse("updateProductionMeasure", responseData);
+
+      return response(res, true, responseData, "issaugota");
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");
@@ -189,11 +230,15 @@ export default {
         status: "Negaminti",
       });
 
-      const data = await newGamyba.save();
+      const responseData = await newGamyba.save();
 
-      if (!data) return response(res, false, null, "Įvyko klaida");
+      if (!responseData) return response(res, false, null, "Įvyko klaida");
 
-      return response(res, true, data, "Užsakymas sukurtas");
+      emit.toAdmin("newProduction", responseData);
+      emit.toProduction("newProduction", responseData);
+      emit.toWarehouse("newProduction", responseData);
+
+      return response(res, true, responseData, "Užsakymas sukurtas");
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");
@@ -204,7 +249,8 @@ export default {
     try {
       const { _id } = req.params;
 
-      const order: HydratedDocument<Gamyba> | null = await productionSchema.findById(_id);
+      const order: HydratedDocument<Gamyba> | null =
+        await productionSchema.findById(_id);
 
       if (!order) return response(res, false, null, "užsakymas nerastas");
 
@@ -220,8 +266,16 @@ export default {
       };
 
       order.bindings?.push(newBinding);
+
       const data = await order.save();
-      return response(res, true, data, "Apkaustas pridėtas");
+
+      const responseData = { _id, data };
+
+      emit.toAdmin("newProduction", responseData);
+      emit.toProduction("newProduction", responseData);
+      emit.toWarehouse("newProduction", responseData);
+
+      return response(res, true, responseData, "Apkaustas pridėtas");
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");
@@ -232,7 +286,8 @@ export default {
     try {
       const { _id, index } = req.body;
 
-      const project: HydratedDocument<Gamyba> | null = await productionSchema.findById(_id);
+      const project: HydratedDocument<Gamyba> | null =
+        await productionSchema.findById(_id);
 
       if (!project) return response(res, false, null, "Projektas nerastas");
 
@@ -269,6 +324,7 @@ export default {
       project.fences[index].measures.push(newMeasure);
 
       const data = await project.save();
+
       return response(res, true, data, "issaugota");
     } catch (error) {
       console.error("Klaida:", error);
@@ -292,7 +348,8 @@ export default {
     try {
       const { _id } = req.params;
 
-      const project: HydratedDocument<Project> | null = await projectSchema.findById(_id);
+      const project: HydratedDocument<Project> | null =
+        await projectSchema.findById(_id);
 
       if (!project) return response(res, false, null, "Projektas nerastas");
 
@@ -302,16 +359,26 @@ export default {
         (item) => item._id.toString() === project._id!.toString()
       );
 
-      if (gamybaExist) return response(res, false, null, "Objektas jau gaminamas");
+      if (gamybaExist)
+        return response(res, false, null, "Objektas jau gaminamas");
       else {
         //main bindings array
         const bindings: Bindings[] = [];
 
         //adds bindings as new or update quantity of existing
-        const addBindings = (color: string, height: number, type: string, quantity: number) => {
+        const addBindings = (
+          color: string,
+          height: number,
+          type: string,
+          quantity: number
+        ) => {
           let found = false;
           for (const binding of bindings) {
-            if (binding.color === color && binding.height === height && binding.type === type) {
+            if (
+              binding.color === color &&
+              binding.height === height &&
+              binding.type === type
+            ) {
               binding.quantity = binding.quantity! + quantity;
               found = true;
               break;
@@ -335,7 +402,8 @@ export default {
 
         //loops via fences
         project.fenceMeasures.forEach((item) => {
-          if (item.type === "Segmentas" || fenceBoards.includes(item.type)) return;
+          if (item.type === "Segmentas" || fenceBoards.includes(item.type))
+            return;
 
           const color = item.color;
           const isBindings = item.bindings === "Taip" ? true : false;
@@ -354,16 +422,29 @@ export default {
 
           item.measures.forEach((measure, index) => {
             const notSpecial =
-              !measure.laiptas.exist && !measure.kampas.exist && !measure.gates.exist;
+              !measure.laiptas.exist &&
+              !measure.kampas.exist &&
+              !measure.gates.exist;
 
             if (!isBindings) {
-              if (notSpecial) addBindings(color, measure.height, "Koja Dviguba " + legWidth, 2);
+              if (notSpecial)
+                addBindings(
+                  color,
+                  measure.height,
+                  "Koja Dviguba " + legWidth,
+                  2
+                );
             } else {
               // if first element is fence, adds one leg
               if (index === 0) {
                 if (notSpecial) {
                   lastHeight = measure.height;
-                  addBindings(color, measure.height, "Koja vienguba " + legWidth, 1);
+                  addBindings(
+                    color,
+                    measure.height,
+                    "Koja vienguba " + legWidth,
+                    1
+                  );
                 } else {
                   if (measure.laiptas.exist) wasStep = true;
                   if (measure.kampas.exist) wasCorner = true;
@@ -373,7 +454,13 @@ export default {
               }
 
               if (index === item.measures.length - 1) {
-                if (notSpecial) addBindings(color, measure.height, "Koja vienguba " + legWidth, 1);
+                if (notSpecial)
+                  addBindings(
+                    color,
+                    measure.height,
+                    "Koja vienguba " + legWidth,
+                    1
+                  );
               }
 
               if (measure.gates.exist) {
@@ -406,9 +493,12 @@ export default {
                   const maxHeight =
                     stepDirection === "Aukštyn"
                       ? lastHeight + stepHeight - (lastHeight - measure.height)
-                      : measure.height + stepHeight - (measure.height - lastHeight);
+                      : measure.height +
+                        stepHeight -
+                        (measure.height - lastHeight);
 
-                  isBindings && addBindings(color, maxHeight, "Kampas " + cornerRadius, 1);
+                  isBindings &&
+                    addBindings(color, maxHeight, "Kampas " + cornerRadius, 1);
 
                   addBindings(color, maxHeight, "Koja vienguba " + legWidth, 1);
                   addBindings(
@@ -423,7 +513,8 @@ export default {
                   lastHeight = measure.height;
                 } else if (wasCorner) {
                   const maxHeight = Math.max(lastHeight, measure.height);
-                  isBindings && addBindings(color, maxHeight, "Kampas " + cornerRadius, 1);
+                  isBindings &&
+                    addBindings(color, maxHeight, "Kampas " + cornerRadius, 1);
 
                   addBindings(
                     color,
@@ -439,7 +530,9 @@ export default {
                   const maxHeight =
                     stepDirection === "Aukštyn"
                       ? lastHeight + stepHeight - (lastHeight - measure.height)
-                      : measure.height + stepHeight - (measure.height - lastHeight);
+                      : measure.height +
+                        stepHeight -
+                        (measure.height - lastHeight);
 
                   isBindings && addBindings(color, maxHeight, "Centrinis", 2);
 
@@ -468,7 +561,10 @@ export default {
         });
 
         const newFences: GamybaFence[] = project.fenceMeasures
-          .filter((item) => item.type !== "Segmentas" && !fenceBoards.includes(item.type))
+          .filter(
+            (item) =>
+              item.type !== "Segmentas" && !fenceBoards.includes(item.type)
+          )
           .map((item) => {
             return {
               ...item,

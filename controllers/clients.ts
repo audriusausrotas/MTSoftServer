@@ -10,7 +10,8 @@ export default {
     try {
       const clients = await clientSchema.find();
 
-      if (!clients.length) return response(res, false, null, "Klientai nerasti");
+      if (!clients.length)
+        return response(res, false, null, "Klientai nerasti");
 
       return response(res, true, clients);
     } catch (error) {
@@ -25,11 +26,14 @@ export default {
     try {
       const { _id } = req.params;
 
-      const client = await clientSchema.findByIdAndDelete(_id);
+      const deletedClient = await clientSchema.findByIdAndDelete(_id);
 
-      if (!client) return response(res, false, null, "Klientas nerastas");
+      if (!deletedClient)
+        return response(res, false, null, "Klientas nerastas");
 
-      return response(res, true, null, "Klientas ištrintas");
+      emit.toAdmin("deleteClient", _id);
+
+      return response(res, true, { _id }, "Klientas ištrintas");
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");
@@ -46,7 +50,8 @@ export default {
 
       const clientExist = await clientSchema.findOne({ email });
 
-      if (clientExist) return response(res, false, null, "Klientas jau egzistuoja");
+      if (clientExist)
+        return response(res, false, null, "Klientas jau egzistuoja");
 
       const client = new clientSchema({
         username,
@@ -55,9 +60,11 @@ export default {
         address,
       });
 
-      const newClient = await client.save();
+      const responseData = await client.save();
 
-      return response(res, true, newClient, "Klientas išsaugotas");
+      emit.toAdmin("newClient", responseData);
+
+      return response(res, true, responseData, "Klientas išsaugotas");
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");

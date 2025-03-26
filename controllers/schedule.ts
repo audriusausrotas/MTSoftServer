@@ -1,4 +1,4 @@
-import { Job, Schedule, SelectValues } from "../data/interfaces";
+import { Job, Schedule } from "../data/interfaces";
 import scheduleSchema from "../schemas/scheduleSchema";
 import { processJob } from "../modules/helpers";
 import userSchema from "../schemas/userSchema";
@@ -29,7 +29,8 @@ export default {
         });
       }
 
-      if (schedule.length === 0) return response(res, false, null, "Grafikas nerastas");
+      if (schedule.length === 0)
+        return response(res, false, null, "Grafikas nerastas");
 
       return response(res, true, schedule);
     } catch (error) {
@@ -48,17 +49,29 @@ export default {
     try {
       const { date, comment, selectedJobs, worker } = req.body;
 
+      // delete if no comment or job is passed
       if (comment.trim() === "" && selectedJobs.length === 0) {
         const existingSchedule = await scheduleSchema.findOneAndDelete({
           date,
           worker,
         });
-        if (existingSchedule) return response(res, true, null, "Išsaugota");
-        else return response(res, false, null, "Klaida saugant");
+
+        if (!existingSchedule)
+          return response(res, false, null, "Klaida saugant");
+
+        const responseData = { date, worker };
+
+        emit.toAdmin("deleteSchedule", responseData);
+        emit.toInstallation("deleteSchedule", responseData);
+        emit.toProduction("deleteSchedule", responseData);
+        emit.toWarehouse("deleteSchedule", responseData);
+
+        return response(res, true, responseData, "Išsaugota");
       }
 
       const workerFound = await userSchema.findById(worker._id);
-      if (!workerFound) return response(res, false, null, "Darbuotojas nerastas");
+      if (!workerFound)
+        return response(res, false, null, "Darbuotojas nerastas");
 
       if (workerFound.accountType !== "Gamyba") {
         selectedJobs.forEach(async (job: Job) => {
@@ -67,12 +80,19 @@ export default {
       }
 
       const existingSchedule = await scheduleSchema.findOne({ date, worker });
+
       if (existingSchedule) {
         existingSchedule.comment = comment;
         existingSchedule.jobs = selectedJobs;
-        const data = await existingSchedule.save();
 
-        return response(res, true, data);
+        const responseData = await existingSchedule.save();
+
+        emit.toAdmin("updateSchedule", responseData);
+        emit.toInstallation("updateSchedule", responseData);
+        emit.toProduction("updateSchedule", responseData);
+        emit.toWarehouse("updateSchedule", responseData);
+
+        return response(res, true, responseData, "Išsaugota");
       } else {
         const newSchedule = new scheduleSchema({
           date,
@@ -81,9 +101,14 @@ export default {
           worker,
         });
 
-        const data = await newSchedule.save();
+        const responseData = await newSchedule.save();
 
-        return response(res, true, data, "Išsaugota");
+        emit.toAdmin("newSchedule", responseData);
+        emit.toInstallation("newSchedule", responseData);
+        emit.toProduction("newSchedule", responseData);
+        emit.toWarehouse("newSchedule", responseData);
+
+        return response(res, true, responseData, "Išsaugota");
       }
     } catch (error) {
       console.error("Klaida:", error);

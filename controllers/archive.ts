@@ -195,9 +195,11 @@ export default {
 
       if (!data) return response(res, false, null, "Projektas nerastas");
 
-      emit.toAdmin("archiveDeleted", { _id, location });
+      const responseData = { _id, location };
 
-      return response(res, true, { _id }, "Projektas ištrintas");
+      emit.toAdmin("archiveDeleted", responseData);
+
+      return response(res, true, responseData, "Projektas ištrintas");
     } catch (error) {
       console.error("Klaida gaunant projektus:", error);
       return response(res, false, null, "Serverio klaida");
@@ -217,7 +219,8 @@ export default {
 
       const archivedProject = await schema.findById(_id);
 
-      if (!archivedProject) return response(res, false, null, "Projektas nerastas");
+      if (!archivedProject)
+        return response(res, false, null, "Projektas nerastas");
 
       const currentDate = new Date();
       let expirationDate = new Date(currentDate);
@@ -231,16 +234,23 @@ export default {
 
       const data = await project.save();
 
+      if (!data) return response(res, false, null, "Klaida saugant projektą");
+
       const deleteSchema = schemaMap[location];
-      if (!schema) {
-        return response(res, false, null, "Klaidinga lokacija");
-      }
+      if (!schema) return response(res, false, null, "Klaidinga lokacija");
 
       await deleteSchema.findByIdAndDelete(_id);
 
-      emit.toAdmin("archiveDeleted", { _id, location });
+      const responseData = { _id, location };
 
-      return response(res, true, data, "Projektas perkeltas į projektus");
+      emit.toAdmin("archiveDeleted", responseData);
+
+      return response(
+        res,
+        true,
+        responseData,
+        "Projektas perkeltas į projektus"
+      );
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");
@@ -265,16 +275,20 @@ export default {
 
       projectData.dateExparation = new Date().toISOString();
 
-      const archivedProject = new archiveSchema({ ...projectData });
+      const archivedProject = new archiveSchema(projectData);
 
-      const data = await archivedProject.save();
+      const responseData = await archivedProject.save();
 
-      await projectSchema.findByIdAndDelete(_id);
-      await montavimasSchema.findByIdAndDelete(_id);
+      const deletedProject = await projectSchema.findByIdAndDelete(_id);
+      if (!deletedProject) response(res, true, null, "Klaida trinant projektą");
 
-      emit.toAdmin("addArchive", data);
+      const deletedInstallation = await montavimasSchema.findByIdAndDelete(_id);
+      if (!deletedInstallation)
+        response(res, true, null, "Klaida trinant montavimą");
 
-      return response(res, true, data, "Projektas perkeltas į archyvą");
+      emit.toAdmin("addArchive", responseData);
+
+      return response(res, true, responseData, "Projektas perkeltas į archyvą");
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");
@@ -291,17 +305,23 @@ export default {
       await deleteVersions(project.versions);
 
       const projectData = project.toObject();
-      const unconfirmedProject = new unconfirmedSchema({ ...projectData });
-      const data = await unconfirmedProject.save();
+      const unconfirmedProject = new unconfirmedSchema(projectData);
 
-      if (!data) return response(res, false, null, "Klaida perkeliant projektą");
+      const responseData = await unconfirmedProject.save();
 
-      await projectSchema.findByIdAndDelete(_id);
-      await backupSchema.findByIdAndDelete(_id);
+      if (!responseData)
+        return response(res, false, null, "Klaida perkeliant projektą");
 
-      emit.toAdmin("addUnconfirmed", data);
+      const deletedProject = await projectSchema.findByIdAndDelete(_id);
+      if (!deletedProject) response(res, true, null, "Klaida trinant projektą");
 
-      return response(res, true, data, "Projektas perkeltas ");
+      const deletedBackup = await backupSchema.findByIdAndDelete(_id);
+      if (!deletedBackup)
+        response(res, true, null, "Klaida trinant atsarginę kopiją");
+
+      emit.toAdmin("addUnconfirmed", responseData);
+
+      return response(res, true, responseData, "Projektas perkeltas ");
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");

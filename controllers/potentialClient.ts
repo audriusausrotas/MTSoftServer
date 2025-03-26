@@ -11,7 +11,8 @@ export default {
     try {
       const users = await potentialClientSchema.find();
 
-      if (users.length === 0) return response(res, false, null, "Vartotojai nerasti");
+      if (users.length === 0)
+        return response(res, false, null, "Vartotojai nerasti");
 
       const statusOrder = ["Nežinoma", "Domina", "Nelabai domina", "Nedomina"];
 
@@ -39,9 +40,18 @@ export default {
       if (!user) return response(res, false, null, "Klientas nerastas");
 
       await new potentialUnsuscribedSchema(user.toObject()).save();
-      await potentialClientSchema.findByIdAndDelete(_id);
+      const data = await potentialClientSchema.findByIdAndDelete(_id);
 
-      return response(res, true, null, "Klientas perkeltas į atsisakiusiųjų sąrašą");
+      if (!data) return response(res, false, null, "Klaida trinant klientą");
+
+      emit.toAdmin("deletePotentialClient", { _id });
+
+      return response(
+        res,
+        true,
+        { _id },
+        "Klientas perkeltas į atsisakiusiųjų sąrašą"
+      );
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");
@@ -54,15 +64,18 @@ export default {
     try {
       const { _id, name, email, phone, address, status } = req.body;
 
-      const user = await potentialClientSchema.findByIdAndUpdate(
+      const responseData = await potentialClientSchema.findByIdAndUpdate(
         _id,
         { name, email, phone, address, status },
         { new: true }
       );
 
-      if (!user) return response(res, false, null, "Klaida atnaujinant duomenis");
+      if (!responseData)
+        return response(res, false, null, "Klaida atnaujinant duomenis");
 
-      return response(res, true, user, "Klientas atnaujintas");
+      emit.toAdmin("updatePotentialClient", responseData);
+
+      return response(res, true, responseData, "Klientas atnaujintas");
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");
@@ -74,16 +87,32 @@ export default {
       const { _id, send, all, value } = req.body;
 
       if (all) {
-        const data = await potentialClientSchema.updateMany({}, { send: value });
+        const data = await potentialClientSchema.updateMany(
+          {},
+          { send: value }
+        );
 
-        if (data.modifiedCount > 0) return response(res, true, response, "Atnaujinta");
-        else return response(res, false, null, "Klaida atnaujinant duomenis");
+        if (data.modifiedCount < 1)
+          return response(res, false, null, "Klaida atnaujinant duomenis");
+
+        emit.toAdmin("selectAll", { value });
+
+        return response(res, true, { value }, "Atnaujinta");
       } else {
-        const user = await potentialClientSchema.findByIdAndUpdate(_id, { send }, { new: true });
+        const user = await potentialClientSchema.findByIdAndUpdate(
+          _id,
+          { send },
+          { new: true }
+        );
 
-        if (!user) return response(res, false, null, "Klaida atnaujinant duomenis");
+        if (!user)
+          return response(res, false, null, "Klaida atnaujinant duomenis");
 
-        return response(res, true, user, "Atnaujinta");
+        const responseData = { _id, send, value };
+
+        emit.toAdmin("selectOne", responseData);
+
+        return response(res, true, responseData, "Atnaujinta");
       }
     } catch (error) {
       console.error("Klaida:", error);
@@ -104,7 +133,8 @@ export default {
 
       if (user) return response(res, false, null, "Klientas jau egzistuoja");
 
-      if (userUnsuscribed) return response(res, false, null, "Klientas atsisakė prenumeratos");
+      if (userUnsuscribed)
+        return response(res, false, null, "Klientas atsisakė prenumeratos");
 
       const newUser = new potentialClientSchema({
         name,
@@ -114,9 +144,11 @@ export default {
         status,
       });
 
-      const data = await newUser.save();
+      const responseData = await newUser.save();
 
-      return response(res, true, data, "Klientas sukurtas");
+      emit.toAdmin("newPotentialClient", responseData);
+
+      return response(res, true, responseData, "Klientas sukurtas");
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");

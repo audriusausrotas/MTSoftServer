@@ -31,7 +31,11 @@ export default {
 
       if (!data) return response(res, false, null, "užsakymas nerastas");
 
-      return response(res, true, null, "Užsakymas ištrintas");
+      emit.toAdmin("deleteInstallationOrder", { _id });
+      emit.toInstallation("deleteInstallationOrder", { _id });
+      emit.toWarehouse("deleteInstallationOrder", { _id });
+
+      return response(res, true, { _id }, "Užsakymas ištrintas");
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");
@@ -42,17 +46,24 @@ export default {
     try {
       const { _id, worker } = req.body;
 
-      const data = await installationSchema.findById(_id);
+      const project = await installationSchema.findById(_id);
 
-      if (!data) return response(res, false, null, "Užsakymas nerastas");
+      if (!project) return response(res, false, null, "Užsakymas nerastas");
 
-      const newWorkers = data?.workers.filter((item) => item !== worker);
+      const newWorkers = project?.workers.filter((item) => item !== worker);
 
-      data.workers = newWorkers;
+      project.workers = newWorkers;
 
-      const newData = await data?.save();
+      const data = await project?.save();
 
-      return response(res, true, newData, "Daruotojas ištrintas");
+      if (!data) return response(res, false, null, "Klaida trinant darbuotoją");
+
+      const responseData = { _id, worker };
+
+      emit.toAdmin("deleteInstallationWorker", responseData);
+      emit.toWarehouse("deleteInstallationWorker", responseData);
+
+      return response(res, true, responseData, "Daruotojas ištrintas");
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");
@@ -65,15 +76,21 @@ export default {
     try {
       const { _id, measureIndex, value } = req.body;
 
-      const data = await installationSchema.findById(_id);
+      const project = await installationSchema.findById(_id);
 
-      if (!data) return response(res, false, null, "Projektas nerastas");
+      if (!project) return response(res, false, null, "Projektas nerastas");
 
-      data.results[measureIndex].delivered = value;
+      project.results[measureIndex].delivered = value;
 
-      const newData = await data.save();
+      const data = await project.save();
 
-      return response(res, true, newData, "Pristatymas patvirtintas");
+      const responseData = { _id, measureIndex, value };
+
+      emit.toAdmin("installationPartsDelivered", responseData);
+      emit.toInstallation("installationPartsDelivered", responseData);
+      emit.toWarehouse("installationPartsDelivered", responseData);
+
+      return response(res, true, responseData, "Pristatymas patvirtintas");
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");
@@ -94,7 +111,13 @@ export default {
 
       if (!project) return response(res, false, null, "Projektas nerastas");
 
-      return response(res, true, project, "Išsaugota");
+      const responseData = { _id, index, measureIndex, value };
+
+      emit.toAdmin("installationUpdatePostone", responseData);
+      emit.toWarehouse("installationUpdatePostone", responseData);
+      emit.toInstallation("installationUpdatePostone", responseData);
+
+      return response(res, true, responseData, "Išsaugota");
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");
@@ -113,7 +136,13 @@ export default {
 
       if (!project) return response(res, false, null, "Projektas nerastas");
 
-      return response(res, true, project, "Išsaugota");
+      const responseData = { _id, index, measureIndex, value };
+
+      emit.toAdmin("installationUpdateDone", responseData);
+      emit.toWarehouse("installationUpdateDone", responseData);
+      emit.toInstallation("installationUpdateDone", responseData);
+
+      return response(res, true, responseData, "Išsaugota");
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");
@@ -124,15 +153,22 @@ export default {
     try {
       const { _id, status } = req.body;
 
-      const data: Montavimas | null = await installationSchema.findByIdAndUpdate(
-        _id,
-        { $set: { status: status } },
-        { new: true }
-      );
+      const data: Montavimas | null =
+        await installationSchema.findByIdAndUpdate(
+          _id,
+          { $set: { status: status } },
+          { new: true }
+        );
 
       if (!data) return response(res, false, null, "Įvyko klaida");
 
-      return response(res, true, data, "Statusas pakeistas");
+      const responseData = { _id, status };
+
+      emit.toAdmin("installationUpdateStatus", responseData);
+      emit.toWarehouse("installationUpdateStatus", responseData);
+      emit.toInstallation("installationUpdateStatus", responseData);
+
+      return response(res, true, responseData, "Statusas pakeistas");
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");
@@ -150,6 +186,11 @@ export default {
       if (!result.success) {
         return response(res, false, null, result.message);
       }
+
+      emit.toAdmin("newInstallation", result.data);
+      emit.toWarehouse("newInstallation", result.data);
+      emit.toInstallation("newInstallation", result.data);
+
       return response(res, true, result.data, result.message);
     } catch (error) {
       console.error("Klaida:", error);

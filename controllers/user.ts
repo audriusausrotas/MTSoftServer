@@ -31,7 +31,7 @@ export default {
 
   deleteUser: async (req: Request, res: Response) => {
     try {
-      const { selectedUserId, password } = req.body;
+      const { _id, password } = req.body;
 
       const user = res.locals.user;
 
@@ -39,16 +39,24 @@ export default {
 
       if (!data) return response(res, false, null, "Vartotojas nerastas");
 
-      const selectedUser: any = await userSchema.findById(selectedUserId);
+      const userToDelete: any = await userSchema.findById(_id);
 
-      if (!selectedUser) return response(res, false, null, "Pasirinktas vartotojas nerastas");
+      if (!userToDelete)
+        return response(res, false, null, "Pasirinktas vartotojas nerastas");
 
       const isPasswordValid = await bcrypt.compare(password, data.password);
 
-      if (isPasswordValid) {
-        await userSchema.findByIdAndDelete(selectedUserId);
-        return response(res, true, null, "Pakeitimai atlikti");
-      } else return response(res, false, null, "Klaidingas slaptažodis");
+      if (!isPasswordValid)
+        return response(res, false, null, "Klaidingas slaptažodis");
+
+      const deletedUser = await userSchema.findByIdAndDelete(_id);
+
+      if (!deletedUser)
+        return response(res, false, null, "Klaidinga trinant vartotoją");
+
+      emit.toAdmin("deleteUser", { _id });
+
+      return response(res, true, null, "Pakeitimai atlikti");
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");
@@ -60,23 +68,25 @@ export default {
   updateProfile: async (req: Request, res: Response) => {
     try {
       const { _id, field, value } = req.body;
-      const data = await userSchema.findById(_id);
+      const user = await userSchema.findById(_id);
 
-      if (!data) return response(res, false, null, "Vartotojas nerastas");
+      if (!user) return response(res, false, null, "Vartotojas nerastas");
 
-      if (field === "phone") data.phone = value;
-      if (field === "name") data.lastName = value;
+      if (field === "phone") user.phone = value;
+      if (field === "name") user.lastName = value;
       if (field === "password") {
         if (value.trim() !== "") {
-          data.password = await bcrypt.hash(value, +process.env.salt!);
+          user.password = await bcrypt.hash(value, +process.env.salt!);
         }
       }
 
-      const newData = await data.save();
+      const data = await user.save();
 
-      newData.password = "";
+      data.password = "";
 
-      return response(res, true, newData, "Pakeitimai išsaugoti");
+      emit.toAdmin("updateUser", data);
+
+      return response(res, true, data, "Pakeitimai išsaugoti");
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");
@@ -85,29 +95,28 @@ export default {
 
   updateUser: async (req: Request, res: Response) => {
     try {
-      const { selectedUserId, value, changeType } = req.body;
+      const { _id, value, changeType } = req.body;
 
-      const selectedUser: any = await userSchema.findById(selectedUserId);
+      const user: any = await userSchema.findById(_id);
 
-      if (!selectedUser) return response(res, false, null, "Pasirinktas vartotojas nerastas");
+      if (!user)
+        return response(res, false, null, "Pasirinktas vartotojas nerastas");
 
       if (changeType === "admin") {
-        selectedUser.accountType = value;
-
-        const newUser = await selectedUser.save();
-        newUser.password = "";
-
-        return response(res, true, newUser, "Pakeitimai atlikti");
+        user.accountType = value;
       }
 
       if (changeType === "verify") {
-        selectedUser.verified = !selectedUser.verified;
+        user.verified = !user.verified;
+      }
 
-        const newUser = await selectedUser.save();
-        newUser.password = "";
+      const data = await user.save();
+      data.password = "";
 
-        return response(res, true, newUser, "Pakeitimai atlikti");
-      } else return response(res, false, null, "Neteisinga užklausa");
+      emit.toAdmin("updateUser", data);
+
+      return response(res, true, data, "Pakeitimai atlikti");
+      // } else return response(res, false, null, "Neteisinga užklausa");
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");

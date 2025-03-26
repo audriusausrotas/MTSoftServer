@@ -30,7 +30,10 @@ export default {
 
       if (!data) return response(res, false, null, "Serverio klaida");
 
-      return response(res, true, null, "Vartų užsakymas atšauktas");
+      emit.toAdmin("cancelGateOrder", { _id });
+      emit.toGates("cancelGateOrder", { _id });
+
+      return response(res, true, { _id }, "Vartų užsakymas atšauktas");
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");
@@ -41,13 +44,21 @@ export default {
     try {
       const { _id } = req.params;
 
-      await projectSchema.findByIdAndUpdate(_id, { status: "Vartai Sumontuoti" });
+      await projectSchema.findByIdAndUpdate(_id, {
+        status: "Vartai Sumontuoti",
+      });
 
-      const data = await gateSchema.findByIdAndUpdate(_id, { measure: "Baigtas" });
+      const data = await gateSchema.findByIdAndUpdate(_id, {
+        measure: "Baigtas",
+      });
 
       if (!data) return response(res, false, null, "Serverio klaida");
 
-      return response(res, true, null, "Užsakymas baigtas");
+      emit.toAdmin("changeProjectStatus", { _id, status: "Vartai Sumontuoti" });
+      emit.toAdmin("changeGateStatus", { _id, status: "Baigtas" });
+      emit.toGates("changeGateStatus", { _id, status: "Baigtas" });
+
+      return response(res, true, { _id }, "Užsakymas baigtas");
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");
@@ -92,9 +103,12 @@ export default {
           return response(res, false, null, "Nežinoma pakeitimo rūšis");
       }
 
-      await data.save();
+      const responseData = await data.save();
 
-      return response(res, true, data, "Būsena atnaujinta");
+      emit.toAdmin("UpdateGateOrder", responseData);
+      emit.toGates("UpdateGateOrder", responseData);
+
+      return response(res, true, responseData, "Būsena atnaujinta");
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");
@@ -111,11 +125,14 @@ export default {
 
       if (!project) return response(res, false, null, "Projektas nerastas");
 
-      if (project.gates.length === 0) return response(res, false, null, "Projektas vartų neturi");
+      if (project.gates.length === 0)
+        return response(res, false, null, "Projektas vartų neturi");
 
       const gates = await gateSchema.find();
 
-      const gatesExist = gates.some((item) => item._id.toString() === project._id.toString());
+      const gatesExist = gates.some(
+        (item) => item._id.toString() === project._id.toString()
+      );
 
       if (gatesExist) return response(res, false, null, "Vartai jau užsakyti");
 
@@ -133,9 +150,12 @@ export default {
 
       const newGates = new gateSchema(gateData);
 
-      const data = await newGates.save();
+      const responseData = await newGates.save();
 
-      return response(res, true, data, "Vartai užsakyti");
+      emit.toAdmin("newGateOrder", responseData);
+      emit.toGates("newGateOrder", responseData);
+
+      return response(res, true, responseData, "Vartai užsakyti");
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");

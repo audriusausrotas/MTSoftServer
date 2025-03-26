@@ -37,7 +37,18 @@ export default {
 
       const data = await order.save();
 
-      return response(res, true, data, value ? "Užsakymas patvirtintas" : "Užsakymas atšauktas");
+      if (!data) return response(res, false, null, "Klaida saugant užsakymą");
+
+      const responseData = { _id, status: value };
+
+      emit.toAdmin("changeProjectStatus", responseData);
+
+      return response(
+        res,
+        true,
+        responseData,
+        value ? "Užsakymas patvirtintas" : "Užsakymas atšauktas"
+      );
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");
