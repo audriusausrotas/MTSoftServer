@@ -13,6 +13,8 @@ const io = new Server(server, {
   },
 });
 
+const connectedSockets = new Map<string, Socket>();
+
 io.on("connection", async (socket: Socket) => {
   console.log(`New connection attempt: ${socket.id}`);
 
@@ -30,15 +32,4 @@ server.listen(port, () => {
   console.log(`Socket.io server is running on port ${port}`);
 });
 
-export { io };
-
-// socket.emit(): Send to the sender (the client).
-// socket.broadcast.emit(): Send to everyone except the sender.
-// io.emit(): Send to everyone (including the sender).
-// socket.to(<socketId>).emit(): Send to a specific client by their socket ID.
-
-// Room Management:
-// socket.join(<room>)
-// socket.leave(<room>)
-// socket.in(<room>).emit(): Send to all clients in a specific room.
-// socket.broadcast.to(<room>).emit(): Send to all clients in a room, except the sender.
+export { connectedSockets, io };

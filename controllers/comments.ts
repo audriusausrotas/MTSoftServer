@@ -74,8 +74,7 @@ export default {
 
       const project = await projectSchema.findById(_id);
 
-      if (!project)
-        return { success: false, project: null, message: "užsakymas nerastas" };
+      if (!project) return { success: false, project: null, message: "užsakymas nerastas" };
 
       project.comments = project.comments.filter(
         (item) => item.date !== comment.date && item.comment !== comment.comment
@@ -106,8 +105,7 @@ export default {
 
       const user = res.locals.user;
 
-      const project: HydratedDocument<Gamyba> | null =
-        await productionSchema.findById(_id);
+      const project: HydratedDocument<Gamyba> | null = await productionSchema.findById(_id);
 
       if (!project) return response(res, false, null, "Projektas nerastas");
 
@@ -141,8 +139,7 @@ export default {
 
       const user = res.locals.user;
 
-      const project: HydratedDocument<Montavimas> | null =
-        await installationSchema.findById(_id);
+      const project: HydratedDocument<Montavimas> | null = await installationSchema.findById(_id);
 
       if (!project) return response(res, false, null, "Montavimas nerastas");
 
@@ -178,8 +175,7 @@ export default {
 
       const user = res.locals.user;
 
-      const project: HydratedDocument<Project> | null =
-        await projectSchema.findById(_id);
+      const project: HydratedDocument<Project> | null = await projectSchema.findById(_id);
 
       if (!project) return response(res, false, null, "Projektas nerastas");
 

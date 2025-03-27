@@ -27,15 +27,11 @@ export default {
 
         let project;
 
-        if (category === "projects")
-          project = await projectSchema.findById(_id);
-        else if (category === "production")
-          project = await productionSchema.findById(_id);
-        else if (category === "installation")
-          project = await installationSchema.findById(_id);
+        if (category === "projects") project = await projectSchema.findById(_id);
+        else if (category === "production") project = await productionSchema.findById(_id);
+        else if (category === "installation") project = await installationSchema.findById(_id);
 
-        if (!project)
-          return response(res, false, null, "Klaida įkeliant failus");
+        if (!project) return response(res, false, null, "Klaida įkeliant failus");
 
         project.files = [...(project.files || []), ...filePaths];
 
@@ -46,15 +42,15 @@ export default {
         const responseData = { _id, files: filePaths };
 
         if (category === "projects") {
-          emit.toAdmin("uploadFilesProject", responseData);
+          emit.toAdmin("updateProjectFiles", responseData);
         } else if (category === "production") {
-          emit.toAdmin("uploadFilesProduction", responseData);
-          emit.toProduction("uploadFilesProduction", responseData);
-          emit.toWarehouse("uploadFilesProduction", responseData);
+          emit.toAdmin("updateProductionFiles", responseData);
+          emit.toProduction("updateProductionFiles", responseData);
+          emit.toWarehouse("updateProductionFiles", responseData);
         } else if (category === "installation") {
-          emit.toAdmin("uploadFilesInstallation", responseData);
-          emit.toProduction("uploadFilesInstallation", responseData);
-          emit.toWarehouse("uploadFilesInstallation", responseData);
+          emit.toAdmin("updateInstallationFiles", responseData);
+          emit.toProduction("updateInstallationFiles", responseData);
+          emit.toWarehouse("updateInstallationFiles", responseData);
         }
 
         return response(res, true, responseData, "Failai sėkmingai įkelti");
@@ -108,15 +104,15 @@ export default {
       const responseData = { _id, files: newData.files };
 
       if (category === "projects") {
-        emit.toAdmin("deleteFilesProject", responseData);
+        emit.toAdmin("updateProjectFiles", responseData);
       } else if (category === "production") {
-        emit.toAdmin("deleteFilesProduction", responseData);
-        emit.toProduction("deleteFilesProduction", responseData);
-        emit.toWarehouse("deleteFilesProduction", responseData);
+        emit.toAdmin("updateProductionFiles", responseData);
+        emit.toProduction("updateProductionFiles", responseData);
+        emit.toWarehouse("updateProductionFiles", responseData);
       } else if (category === "installation") {
-        emit.toAdmin("deleteFilesInstallation", responseData);
-        emit.toProduction("deleteFilesInstallation", responseData);
-        emit.toWarehouse("deleteFilesInstallation", responseData);
+        emit.toAdmin("updateInstallationFiles", responseData);
+        emit.toProduction("updateInstallationFiles", responseData);
+        emit.toWarehouse("updateInstallationFiles", responseData);
       }
 
       return response(res, true, responseData, "Failai sėkmingai ištrinti");

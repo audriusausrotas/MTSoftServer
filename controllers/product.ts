@@ -3,6 +3,7 @@ import { Product } from "../data/interfaces";
 import { Request, Response } from "express";
 import response from "../modules/response";
 import emit from "../sockets/emits";
+import { io } from "../sockets/main";
 
 export default {
   //////////////////// get requests ////////////////////////////////////
@@ -98,16 +99,11 @@ export default {
         category,
       };
 
-      const responseData = await productSchema.findByIdAndUpdate(
-        _id,
-        updatedData,
-        {
-          new: true,
-        }
-      );
+      const responseData = await productSchema.findByIdAndUpdate(_id, updatedData, {
+        new: true,
+      });
 
-      if (!responseData)
-        return response(res, false, null, "Produktas neegzistuoja");
+      if (!responseData) return response(res, false, null, "Produktas neegzistuoja");
 
       emit.toAdmin("updateProduct", responseData);
 
@@ -126,8 +122,7 @@ export default {
 
       const doesExist = await productSchema.findOne({ name });
 
-      if (doesExist)
-        return response(res, false, null, "Produktas jau egzistuoja");
+      if (doesExist) return response(res, false, null, "Produktas jau egzistuoja");
 
       const product = new productSchema({
         name,
