@@ -2,52 +2,14 @@ import installationSchema from "../schemas/installationSchema";
 import { MontavimasFence, Project } from "../data/interfaces";
 import projectSchema from "../schemas/projectSchema";
 import { HydratedDocument, Types } from "mongoose";
-import nodemailer from "nodemailer";
 import { Response } from "express";
 
-export async function sendEmail({ to, subject, html, user, attachments }: any) {
-  let fromPass: string = "";
+export default async (_id: Types.ObjectId, worker: string, res: Response) => {
+  const project: HydratedDocument<Project> | null =
+    await projectSchema.findById(_id);
 
-  if (user.email.includes("audrius")) {
-    fromPass = process.env.NODEMAILER_PASS_AUDRIUS!;
-  } else if (user.email.includes("andrius")) {
-    fromPass = process.env.NODEMAILER_PASS_ANDRIUS!;
-  } else if (user.email.includes("pardavimai")) {
-    fromPass = process.env.NODEMAILER_PASS_HARIS!;
-  }
-
-  const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      user: user.email,
-      pass: fromPass,
-    },
-  });
-
-  try {
-    await transporter.sendMail({
-      from: "Moderni Tvora " + user.email,
-      to,
-      subject: subject,
-      html,
-      attachments,
-    });
-    return {
-      success: true,
-      message: "Email sent successfully",
-    };
-  } catch (error: any) {
-    return {
-      success: false,
-      message: "Error: " + error.message,
-    };
-  }
-}
-
-export async function processJob(_id: Types.ObjectId, worker: string, res: Response) {
-  const project: HydratedDocument<Project> | null = await projectSchema.findById(_id);
-
-  if (!project) return { success: false, data: null, message: "Projektas nerastas" };
+  if (!project)
+    return { success: false, data: null, message: "Projektas nerastas" };
 
   const montavimas = await installationSchema.findById(project._id);
 
@@ -64,7 +26,11 @@ export async function processJob(_id: Types.ObjectId, worker: string, res: Respo
 
   if (montavimas) {
     if (montavimas.workers.includes(worker))
-      return { success: false, data: null, message: "Objektas jau montuojamas" };
+      return {
+        success: false,
+        data: null,
+        message: "Objektas jau montuojamas",
+      };
     else {
       montavimas.workers.push(worker);
       const data = await montavimas.save();
@@ -109,6 +75,10 @@ export async function processJob(_id: Types.ObjectId, worker: string, res: Respo
     project.status = "Montuojama";
 
     await project.save();
-    return { success: true, data: newMontavimas, message: "Perduota montavimui" };
+    return {
+      success: true,
+      data: newMontavimas,
+      message: "Perduota montavimui",
+    };
   }
-}
+};

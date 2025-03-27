@@ -1,6 +1,6 @@
 import { Job, Schedule } from "../data/interfaces";
 import scheduleSchema from "../schemas/scheduleSchema";
-import { processJob } from "../modules/helpers";
+import processJob from "../modules/processJob";
 import userSchema from "../schemas/userSchema";
 import { Request, Response } from "express";
 import { HydratedDocument } from "mongoose";

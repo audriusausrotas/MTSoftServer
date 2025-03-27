@@ -243,7 +243,7 @@ export default {
 
       const responseData = { _id, location };
 
-      emit.toAdmin("archiveDeleted", responseData);
+      emit.toAdmin("restoreArchive", responseData);
 
       return response(
         res,

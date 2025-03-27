@@ -7,7 +7,8 @@ import deletedSchema from "../schemas/deletedSchema";
 import projectSchema from "../schemas/projectSchema";
 import backupSchema from "../schemas/backupSchema";
 import bonusSchema from "../schemas/bonusSchema";
-import { sendEmail } from "../modules/helpers";
+import generateHTML from "../modules/generateHTML";
+import sendEmail from "../modules/sendEmail";
 import userSchema from "../schemas/userSchema";
 import { Project } from "../data/interfaces";
 import { HydratedDocument } from "mongoose";
@@ -21,7 +22,8 @@ export default {
   getProjects: async (req: Request, res: Response) => {
     try {
       const projects = await projectSchema.find();
-      if (!projects.length) return response(res, false, null, "Projektai nerasti");
+      if (!projects.length)
+        return response(res, false, null, "Projektai nerasti");
 
       projects.reverse();
       return response(res, true, projects, "Prisijungimas sėkmingas");
@@ -49,10 +51,13 @@ export default {
 
       const deletedProject = new deletedSchema({ ...projectData });
       const deletedData = await deletedProject.save();
-      if (!deletedData) return response(res, false, null, "Klaida trinant projektą");
+      if (!deletedData)
+        return response(res, false, null, "Klaida trinant projektą");
 
       await projectSchema.findByIdAndDelete(_id);
       await montavimasSchema.findByIdAndDelete(_id);
+
+      emit.toAdmin("deleteProject", { _id });
 
       return response(res, true, null, "Projektas ištrintas");
     } catch (error) {
@@ -69,7 +74,10 @@ export default {
       const currentDate = new Date();
 
       const deletionPromises = projects.map(async (project) => {
-        if (project.status === "Nepatvirtintas" || project.status === "Netinkamas") {
+        if (
+          project.status === "Nepatvirtintas" ||
+          project.status === "Netinkamas"
+        ) {
           const expirationDate = new Date(project.dateExparation);
 
           if (currentDate > expirationDate) {
@@ -110,9 +118,15 @@ export default {
         (version) => version.id.toString() !== _id.toString()
       );
 
-      const newProject = await project.save();
+      const data = await project.save();
 
-      return response(res, true, newProject, "Versija ištrinta");
+      if (!data) return response(res, false, null, "Klaida saugant projektą");
+
+      const responseData = { _id, projectId };
+
+      emit.toAdmin("deleteProjectVersion", responseData);
+
+      return response(res, true, responseData, "Versija ištrinta");
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");
@@ -138,7 +152,13 @@ export default {
 
       const data = await project.save();
 
-      return response(res, true, data, "Avansas atnaujintas");
+      if (!data) return response(res, false, null, "Klaida saugant projektą");
+
+      const responseData = { _id, value: advance };
+
+      emit.toAdmin("updateProjectAdvance", responseData);
+
+      return response(res, true, responseData, "Avansas atnaujintas");
     } catch (error) {
       console.error("Klaida atnaujinant projektą:", error);
       return response(res, false, null, "Serverio klaida");
@@ -158,7 +178,13 @@ export default {
       project.creator = newUser!;
       const data = await project.save();
 
-      return response(res, true, data, "Atsakingas amuo pakeistas");
+      if (!data) return response(res, false, null, "Klaida saugant projektą");
+
+      const responseData = { _id, user: newUser };
+
+      emit.toAdmin("updateProjectManager", responseData);
+
+      return response(res, true, responseData, "Atsakingas amuo pakeistas");
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");
@@ -169,7 +195,8 @@ export default {
     try {
       const { _id } = req.params;
 
-      const project: HydratedDocument<Project> | null = await projectSchema.findById(_id);
+      const project: HydratedDocument<Project> | null =
+        await projectSchema.findById(_id);
 
       if (!project) return response(res, false, null, "Projektas nerastas");
 
@@ -182,7 +209,13 @@ export default {
 
       const data = await project.save();
 
-      return response(res, true, data, "Galiojimo laikas pratęstas");
+      if (!data) return response(res, false, null, "Klaida saugant projektą");
+
+      const responseData = { _id, dateExparation };
+
+      emit.toAdmin("updateProjectExparationDate", responseData);
+
+      return response(res, true, responseData, "Galiojimo laikas pratęstas");
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");
@@ -199,7 +232,8 @@ export default {
 
       const rollbackVersion = await versionsSchema.findById(_id);
 
-      if (!rollbackVersion) return response(res, false, null, "Projektas nerastas");
+      if (!rollbackVersion)
+        return response(res, false, null, "Projektas nerastas");
 
       rollbackVersion.versions = [...project.versions];
 
@@ -222,7 +256,13 @@ export default {
 
       const data = await project.save();
 
-      return response(res, true, data, "Failai sėkmingai įkelti");
+      if (!data) return response(res, false, null, "Klaida saugant projektą");
+
+      const responseData = { _id, files };
+
+      emit.toAdmin("updateProjectAddFiles", responseData);
+
+      return response(res, true, responseData, "Failai sėkmingai įkelti");
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");
@@ -252,195 +292,7 @@ export default {
       }
 
       if (value === "Apmokėjimas") {
-        let comments = project.comments
-          .map(
-            (comment) => `
-        <tr>
-          <td>${comment.date.slice(0, 16).replace("T", " ")}</td>
-          <td>${comment.creator}</td>
-          <td>${comment.comment}</td>
-    
-    
-        </tr>`
-          )
-          .join("");
-
-        let materialsList = project.results
-          .map(
-            (result) => `
-        <tr>
-          <td>${result.type}</td>
-          <td>${result.color}</td>
-          <td>${result.quantity}</td>
-          <td>${result.cost} €</td>
-          <td>${result.price} €</td>
-          <td>${result.totalCost} €</td>
-          <td>${result.totalPrice} €</td>
-        </tr>`
-          )
-          .join("");
-
-        let workList = project.works
-          .map(
-            (result) => `
-        <tr>
-          <td>${result.name}</td>
-          <td>${result.quantity}</td>
-          <td>${result.cost} €</td>
-          <td>${result.price} €</td>
-          <td>${result.totalCost} €</td>
-          <td>${result.totalPrice} €</td>
-        </tr>`
-          )
-          .join("");
-
-        let html = `
-      <html>
-      <head>
-        <style>
-          body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            padding: 20px;
-          }
-          h2 {
-            color: #333;
-          }
-          .section-title {
-            font-size: 18px;
-            font-weight: bold;
-            margin-bottom: 8px;
-          }
-          .info-table, .finance-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-          }
-          .info-table th, .info-table td,
-          .finance-table th, .finance-table td {
-            padding: 10px;
-            border: 1px solid #ddd;
-            text-align: left;
-          }
-          .info-table th, .finance-table th {
-            background-color: #f4f4f4;
-            font-weight: bold;
-          }
-          .highlight {
-            font-weight: bold;
-            color: #2c3e50;
-          }
-        </style>
-      </head>
-      <body>
-        
-        <h2>Baigtas objektas</h2>
-    
-        <table class="info-table">
-          <tr>
-            <th>Klientas</th>
-            <td>${project.client.username}</td>
-          </tr>
-          <tr>
-            <th>Adresas</th>
-            <td>${project.client.address}</td>
-          </tr>
-          <tr>
-            <th>Telefono numeris</th>
-            <td>${project.client.phone}</td>
-          </tr>
-          <tr>
-            <th>Elektroninio pašto adresas</th>
-            <td>${project.client.email}</td>
-          </tr>
-          <tr>
-            <th>Objektą administravo</th>
-            <td>${project.creator.username}</td>
-          </tr>
-        </table>
-    
-        <h2>Komentarai</h2>
-        <table class="info-table">
-          <thead>
-            <tr>
-              <th>Data</th>
-              <th>Autorius</th>
-              <th>Komentaras</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${comments}
-          </tbody>
-        </table>
-    
-        <h2>Medžiagos</h2>
-        <table class="info-table">
-          <thead>
-            <tr>
-              <th>Pavadinimas</th>
-              <th>Spalva</th>
-              <th>Kiekis</th>
-              <th>Savikaina</th>
-              <th>Kaina</th>
-              <th>Savikaina viso</th>
-              <th>Kaina viso</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${materialsList}
-          </tbody>
-        </table>
-    
-        <h2>Darbai</h2>
-        <table class="info-table">
-          <thead>
-            <tr>
-              <th>Pavadinimas</th>
-              <th>Kiekis</th>
-              <th>Savikaina</th>
-              <th>Kaina</th>
-              <th>Savikaina viso</th>
-              <th>Kaina viso</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${workList}
-          </tbody>
-        </table>
-    
-        <h2>Finansinė informacija</h2>
-        <table class="finance-table">
-          <tr>
-            <th>Projekto savikaina</th>
-            <td class="highlight">${project.totalCost} €</td>
-          </tr>
-          <tr>
-            <th>Projekto Kaina</th>
-            <td class="highlight">${project.totalPrice} €</td>
-          </tr>
-          <tr>
-            <th>Paliktas avansas</th>
-            <td class="highlight">${project.advance} €</td>
-          </tr>
-          <tr>
-            <th>Galutinė kaina klientui</th>
-            <td class="highlight">${
-              project.discount ? project.priceWithDiscount : project.priceVAT
-            } €</td>
-          </tr>
-          <tr>
-            <th>Atsiskaityti likę</th>
-            <td class="highlight">${
-              project.discount
-                ? project.priceWithDiscount - project.advance
-                : project.priceVAT - project.advance
-            } €</td>
-          </tr>
-        </table>
-    
-      </body>
-      </html>
-    `;
+        const html = generateHTML(project);
 
         const emailResult = await sendEmail({
           to: "vaida@modernitvora.lt",
@@ -468,11 +320,18 @@ export default {
           });
 
           const bonusData = await bonus.save();
-          if (!bonusData) return response(res, true, null, "Klaida išsaugant bonusus");
+          if (!bonusData)
+            return response(res, true, null, "Klaida išsaugant bonusus");
         }
       }
 
-      return response(res, true, data, "Būsena atnaujinta");
+      const responseData = { _id, status: value };
+
+      emit.toAdmin("changeProjectStatus", responseData);
+
+      if (value === "Baigtas") emit.toAdmin("finishProject", { _id });
+
+      return response(res, true, responseData, "Būsena atnaujinta");
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");
@@ -507,7 +366,8 @@ export default {
 
       const orderExist = await projectSchema.findById(_id);
 
-      if (!orderExist) return { success: false, data: null, message: "Projektas nerastas" };
+      if (!orderExist)
+        return { success: false, data: null, message: "Projektas nerastas" };
 
       const versionObject: Project = orderExist.toObject();
       delete versionObject._id;
@@ -515,7 +375,8 @@ export default {
       const newVersion = new versionsSchema(versionObject);
       const version = await newVersion.save();
 
-      if (!version) return response(res, false, null, "Klaida išsaugant versiją");
+      if (!version)
+        return response(res, false, null, "Klaida išsaugant versiją");
 
       orderExist.versions?.push({
         id: version._id,
@@ -537,8 +398,11 @@ export default {
       orderExist.dateExparation = dateExparation;
       orderExist.retail = retail;
 
-      const data = await orderExist.save();
-      return response(res, true, data, "Projektas išsaugotas");
+      const responseData = await orderExist.save();
+
+      emit.toAdmin("updateProject", responseData);
+
+      return response(res, true, responseData, "Projektas išsaugotas");
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");
@@ -582,7 +446,9 @@ export default {
 
       if (_id) projectExist = await projectSchema.findById(_id);
 
-      const creatorUsername = projectExist ? projectExist.creator.username : creator.username;
+      const creatorUsername = projectExist
+        ? projectExist.creator.username
+        : creator.username;
 
       const currentDate = new Date();
 
@@ -612,7 +478,8 @@ export default {
           (a, b) => extractOrderNumber(a) - extractOrderNumber(b)
         );
 
-        let lastOrder = sortedOrderNumbers[sortedOrderNumbers.length - 1]?.orderNumber;
+        let lastOrder =
+          sortedOrderNumbers[sortedOrderNumbers.length - 1]?.orderNumber;
 
         let orderNumbers = +lastOrder.split("-")[1];
         orderNumbers++;
@@ -662,9 +529,11 @@ export default {
           retail,
         });
 
-        const data = await project.save();
+        const responseData = await project.save();
 
-        return response(res, true, data, "Projektas išsaugotas");
+        emit.toAdmin("newProject", responseData);
+
+        return response(res, true, responseData, "Projektas išsaugotas");
       }
     } catch (error) {
       console.error("Klaida gaunant projektą:", error);

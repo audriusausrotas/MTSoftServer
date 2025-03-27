@@ -325,7 +325,15 @@ export default {
 
       const data = await project.save();
 
-      return response(res, true, data, "issaugota");
+      if (!data) return response(res, false, null, "Klaida išsaugant duomenis");
+
+      const responseData = { _id, index, newMeasure };
+
+      emit.toAdmin("newProduction", responseData);
+      emit.toProduction("newProduction", responseData);
+      emit.toWarehouse("newProduction", responseData);
+
+      return response(res, true, responseData, "issaugota");
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");
@@ -588,15 +596,23 @@ export default {
           status: "Negaminti",
         });
 
-        const data = await newGamyba.save();
+        const responseData = await newGamyba.save();
 
-        if (!data) return response(res, false, null, "Įvyko klaida");
+        if (!responseData) return response(res, false, null, "Įvyko klaida");
 
-        project.status = "Gaminama";
+        const status = "Gaminama";
+
+        project.status = status;
 
         await project.save();
 
-        return response(res, true, data, "Perduota gamybai");
+        emit.toAdmin("newProduction", responseData);
+        emit.toProduction("newProduction", responseData);
+        emit.toWarehouse("newProduction", responseData);
+
+        emit.toAdmin("changeProjectStatus", { status });
+
+        return response(res, true, responseData, "Perduota gamybai");
       }
     } catch (error) {
       console.error("Klaida:", error);

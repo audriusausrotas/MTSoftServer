@@ -25,23 +25,39 @@ export default {
 
         const { category, _id } = req.body;
 
-        let data;
+        let project;
+
+        if (category === "projects")
+          project = await projectSchema.findById(_id);
+        else if (category === "production")
+          project = await productionSchema.findById(_id);
+        else if (category === "installation")
+          project = await installationSchema.findById(_id);
+
+        if (!project)
+          return response(res, false, null, "Klaida įkeliant failus");
+
+        project.files = [...(project.files || []), ...filePaths];
+
+        const newData = await project?.save();
+
+        if (!newData) response(res, false, null, "Klaida saugant duomenis");
+
+        const responseData = { _id, files: filePaths };
 
         if (category === "projects") {
-          data = await projectSchema.findById(_id);
+          emit.toAdmin("uploadFilesProject", responseData);
         } else if (category === "production") {
-          data = await productionSchema.findById(_id);
+          emit.toAdmin("uploadFilesProduction", responseData);
+          emit.toProduction("uploadFilesProduction", responseData);
+          emit.toWarehouse("uploadFilesProduction", responseData);
         } else if (category === "installation") {
-          data = await installationSchema.findById(_id);
+          emit.toAdmin("uploadFilesInstallation", responseData);
+          emit.toProduction("uploadFilesInstallation", responseData);
+          emit.toWarehouse("uploadFilesInstallation", responseData);
         }
 
-        if (!data) return response(res, false, null, "Klaida įkeliant failus");
-
-        data.files = [...(data.files || []), ...filePaths];
-
-        const newData = await data?.save();
-
-        return response(res, true, newData, "Failai sėkmingai įkelti");
+        return response(res, true, responseData, "Failai sėkmingai įkelti");
       } catch (error) {
         console.log("Klaida", error);
         return response(res, false, null, "Serverio klaida");
@@ -66,7 +82,7 @@ export default {
       if (!data) return response(res, false, null, "Serverio klaida");
 
       if (!files || !Array.isArray(files) || files.length === 0) {
-        return response(res, false, null, "Nurodykite failus, kuriuos norite ištrinti.");
+        return response(res, false, null, "Nepasirinkti failai");
       }
 
       const deletePromises = files.map((filePath: string) => {
@@ -89,7 +105,21 @@ export default {
 
       const newData = await data.save();
 
-      return response(res, true, newData, "Failai sėkmingai ištrinti");
+      const responseData = { _id, files: newData.files };
+
+      if (category === "projects") {
+        emit.toAdmin("deleteFilesProject", responseData);
+      } else if (category === "production") {
+        emit.toAdmin("deleteFilesProduction", responseData);
+        emit.toProduction("deleteFilesProduction", responseData);
+        emit.toWarehouse("deleteFilesProduction", responseData);
+      } else if (category === "installation") {
+        emit.toAdmin("deleteFilesInstallation", responseData);
+        emit.toProduction("deleteFilesInstallation", responseData);
+        emit.toWarehouse("deleteFilesInstallation", responseData);
+      }
+
+      return response(res, true, responseData, "Failai sėkmingai ištrinti");
     } catch (error) {
       console.log("Klaida", error);
       return response(res, false, null, "Serverio klaida");

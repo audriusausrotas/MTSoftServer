@@ -1,6 +1,6 @@
 import installationSchema from "../schemas/installationSchema";
 import { Montavimas } from "../data/interfaces";
-import { processJob } from "../modules/helpers";
+import processJob from "../modules/processJob";
 import { Request, Response } from "express";
 import response from "../modules/response";
 import emit from "../sockets/emits";
@@ -113,9 +113,9 @@ export default {
 
       const responseData = { _id, index, measureIndex, value };
 
-      emit.toAdmin("installationUpdatePostone", responseData);
-      emit.toWarehouse("installationUpdatePostone", responseData);
-      emit.toInstallation("installationUpdatePostone", responseData);
+      emit.toAdmin("updateInstallationPostone", responseData);
+      emit.toWarehouse("updateInstallationPostone", responseData);
+      emit.toInstallation("updateInstallationPostone", responseData);
 
       return response(res, true, responseData, "Išsaugota");
     } catch (error) {
@@ -138,9 +138,9 @@ export default {
 
       const responseData = { _id, index, measureIndex, value };
 
-      emit.toAdmin("installationUpdateDone", responseData);
-      emit.toWarehouse("installationUpdateDone", responseData);
-      emit.toInstallation("installationUpdateDone", responseData);
+      emit.toAdmin("updateInstallationDone", responseData);
+      emit.toWarehouse("updateInstallationDone", responseData);
+      emit.toInstallation("updateInstallationDone", responseData);
 
       return response(res, true, responseData, "Išsaugota");
     } catch (error) {
@@ -164,9 +164,9 @@ export default {
 
       const responseData = { _id, status };
 
-      emit.toAdmin("installationUpdateStatus", responseData);
-      emit.toWarehouse("installationUpdateStatus", responseData);
-      emit.toInstallation("installationUpdateStatus", responseData);
+      emit.toAdmin("updateInstallationStatus", responseData);
+      emit.toWarehouse("updateInstallationStatus", responseData);
+      emit.toInstallation("updateInstallationStatus", responseData);
 
       return response(res, true, responseData, "Statusas pakeistas");
     } catch (error) {

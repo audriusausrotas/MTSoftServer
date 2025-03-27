@@ -16,16 +16,24 @@ export default {
     try {
       const { _id, comment } = req.body;
 
-      const data = await productionSchema.findOne(_id);
+      const project = await productionSchema.findOne(_id);
 
-      if (!data) return response(res, false, null, "Projektas nerastas");
+      if (!project) return response(res, false, null, "Projektas nerastas");
 
-      data.aditional = data.aditional.filter(
+      project.aditional = project.aditional.filter(
         (item) => item.date !== comment.date && item.comment !== comment.comment
       );
 
-      await data.save();
-      return response(res, true, data, "Komentaras ištrintas");
+      const data = await project.save();
+      if (!data) return response(res, false, null, "Klaida trinant komentarą");
+
+      const responseData = { _id, comment };
+
+      emit.toAdmin("deleteProductionComment", responseData);
+      emit.toInstallation("deleteProductionComment", responseData);
+      emit.toWarehouse("deleteProductionComment", responseData);
+
+      return response(res, true, responseData, "Komentaras ištrintas");
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");
@@ -36,17 +44,24 @@ export default {
     try {
       const { _id, comment } = req.body;
 
-      const data = await installationSchema.findById(_id);
+      const project = await installationSchema.findById(_id);
 
-      if (!data) return response(res, false, null, "užsakymas nerastas");
+      if (!project) return response(res, false, null, "užsakymas nerastas");
 
-      data.aditional = data.aditional.filter(
+      project.aditional = project.aditional.filter(
         (item) => item.date !== comment.date && item.comment !== comment.comment
       );
 
-      await data.save();
+      const data = await project.save();
+      if (!data) return response(res, false, null, "Klaida trinant komentarą");
 
-      return response(res, true, data, "Komentaras ištrintas");
+      const responseData = { _id, comment };
+
+      emit.toAdmin("deleteInstallationComment", responseData);
+      emit.toInstallation("deleteInstallationComment", responseData);
+      emit.toWarehouse("deleteInstallationComment", responseData);
+
+      return response(res, true, responseData, "Komentaras ištrintas");
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");
@@ -57,17 +72,25 @@ export default {
     try {
       const { _id, comment } = req.body;
 
-      const data = await projectSchema.findById(_id);
+      const project = await projectSchema.findById(_id);
 
-      if (!data) return { success: false, data: null, message: "užsakymas nerastas" };
+      if (!project)
+        return { success: false, project: null, message: "užsakymas nerastas" };
 
-      data.comments = data.comments.filter(
+      project.comments = project.comments.filter(
         (item) => item.date !== comment.date && item.comment !== comment.comment
       );
 
-      await data.save();
+      const data = await project.save();
+      if (!data) return response(res, false, null, "Klaida trinant komentarą");
 
-      return response(res, true, data, "Komentaras ištrintas");
+      const responseData = { _id, comment };
+
+      emit.toAdmin("deleteProjectComment", responseData);
+      emit.toInstallation("deleteProjectComment", responseData);
+      emit.toWarehouse("deleteProjectComment", responseData);
+
+      return response(res, true, responseData, "Komentaras ištrintas");
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");
@@ -83,9 +106,10 @@ export default {
 
       const user = res.locals.user;
 
-      const data: HydratedDocument<Gamyba> | null = await productionSchema.findById(_id);
+      const project: HydratedDocument<Gamyba> | null =
+        await productionSchema.findById(_id);
 
-      if (!data) return response(res, false, null, "Projektas nerastas");
+      if (!project) return response(res, false, null, "Projektas nerastas");
 
       const newComment: Comment = {
         comment,
@@ -93,10 +117,18 @@ export default {
         creator: user.username,
       };
 
-      data.aditional.unshift(newComment);
+      project.aditional.unshift(newComment);
 
-      await data.save();
-      return response(res, true, data, "komentaras išsaugotas");
+      const data = await project.save();
+      if (!data) return response(res, false, null, "Klaida saugant komentarą");
+
+      const responseData = { _id, comment };
+
+      emit.toAdmin("newProductionComment", responseData);
+      emit.toInstallation("newProductionComment", responseData);
+      emit.toWarehouse("newProductionComment", responseData);
+
+      return response(res, true, responseData, "komentaras išsaugotas");
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");
@@ -109,9 +141,10 @@ export default {
 
       const user = res.locals.user;
 
-      const data: HydratedDocument<Montavimas> | null = await installationSchema.findById(_id);
+      const project: HydratedDocument<Montavimas> | null =
+        await installationSchema.findById(_id);
 
-      if (!data) return response(res, false, null, "Montavimas nerastas");
+      if (!project) return response(res, false, null, "Montavimas nerastas");
 
       const newComment: Comment = {
         comment,
@@ -119,11 +152,20 @@ export default {
         creator: user.username,
       };
 
-      data.aditional.unshift(newComment);
+      project.aditional.unshift(newComment);
 
-      await data.save();
+      await project.save();
 
-      return response(res, true, data, "Komentaras išsaugotas");
+      const data = await project.save();
+      if (!data) return response(res, false, null, "Klaida saugant komentarą");
+
+      const responseData = { _id, comment };
+
+      emit.toAdmin("newInstallationComment", responseData);
+      emit.toInstallation("newInstallationComment", responseData);
+      emit.toWarehouse("newInstallationComment", responseData);
+
+      return response(res, true, responseData, "Komentaras išsaugotas");
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");
@@ -136,9 +178,10 @@ export default {
 
       const user = res.locals.user;
 
-      const data: HydratedDocument<Project> | null = await projectSchema.findById(_id);
+      const project: HydratedDocument<Project> | null =
+        await projectSchema.findById(_id);
 
-      if (!data) return response(res, false, null, "Projektas nerastas");
+      if (!project) return response(res, false, null, "Projektas nerastas");
 
       const newComment: Comment = {
         comment,
@@ -146,11 +189,18 @@ export default {
         creator: user.username,
       };
 
-      data.comments.unshift(newComment);
+      project.comments.unshift(newComment);
 
-      const savedData = await data.save();
+      const data = await project.save();
+      if (!data) return response(res, false, null, "Klaida saugant komentarą");
 
-      return response(res, true, savedData, "Komentaras išsaugotas");
+      const responseData = { _id, comment };
+
+      emit.toAdmin("newProjectComment", responseData);
+      emit.toInstallation("newProjectComment", responseData);
+      emit.toWarehouse("newProjectComment", responseData);
+
+      return response(res, true, responseData, "Komentaras išsaugotas");
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");
