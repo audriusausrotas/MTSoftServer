@@ -1,19 +1,17 @@
 import installationSchema from "../schemas/installationSchema";
-import { MontavimasFence, Project } from "../data/interfaces";
+import { InstallationFence, Project } from "../data/interfaces";
 import projectSchema from "../schemas/projectSchema";
 import { HydratedDocument, Types } from "mongoose";
 import { Response } from "express";
 
 export default async (_id: Types.ObjectId, worker: string, res: Response) => {
-  const project: HydratedDocument<Project> | null =
-    await projectSchema.findById(_id);
+  const project: HydratedDocument<Project> | null = await projectSchema.findById(_id);
 
-  if (!project)
-    return { success: false, data: null, message: "Projektas nerastas" };
+  if (!project) return { success: false, data: null, message: "Projektas nerastas" };
 
-  const montavimas = await installationSchema.findById(project._id);
+  const installation = await installationSchema.findById(project._id);
 
-  const newFences: MontavimasFence[] = project.fenceMeasures.map((item) => {
+  const newFences: InstallationFence[] = project.fenceMeasures.map((item) => {
     return {
       ...item,
       measures: item.measures.map((measure) => ({
@@ -24,16 +22,16 @@ export default async (_id: Types.ObjectId, worker: string, res: Response) => {
     };
   });
 
-  if (montavimas) {
-    if (montavimas.workers.includes(worker))
+  if (installation) {
+    if (installation.workers.includes(worker))
       return {
         success: false,
         data: null,
         message: "Objektas jau montuojamas",
       };
     else {
-      montavimas.workers.push(worker);
-      const data = await montavimas.save();
+      installation.workers.push(worker);
+      const data = await installation.save();
       return { success: true, data, message: "Montavimas priskirtas" };
     }
   } else {
@@ -57,7 +55,7 @@ export default async (_id: Types.ObjectId, worker: string, res: Response) => {
       };
     });
 
-    const newMontavimas = new installationSchema({
+    const newInstallation = new installationSchema({
       _id: project._id?.toString(),
       creator: { ...project.creator },
       client: { ...project.client },
@@ -65,11 +63,11 @@ export default async (_id: Types.ObjectId, worker: string, res: Response) => {
       fences: newFences,
       results: newResults,
       works: newWorks,
-      aditional: [],
+      comments: [],
       workers: [worker],
     });
 
-    const data = await newMontavimas.save();
+    const data = await newInstallation.save();
     if (!data) return { success: false, data: null, message: "Įvyko klaida" };
 
     project.status = "Montuojama";
@@ -77,7 +75,7 @@ export default async (_id: Types.ObjectId, worker: string, res: Response) => {
     await project.save();
     return {
       success: true,
-      data: newMontavimas,
+      data: newInstallation,
       message: "Perduota montavimui",
     };
   }

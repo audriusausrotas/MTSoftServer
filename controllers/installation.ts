@@ -1,5 +1,5 @@
 import installationSchema from "../schemas/installationSchema";
-import { Montavimas } from "../data/interfaces";
+import { Installation } from "../data/interfaces";
 import processJob from "../modules/processJob";
 import { Request, Response } from "express";
 import response from "../modules/response";
@@ -10,7 +10,7 @@ export default {
 
   getWorks: async (req: Request, res: Response) => {
     try {
-      const data: Montavimas[] = await installationSchema.find();
+      const data: Installation[] = await installationSchema.find();
 
       if (!data) return response(res, false, null, "Montavimo nėra");
 
@@ -153,12 +153,11 @@ export default {
     try {
       const { _id, status } = req.body;
 
-      const data: Montavimas | null =
-        await installationSchema.findByIdAndUpdate(
-          _id,
-          { $set: { status: status } },
-          { new: true }
-        );
+      const data: Installation | null = await installationSchema.findByIdAndUpdate(
+        _id,
+        { $set: { status: status } },
+        { new: true }
+      );
 
       if (!data) return response(res, false, null, "Įvyko klaida");
 

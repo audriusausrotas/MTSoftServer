@@ -1,7 +1,7 @@
 import deleteProjectVersions from "../modules/deleteProjectVersions";
 import deleteVersions from "../modules/deleteProjectVersions";
 import unconfirmedSchema from "../schemas/unconfirmedSchema";
-import montavimasSchema from "../schemas/installationSchema";
+import installationSchema from "../schemas/installationSchema";
 import versionsSchema from "../schemas/versionsSchema";
 import deletedSchema from "../schemas/deletedSchema";
 import projectSchema from "../schemas/projectSchema";
@@ -55,7 +55,7 @@ export default {
         return response(res, false, null, "Klaida trinant projektą");
 
       await projectSchema.findByIdAndDelete(_id);
-      await montavimasSchema.findByIdAndDelete(_id);
+      await installationSchema.findByIdAndDelete(_id);
 
       emit.toAdmin("deleteProject", { _id });
 

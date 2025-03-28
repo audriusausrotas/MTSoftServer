@@ -62,7 +62,7 @@ export interface Fence {
   seeThrough: string;
   direction: string;
   parts: string;
-  aditional: string;
+  comment: string;
   twoSided: string;
   bindings: string;
   anchoredPoles: string;
@@ -82,7 +82,7 @@ export interface Measure {
   kampas: {
     exist: boolean;
     value: number;
-    aditional: string;
+    comment: string;
   };
   laiptas: {
     exist: boolean;
@@ -112,7 +112,7 @@ export interface Result {
   width: number | null;
 }
 
-export interface MontavimasResult {
+export interface InstallationResult {
   type: string;
   category: string;
   quantity: number;
@@ -165,7 +165,7 @@ export interface Gate {
   bankette: string;
   direction: string;
   lock: string;
-  aditional: string;
+  comment: string;
   option: string;
 }
 
@@ -192,7 +192,7 @@ export interface GateInfo {
   exist: boolean;
   type: string;
   automatics: string;
-  aditional: string;
+  comment: string;
   direction: string;
   lock: string;
   bankette: string;
@@ -285,7 +285,7 @@ export interface Works {
   isNew: boolean;
 }
 
-export interface MontavimasWorks {
+export interface InstallationWorks {
   name: string;
   quantity: number;
   delivered: boolean;
@@ -331,21 +331,21 @@ export interface FenceMeasure {
   seeThrough: number[];
 }
 
-export interface Montavimas {
+export interface Installation {
   _id: Types.ObjectId;
   client: Client;
   creator: Creator;
   orderNumber: string;
   workers: string[];
   status: string;
-  fences: GamybaFence[];
-  results: MontavimasResult[];
-  works: MontavimasWorks[];
-  aditional: Comment[];
+  fences: ProdutionFence[];
+  results: InstallationResult[];
+  works: InstallationWorks[];
+  comments: Comment[];
   files: string[];
 }
 
-export interface MontavimasMeasure {
+export interface InstallationMeasure {
   length: number;
   height: number;
   MeasureSpace: number;
@@ -356,7 +356,7 @@ export interface MontavimasMeasure {
   kampas: {
     exist: boolean;
     value: number;
-    aditional: string;
+    comment: string;
   };
   laiptas: {
     exist: boolean;
@@ -365,19 +365,19 @@ export interface MontavimasMeasure {
   };
 }
 
-export interface Gamyba {
+export interface Prodution {
   _id: Types.ObjectId;
   client: Client;
   creator: Creator;
   orderNumber: string;
   status: string;
-  fences: GamybaFence[];
+  fences: ProdutionFence[];
   bindings: Bindings[] | null;
-  aditional: Comment[];
+  comments: Comment[];
   files: string[];
 }
 
-export interface MontavimasFence {
+export interface InstallationFence {
   id: string;
   side: string;
   type: string;
@@ -387,7 +387,7 @@ export interface MontavimasFence {
   seeThrough: string;
   direction: string;
   parts: string;
-  aditional: string;
+  comment: string;
   twoSided: string;
   bindings: string;
   anchoredPoles: string;
@@ -395,10 +395,10 @@ export interface MontavimasFence {
   elements: number;
   totalLength: number;
   totalQuantity: number;
-  measures: MontavimasMeasure[];
+  measures: InstallationMeasure[];
 }
 
-export interface GamybaFence {
+export interface ProdutionFence {
   id: string;
   side: string;
   type: string;
@@ -408,7 +408,7 @@ export interface GamybaFence {
   seeThrough: string;
   direction: string;
   parts: string;
-  aditional: string;
+  comment: string;
   twoSided: string;
   bindings: string;
   anchoredPoles: string;
@@ -416,10 +416,10 @@ export interface GamybaFence {
   elements: number;
   totalLength: number;
   totalQuantity: number;
-  measures: GamybaMeasure[];
+  measures: ProdutionMeasure[];
 }
 
-export interface GamybaMeasure {
+export interface ProdutionMeasure {
   length: number;
   height: number;
   MeasureSpace: number;
@@ -431,7 +431,7 @@ export interface GamybaMeasure {
   kampas: {
     exist: boolean;
     value: number;
-    aditional: string;
+    comment: string;
   };
   laiptas: {
     exist: boolean;

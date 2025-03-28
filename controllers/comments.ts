@@ -1,4 +1,4 @@
-import { Comment, Gamyba, Montavimas, Project } from "../data/interfaces";
+import { Comment, Prodution, Installation, Project } from "../data/interfaces";
 import installationSchema from "../schemas/installationSchema";
 import productionSchema from "../schemas/productionSchema";
 import projectSchema from "../schemas/projectSchema";
@@ -20,7 +20,7 @@ export default {
 
       if (!project) return response(res, false, null, "Projektas nerastas");
 
-      project.aditional = project.aditional.filter(
+      project.comments = project.comments.filter(
         (item) => item.date !== comment.date && item.comment !== comment.comment
       );
 
@@ -48,7 +48,7 @@ export default {
 
       if (!project) return response(res, false, null, "užsakymas nerastas");
 
-      project.aditional = project.aditional.filter(
+      project.comments = project.comments.filter(
         (item) => item.date !== comment.date && item.comment !== comment.comment
       );
 
@@ -105,7 +105,7 @@ export default {
 
       const user = res.locals.user;
 
-      const project: HydratedDocument<Gamyba> | null = await productionSchema.findById(_id);
+      const project: HydratedDocument<Prodution> | null = await productionSchema.findById(_id);
 
       if (!project) return response(res, false, null, "Projektas nerastas");
 
@@ -115,7 +115,7 @@ export default {
         creator: user.username,
       };
 
-      project.aditional.unshift(newComment);
+      project.comments.unshift(newComment);
 
       const data = await project.save();
       if (!data) return response(res, false, null, "Klaida saugant komentarą");
@@ -139,7 +139,7 @@ export default {
 
       const user = res.locals.user;
 
-      const project: HydratedDocument<Montavimas> | null = await installationSchema.findById(_id);
+      const project: HydratedDocument<Installation> | null = await installationSchema.findById(_id);
 
       if (!project) return response(res, false, null, "Montavimas nerastas");
 
@@ -149,7 +149,7 @@ export default {
         creator: user.username,
       };
 
-      project.aditional.unshift(newComment);
+      project.comments.unshift(newComment);
 
       await project.save();
 

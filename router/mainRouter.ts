@@ -140,7 +140,7 @@ router.patch("/updateMeasure", checkAdmin, production.updateMeasure);
 router.patch("/updateProductionStatus", checkUser, production.updateStatus);
 
 router.post("/newProduction/:_id", checkUser, production.newProduction);
-router.post("/addNewGamyba", checkUser, production.addNewGamyba);
+router.post("/addNewProdution", checkUser, production.addNewProdution);
 router.post("/addBinding/:_id", checkAdmin, production.addBinding);
 router.post("/addMeasure", checkAdmin, production.addMeasure);
 

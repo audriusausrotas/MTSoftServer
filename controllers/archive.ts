@@ -1,6 +1,6 @@
 import deleteVersions from "../modules/deleteProjectVersions";
 import unconfirmedSchema from "../schemas/unconfirmedSchema";
-import montavimasSchema from "../schemas/installationSchema";
+import installationSchema from "../schemas/installationSchema";
 import deletedSchema from "../schemas/deletedSchema";
 import projectSchema from "../schemas/projectSchema";
 import archiveSchema from "../schemas/archiveSchema";
@@ -219,8 +219,7 @@ export default {
 
       const archivedProject = await schema.findById(_id);
 
-      if (!archivedProject)
-        return response(res, false, null, "Projektas nerastas");
+      if (!archivedProject) return response(res, false, null, "Projektas nerastas");
 
       const currentDate = new Date();
       let expirationDate = new Date(currentDate);
@@ -245,12 +244,7 @@ export default {
 
       emit.toAdmin("restoreArchive", responseData);
 
-      return response(
-        res,
-        true,
-        responseData,
-        "Projektas perkeltas į projektus"
-      );
+      return response(res, true, responseData, "Projektas perkeltas į projektus");
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");
@@ -282,9 +276,8 @@ export default {
       const deletedProject = await projectSchema.findByIdAndDelete(_id);
       if (!deletedProject) response(res, true, null, "Klaida trinant projektą");
 
-      const deletedInstallation = await montavimasSchema.findByIdAndDelete(_id);
-      if (!deletedInstallation)
-        response(res, true, null, "Klaida trinant montavimą");
+      const deletedInstallation = await installationSchema.findByIdAndDelete(_id);
+      if (!deletedInstallation) response(res, true, null, "Klaida trinant montavimą");
 
       emit.toAdmin("addArchive", responseData);
 
@@ -309,15 +302,13 @@ export default {
 
       const responseData = await unconfirmedProject.save();
 
-      if (!responseData)
-        return response(res, false, null, "Klaida perkeliant projektą");
+      if (!responseData) return response(res, false, null, "Klaida perkeliant projektą");
 
       const deletedProject = await projectSchema.findByIdAndDelete(_id);
       if (!deletedProject) response(res, true, null, "Klaida trinant projektą");
 
       const deletedBackup = await backupSchema.findByIdAndDelete(_id);
-      if (!deletedBackup)
-        response(res, true, null, "Klaida trinant atsarginę kopiją");
+      if (!deletedBackup) response(res, true, null, "Klaida trinant atsarginę kopiją");
 
       emit.toAdmin("addUnconfirmed", responseData);
 

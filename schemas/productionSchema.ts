@@ -1,11 +1,11 @@
 import mongoose from "mongoose";
-import { Gamyba, GamybaFence, GamybaMeasure, GateInfo } from "../data/interfaces";
+import { Prodution, ProdutionFence, ProdutionMeasure, GateInfo } from "../data/interfaces";
 
 const gatesSchema = new mongoose.Schema<GateInfo>({
   exist: { type: Boolean, default: false },
   type: { type: String, default: "" },
   automatics: { type: String, default: "" },
-  aditional: { type: String, default: "" },
+  comment: { type: String, default: "" },
   direction: { type: String, default: "" },
   lock: { type: String, default: "" },
   bankette: { type: String, default: "" },
@@ -15,7 +15,7 @@ const gatesSchema = new mongoose.Schema<GateInfo>({
 const cornerSchema = new mongoose.Schema({
   exist: { type: Boolean, default: false },
   value: { type: Number, default: 0 },
-  aditional: { type: String, default: "" },
+  comment: { type: String, default: "" },
 });
 
 const stepSchema = new mongoose.Schema({
@@ -24,7 +24,7 @@ const stepSchema = new mongoose.Schema({
   direction: { type: String, default: "" },
 });
 
-const measureSchema = new mongoose.Schema<GamybaMeasure>({
+const measureSchema = new mongoose.Schema<ProdutionMeasure>({
   length: { type: Number, default: 0 },
   height: { type: Number, default: 0 },
   MeasureSpace: { type: Number, default: 0 },
@@ -37,7 +37,7 @@ const measureSchema = new mongoose.Schema<GamybaMeasure>({
   laiptas: { type: stepSchema, default: () => ({}) },
 });
 
-const fenceSchema = new mongoose.Schema<GamybaFence>({
+const fenceSchema = new mongoose.Schema<ProdutionFence>({
   id: String,
   side: String,
   type: String,
@@ -47,7 +47,7 @@ const fenceSchema = new mongoose.Schema<GamybaFence>({
   seeThrough: String,
   direction: String,
   parts: String,
-  aditional: String,
+  comment: String,
   twoSided: String,
   bindings: String,
   anchoredPoles: String,
@@ -58,7 +58,7 @@ const fenceSchema = new mongoose.Schema<GamybaFence>({
   measures: { type: [measureSchema], default: [] },
 });
 
-const productionSchema = new mongoose.Schema<Gamyba>({
+const productionSchema = new mongoose.Schema<Prodution>({
   client: Object,
   creator: Object,
   orderNumber: String,
@@ -76,7 +76,7 @@ const productionSchema = new mongoose.Schema<Gamyba>({
     required: false,
     default: [],
   },
-  aditional: {
+  comments: {
     type: [Object],
     required: false,
     default: [],
