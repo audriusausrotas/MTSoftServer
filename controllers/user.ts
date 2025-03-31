@@ -15,12 +15,12 @@ export default {
 
       if (!data) return response(res, false, null, "Vartotojai nerasti");
 
-      const updatedData = data.map((item) => {
+      const responseData = data.map((item) => {
         item.password = "";
         return item;
       });
 
-      return response(res, true, updatedData);
+      return response(res, true, responseData);
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");
@@ -41,18 +41,15 @@ export default {
 
       const userToDelete: any = await userSchema.findById(_id);
 
-      if (!userToDelete)
-        return response(res, false, null, "Pasirinktas vartotojas nerastas");
+      if (!userToDelete) return response(res, false, null, "Pasirinktas vartotojas nerastas");
 
       const isPasswordValid = await bcrypt.compare(password, data.password);
 
-      if (!isPasswordValid)
-        return response(res, false, null, "Klaidingas slaptažodis");
+      if (!isPasswordValid) return response(res, false, null, "Klaidingas slaptažodis");
 
       const deletedUser = await userSchema.findByIdAndDelete(_id);
 
-      if (!deletedUser)
-        return response(res, false, null, "Klaidinga trinant vartotoją");
+      if (!deletedUser) return response(res, false, null, "Klaidinga trinant vartotoją");
 
       emit.toAdmin("deleteUser", { _id });
 
@@ -80,13 +77,13 @@ export default {
         }
       }
 
-      const data = await user.save();
+      const responseData = await user.save();
 
-      data.password = "";
+      responseData.password = "";
 
-      emit.toAdmin("updateUser", data);
+      emit.toAdmin("updateUser", responseData);
 
-      return response(res, true, data, "Pakeitimai išsaugoti");
+      return response(res, true, responseData, "Pakeitimai išsaugoti");
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");
@@ -99,8 +96,7 @@ export default {
 
       const user: any = await userSchema.findById(_id);
 
-      if (!user)
-        return response(res, false, null, "Pasirinktas vartotojas nerastas");
+      if (!user) return response(res, false, null, "Pasirinktas vartotojas nerastas");
 
       if (changeType === "admin") {
         user.accountType = value;
@@ -110,12 +106,12 @@ export default {
         user.verified = !user.verified;
       }
 
-      const data = await user.save();
-      data.password = "";
+      const responseData = await user.save();
+      responseData.password = "";
 
-      emit.toAdmin("updateUser", data);
+      emit.toAdmin("updateUser", responseData);
 
-      return response(res, true, data, "Pakeitimai atlikti");
+      return response(res, true, responseData, "Pakeitimai atlikti");
       // } else return response(res, false, null, "Neteisinga užklausa");
     } catch (error) {
       console.error("Klaida:", error);
