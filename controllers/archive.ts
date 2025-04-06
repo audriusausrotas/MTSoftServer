@@ -240,7 +240,7 @@ export default {
 
       await deleteSchema.findByIdAndDelete(_id);
 
-      const responseData = { _id, location };
+      const responseData = { data, location };
 
       emit.toAdmin("restoreArchive", responseData);
 
@@ -273,11 +273,8 @@ export default {
 
       const responseData = await archivedProject.save();
 
-      const deletedProject = await projectSchema.findByIdAndDelete(_id);
-      if (!deletedProject) response(res, true, null, "Klaida trinant projektą");
-
-      const deletedInstallation = await installationSchema.findByIdAndDelete(_id);
-      if (!deletedInstallation) response(res, true, null, "Klaida trinant montavimą");
+      await projectSchema.findByIdAndDelete(_id);
+      await installationSchema.findByIdAndDelete(_id);
 
       emit.toAdmin("addArchive", responseData);
 
@@ -304,11 +301,8 @@ export default {
 
       if (!responseData) return response(res, false, null, "Klaida perkeliant projektą");
 
-      const deletedProject = await projectSchema.findByIdAndDelete(_id);
-      if (!deletedProject) response(res, true, null, "Klaida trinant projektą");
-
-      const deletedBackup = await backupSchema.findByIdAndDelete(_id);
-      if (!deletedBackup) response(res, true, null, "Klaida trinant atsarginę kopiją");
+      await projectSchema.findByIdAndDelete(_id);
+      await backupSchema.findByIdAndDelete(_id);
 
       emit.toAdmin("addUnconfirmed", responseData);
 

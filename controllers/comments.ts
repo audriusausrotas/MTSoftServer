@@ -120,7 +120,7 @@ export default {
       const data = await project.save();
       if (!data) return response(res, false, null, "Klaida saugant komentarą");
 
-      const responseData = { _id, comment };
+      const responseData = { _id, comment: newComment };
 
       emit.toAdmin("newProductionComment", responseData);
       emit.toInstallation("newProductionComment", responseData);
@@ -135,7 +135,7 @@ export default {
 
   addInstallationComment: async (req: Request, res: Response) => {
     try {
-      const { _id, comment } = req.body;
+      const { _id, comment: comment } = req.body;
 
       const user = res.locals.user;
 
@@ -156,7 +156,7 @@ export default {
       const data = await project.save();
       if (!data) return response(res, false, null, "Klaida saugant komentarą");
 
-      const responseData = { _id, comment };
+      const responseData = { _id, comment: newComment };
 
       emit.toAdmin("newInstallationComment", responseData);
       emit.toInstallation("newInstallationComment", responseData);
@@ -190,7 +190,7 @@ export default {
       const data = await project.save();
       if (!data) return response(res, false, null, "Klaida saugant komentarą");
 
-      const responseData = { _id, comment };
+      const responseData = { _id, comment: newComment };
 
       emit.toAdmin("newProjectComment", responseData);
       emit.toInstallation("newProjectComment", responseData);

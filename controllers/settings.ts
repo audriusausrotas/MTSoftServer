@@ -24,8 +24,7 @@ export default {
     try {
       const data = await selectSchema.find();
 
-      if (data.length === 0)
-        return response(res, false, null, "Nustatymai nerasti");
+      if (data.length === 0) return response(res, false, null, "Nustatymai nerasti");
 
       return response(res, true, data[0]);
     } catch (error) {
@@ -38,8 +37,7 @@ export default {
     try {
       const data = await userRightsSchema.find();
 
-      if (data.length === 0)
-        return response(res, false, null, "Nustatymai nerasti");
+      if (data.length === 0) return response(res, false, null, "Nustatymai nerasti");
 
       return response(res, true, data);
     } catch (error) {
@@ -53,13 +51,17 @@ export default {
   deleteSelect: async (req: Request, res: Response) => {
     try {
       const { field, index } = req.body;
-      const data: any = await selectSchema.findOne();
+      const selects: any = await selectSchema.findOne();
 
-      if (!data) return response(res, false, null, "Serverio klaida");
+      if (!selects) return response(res, false, null, "Serverio klaida");
 
-      data[field].splice(index, 1);
+      selects[field].splice(index, 1);
 
-      const responseData = await data.save();
+      const data = await selects.save();
+
+      if (!data) return response(res, false, null, "Klaida saugant nustatymus");
+
+      const responseData = { field, index };
 
       emit.toAdmin("deleteSelect", responseData);
 
@@ -74,8 +76,7 @@ export default {
 
   updateFenceData: async (req: Request, res: Response) => {
     try {
-      const { _id, width, height, isFenceBoard, defaultDirection, seeThrough } =
-        req.body;
+      const { _id, width, height, isFenceBoard, defaultDirection, seeThrough } = req.body;
 
       const updatedData = {
         width,
@@ -85,16 +86,11 @@ export default {
         seeThrough,
       };
 
-      const responseData = await productSchema.findByIdAndUpdate(
-        _id,
-        updatedData,
-        {
-          new: true,
-        }
-      );
+      const responseData = await productSchema.findByIdAndUpdate(_id, updatedData, {
+        new: true,
+      });
 
-      if (!responseData)
-        return response(res, false, null, "Produktas neegzistuoja");
+      if (!responseData) return response(res, false, null, "Produktas neegzistuoja");
 
       emit.toAdmin("updateFenceSettings", responseData);
 
@@ -115,11 +111,15 @@ export default {
         return response(res, false, null, `Netinkamas laukas "${field}"`);
       }
 
-      const responseData = await defaultValuesSchema.findOneAndUpdate(
+      const data = await defaultValuesSchema.findOneAndUpdate(
         {},
         { [field]: value },
         { new: true, upsert: true }
       );
+
+      if (!data) return response(res, false, null, "Klaida saugant reikšmę");
+
+      const responseData = { value, field };
 
       emit.toAdmin("newDefaultValue", responseData);
 
@@ -134,13 +134,15 @@ export default {
     try {
       const { field, value } = req.body;
 
-      const responseData = await selectSchema.findOneAndUpdate(
+      const data = await selectSchema.findOneAndUpdate(
         {},
         { $push: { [field]: value } },
         { new: true, upsert: true }
       );
 
-      if (!responseData) return response(res, false, null, "Serverio klaida");
+      if (!data) return response(res, false, null, "Serverio klaida");
+
+      const responseData = { field, value };
 
       emit.toAdmin("newSelectValue", responseData);
 
@@ -153,15 +155,7 @@ export default {
 
   newUserRights: async (req: Request, res: Response) => {
     try {
-      const {
-        accountType,
-        project,
-        schedule,
-        production,
-        installation,
-        gate,
-        admin,
-      } = req.body;
+      const { accountType, project, schedule, production, installation, gate, admin } = req.body;
 
       let doesExist = await userRightsSchema.findOne({ accountType });
       if (doesExist) {
