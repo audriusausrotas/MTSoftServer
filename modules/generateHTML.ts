@@ -15,7 +15,7 @@ export default (project: Project) => {
 
   const materialsList = project.results
     .map(
-      (result) => `
+      (result) => ` 
               <tr>
                 <td>${result.type}</td>
                 <td>${result.color}</td>
@@ -173,9 +173,7 @@ export default (project: Project) => {
                 <tr>
                   <th>Galutinė kaina klientui</th>
                   <td class="highlight">${
-                    project.discount
-                      ? project.priceWithDiscount
-                      : project.priceVAT
+                    project.discount ? project.priceWithDiscount : project.priceVAT
                   } €</td>
                 </tr>
                 <tr>
