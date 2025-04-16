@@ -140,7 +140,7 @@ router.patch("/updateMeasure", checkAdmin, production.updateMeasure);
 router.patch("/updateProductionStatus", checkUser, production.updateStatus);
 
 router.post("/newProduction/:_id", checkUser, production.newProduction);
-router.post("/addNewProdution", checkUser, production.addNewProdution);
+router.post("/addNewProduction", checkUser, production.addNewProduction);
 router.post("/addBinding/:_id", checkAdmin, production.addBinding);
 router.post("/addMeasure", checkAdmin, production.addMeasure);
 
@@ -155,10 +155,11 @@ router.delete("/deleteVersion", checkAdmin, project.deleteVersion);
 
 router.patch("/extendExparationDate/:_id", checkAdmin, project.extendExparationDate);
 router.patch("/versionRollback", checkAdmin, project.versionRollback);
+router.patch("/projectFinished/:_id", checkAdmin, project.projectFinished);
+router.patch("/updateProjectStatus", checkUser, project.updateStatus);
 router.patch("/changeAdvance", checkAdmin, project.changeAdvance);
 router.patch("/changeManager", checkAdmin, project.changeManager);
 router.patch("/updateProject", checkAdmin, project.updateProject);
-router.patch("/updateProjectStatus", checkUser, project.updateStatus);
 router.patch("/addFileProject", checkUser, project.addFiles);
 
 router.post("/newProject", checkAdmin, project.newProject);

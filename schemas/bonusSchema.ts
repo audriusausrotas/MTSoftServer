@@ -8,7 +8,7 @@ const bonusSchema = new mongoose.Schema<Bonus>({
   cost: Number,
   profit: Number,
   margin: Number,
-  bonus: Number,
+  user: String,
 });
 
 export default mongoose.model("bonus", bonusSchema, "bonus");

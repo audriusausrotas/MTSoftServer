@@ -15,6 +15,9 @@ import { HydratedDocument } from "mongoose";
 import { Request, Response } from "express";
 import response from "../modules/response";
 import emit from "../sockets/emits";
+import archiveSchema from "../schemas/archiveSchema";
+import productionSchema from "../schemas/productionSchema";
+import gateSchema from "../schemas/gateSchema";
 
 export default {
   //////////////////// get requests ////////////////////////////////////
@@ -292,7 +295,7 @@ export default {
       if (value === "Apmokėjimas") {
         const html = generateHTML(project);
 
-        const emailResult = await sendEmail({
+        await sendEmail({
           to: "vaida@modernitvora.lt",
           subject: "Baigtas objektas",
           user: project.creator,
@@ -327,6 +330,59 @@ export default {
       emit.toAdmin("changeProjectStatus", responseData);
 
       if (value === "Baigtas") emit.toAdmin("finishProject", { _id });
+
+      return response(res, true, responseData, "Būsena atnaujinta");
+    } catch (error) {
+      console.error("Klaida:", error);
+      return response(res, false, null, "Serverio klaida");
+    }
+  },
+
+  projectFinished: async (req: Request, res: Response) => {
+    try {
+      const { _id } = req.params;
+
+      const project = await projectSchema.findById(_id);
+
+      if (!project) return response(res, false, null, "Projektas nerastas");
+
+      const currentDate = new Date().toISOString();
+
+      await deleteVersions(project.versions);
+
+      project.versions = [];
+      project.status = "Baigtas";
+
+      const newProject = project.toObject();
+
+      newProject.dateExparation = currentDate;
+
+      const archivedProject = new archiveSchema(newProject);
+
+      const data = await archivedProject.save();
+
+      if (!data) response(res, false, null, "Klaida išsaugant projektą");
+
+      const bonus = new bonusSchema({
+        address: project.client.address,
+        dateFinished: currentDate,
+        price: project.totalPrice,
+        cost: project.totalCost,
+        profit: project.totalProfit,
+        margin: project.totalMargin,
+        user: project.creator.username,
+      });
+
+      await projectSchema.findByIdAndDelete(_id);
+      await backupSchema.findByIdAndDelete(_id);
+      await installationSchema.findByIdAndDelete(_id);
+      await productionSchema.findByIdAndDelete(_id);
+      await gateSchema.findByIdAndDelete(_id);
+      await bonus.save();
+
+      const responseData = { _id, data };
+
+      emit.toAdmin("finishProject", responseData);
 
       return response(res, true, responseData, "Būsena atnaujinta");
     } catch (error) {

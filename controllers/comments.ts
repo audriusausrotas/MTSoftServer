@@ -16,7 +16,7 @@ export default {
     try {
       const { _id, comment } = req.body;
 
-      const project = await productionSchema.findOne(_id);
+      const project = await productionSchema.findById(_id);
 
       if (!project) return response(res, false, null, "Projektas nerastas");
 

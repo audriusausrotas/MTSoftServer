@@ -321,7 +321,7 @@ export interface Bonus {
   cost: number;
   profit: number;
   margin: number;
-  bonus: number;
+  user: string;
 }
 
 export interface FenceMeasure {

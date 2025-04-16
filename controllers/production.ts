@@ -211,7 +211,7 @@ export default {
 
   //////////////////// post requests ///////////////////////////////////
 
-  addNewProdution: async (req: Request, res: Response) => {
+  addNewProduction: async (req: Request, res: Response) => {
     try {
       const { number, address, creator } = req.body;
 
@@ -270,9 +270,9 @@ export default {
 
       const responseData = { _id, data };
 
-      emit.toAdmin("newProduction", responseData);
-      emit.toProduction("newProduction", responseData);
-      emit.toWarehouse("newProduction", responseData);
+      emit.toAdmin("newProductionBinding", responseData);
+      emit.toProduction("newProductionBinding", responseData);
+      emit.toWarehouse("newProductionBinding", responseData);
 
       return response(res, true, responseData, "Apkaustas pridėtas");
     } catch (error) {
@@ -327,9 +327,9 @@ export default {
 
       const responseData = { _id, index, newMeasure };
 
-      emit.toAdmin("newProduction", responseData);
-      emit.toProduction("newProduction", responseData);
-      emit.toWarehouse("newProduction", responseData);
+      emit.toAdmin("newProductionMeasure", responseData);
+      emit.toProduction("newProductionMeasure", responseData);
+      emit.toWarehouse("newProductionMeasure", responseData);
 
       return response(res, true, responseData, "issaugota");
     } catch (error) {
