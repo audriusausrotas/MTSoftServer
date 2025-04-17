@@ -109,12 +109,12 @@ router.patch("/changeOrderStatus", order.changeOrderStatus);
 
 router.get("/getpotentialClients", checkAdmin, potentialClient.getUsers);
 
-router.delete("/deleteClient/:_id", checkAdmin, potentialClient.deleteClient);
+router.delete("/deletePotentialClient/:_id", checkAdmin, potentialClient.deletePotentialClient);
 
 router.patch("/selectClients", checkAdmin, potentialClient.selectClients);
 router.patch("/updateClient", checkAdmin, potentialClient.updateClient);
 
-router.post("/newClient", checkAdmin, potentialClient.newClient);
+router.post("/newPotentialClient", checkAdmin, potentialClient.newPotentialClient);
 
 /////////////////////// Products /////////////////////////
 

@@ -30,7 +30,7 @@ export default {
 
   //////////////////// delete requests /////////////////////////////////
 
-  deleteClient: async (req: Request, res: Response) => {
+  deletePotentialClient: async (req: Request, res: Response) => {
     try {
       const { _id } = req.params;
 
@@ -85,8 +85,6 @@ export default {
         if (data.modifiedCount < 1)
           return response(res, false, null, "Klaida atnaujinant duomenis");
 
-        emit.toAdmin("selectAll", { value });
-
         return response(res, true, { value }, "Atnaujinta");
       } else {
         const user = await potentialClientSchema.findByIdAndUpdate(_id, { send }, { new: true });
@@ -94,8 +92,6 @@ export default {
         if (!user) return response(res, false, null, "Klaida atnaujinant duomenis");
 
         const responseData = { _id, send };
-
-        emit.toAdmin("selectOne", responseData);
 
         return response(res, true, responseData, "Atnaujinta");
       }
@@ -107,11 +103,13 @@ export default {
 
   //////////////////// post requests ///////////////////////////////////
 
-  newClient: async (req: Request, res: Response) => {
+  newPotentialClient: async (req: Request, res: Response) => {
     try {
       const { name, email, phone, address, status } = req.body;
 
+      console.log(name);
       const user = await potentialClientSchema.findOne({ email });
+
       const userUnsuscribed = await potentialUnsuscribedSchema.findOne({
         email,
       });
