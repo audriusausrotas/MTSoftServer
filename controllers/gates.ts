@@ -48,15 +48,17 @@ export default {
         status: "Vartai Sumontuoti",
       });
 
-      const data = await gateSchema.findByIdAndUpdate(_id, {
+      const responseData = await gateSchema.findByIdAndUpdate(_id, {
         measure: "Baigtas",
       });
 
-      if (!data) return response(res, false, null, "Serverio klaida");
+      if (!responseData) return response(res, false, null, "Serverio klaida");
+
+      responseData.measure = "Baigtas";
 
       emit.toAdmin("changeProjectStatus", { _id, status: "Vartai Sumontuoti" });
-      emit.toAdmin("changeGateStatus", { _id, status: "Baigtas" });
-      emit.toGates("changeGateStatus", { _id, status: "Baigtas" });
+      emit.toAdmin("updateGateOrder", responseData);
+      emit.toGates("updateGateOrder", responseData);
 
       return response(res, true, { _id }, "Užsakymas baigtas");
     } catch (error) {
@@ -105,8 +107,8 @@ export default {
 
       const responseData = await data.save();
 
-      emit.toAdmin("UpdateGateOrder", responseData);
-      emit.toGates("UpdateGateOrder", responseData);
+      emit.toAdmin("updateGateOrder", responseData);
+      emit.toGates("updateGateOrder", responseData);
 
       return response(res, true, responseData, "Būsena atnaujinta");
     } catch (error) {

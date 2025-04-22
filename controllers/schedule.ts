@@ -14,9 +14,18 @@ export default {
     try {
       const user = res.locals.user;
 
-      if (!user) return response(res, false, null, "Klaidingas varotojas");
+      if (!user) return response(res, false, null, "Klaidingas vartotojas");
+
+      const today = new Date();
+
+      const twoWeeksAgo = new Date();
+      twoWeeksAgo.setDate(today.getDate() - 14);
+
+      const oneMonthAhead = new Date();
+      oneMonthAhead.setMonth(today.getMonth() + 1);
 
       let schedule: Schedule[] = [];
+
       if (
         user.accountType === "Administratorius" ||
         user.accountType === "Gamyba" ||
@@ -29,10 +38,15 @@ export default {
         });
       }
 
-      if (schedule.length === 0)
+      const filtered = schedule.filter((s: any) => {
+        const parsedDate = new Date(s.date);
+        return parsedDate >= twoWeeksAgo && parsedDate <= oneMonthAhead;
+      });
+
+      if (filtered.length === 0)
         return response(res, false, null, "Grafikas nerastas");
 
-      return response(res, true, schedule);
+      return response(res, true, filtered);
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");

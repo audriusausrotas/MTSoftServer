@@ -1,4 +1,4 @@
-import { Types } from "mongoose";
+import { Date, Types } from "mongoose";
 import { ObjectId } from "mongodb";
 
 export interface Response {
@@ -476,7 +476,7 @@ export interface Job {
 
 export interface Schedule {
   _id: Types.ObjectId;
-  date: string;
+  date: Date;
   worker: Worker;
   jobs: [Job] | [];
   comment: string;

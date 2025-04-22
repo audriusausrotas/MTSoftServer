@@ -99,7 +99,10 @@ export default {
         return response(res, false, null, "Vartotojas jau egzistuoja");
       }
 
-      const hashedPassword = await bcrypt.hash(password, parseInt(process.env.SALT as string));
+      const hashedPassword = await bcrypt.hash(
+        password,
+        parseInt(process.env.SALT as string)
+      );
 
       const user = new userSchema({
         username,
@@ -107,11 +110,11 @@ export default {
         password: hashedPassword,
       });
 
-      const newUser: any = await user.save();
+      const responseData: any = await user.save();
 
-      if (newUser) {
-        newUser.password = "";
-        // io.emit("newUser", newUser);
+      if (responseData) {
+        responseData.password = "";
+        emit.toAdmin("newUser", responseData);
       }
       return response(res, true, null, "Sėkmingai prisiregistruota");
     } catch (error) {
