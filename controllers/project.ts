@@ -60,7 +60,7 @@ export default {
 
       emit.toAdmin("deleteProject", { _id });
 
-      return response(res, true, null, "Projektas ištrintas");
+      return response(res, true, { _id }, "Projektas ištrintas");
     } catch (error) {
       console.error("Klaida trinant projektą:", error);
       return response(res, false, null, "Serverio klaida");

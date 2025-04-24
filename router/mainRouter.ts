@@ -60,27 +60,11 @@ router.post("/newClient", checkAdmin, clients.newClient);
 
 /////////////////////// Comments /////////////////////////
 
-router.delete(
-  "/deleteInstallationComment",
-  checkUser,
-  comments.deleteInstallationComment
-);
-router.delete(
-  "/deleteProductionComment",
-  checkUser,
-  comments.deleteProductionComment
-);
-router.delete(
-  "/deleteProjectComment",
-  checkUser,
-  comments.deleteProjectComment
-);
+router.delete("/deleteInstallationComment", checkUser, comments.deleteInstallationComment);
+router.delete("/deleteProductionComment", checkUser, comments.deleteProductionComment);
+router.delete("/deleteProjectComment", checkUser, comments.deleteProjectComment);
 
-router.post(
-  "/addInstallationComment",
-  checkUser,
-  comments.addInstallationComment
-);
+router.post("/addInstallationComment", checkUser, comments.addInstallationComment);
 router.post("/addProductionComment", checkUser, comments.addProductionComment);
 router.post("/addProjectComment", checkUser, comments.addProjectComment);
 
@@ -105,20 +89,12 @@ router.post("/newOrder", checkAdmin, gates.newOrder);
 
 router.get("/getWorks", checkUser, installation.getWorks);
 
-router.delete(
-  "/deleteInstallation/:_id",
-  checkAdmin,
-  installation.deleteInstallation
-);
+router.delete("/deleteInstallation/:_id", checkAdmin, installation.deleteInstallation);
 router.delete("/deleteWorker", checkAdmin, installation.deleteWorker);
 
 router.patch("/updateInstallation", checkUser, installation.updateInstallation);
 router.patch("/partsDelivered", checkUser, installation.partsDelivered);
-router.patch(
-  "/updateInstallationPostone",
-  checkUser,
-  installation.updatePostone
-);
+router.patch("/updateInstallationPostone", checkUser, installation.updatePostone);
 router.patch("/updateInstallationStatus", checkUser, installation.updateStatus);
 
 router.post("/addInstallation", checkAdmin, installation.addInstallation);
@@ -133,20 +109,12 @@ router.patch("/changeOrderStatus", order.changeOrderStatus);
 
 router.get("/getpotentialClients", checkAdmin, potentialClient.getUsers);
 
-router.delete(
-  "/deletePotentialClient/:_id",
-  checkAdmin,
-  potentialClient.deletePotentialClient
-);
+router.delete("/deletePotentialClient/:_id", checkAdmin, potentialClient.deletePotentialClient);
 
 router.patch("/selectClients", checkAdmin, potentialClient.selectClients);
 router.patch("/updateClient", checkAdmin, potentialClient.updateClient);
 
-router.post(
-  "/newPotentialClient",
-  checkAdmin,
-  potentialClient.newPotentialClient
-);
+router.post("/newPotentialClient", checkAdmin, potentialClient.newPotentialClient);
 
 /////////////////////// Products /////////////////////////
 
@@ -162,11 +130,7 @@ router.post("/newProduct", checkAdmin, product.newProduct);
 
 router.get("/getProduction", checkUser, production.getProduction);
 
-router.delete(
-  "/deleteProduction/:_id",
-  checkAdmin,
-  production.deleteProduction
-);
+router.delete("/deleteProduction/:_id", checkAdmin, production.deleteProduction);
 router.delete("/deleteBindings", checkAdmin, production.deleteBindings);
 router.delete("/deleteMeasure", checkAdmin, production.deleteMeasure);
 router.delete("/deleteFence", checkAdmin, production.deleteFence);
@@ -189,11 +153,7 @@ router.delete("/removeUnconfirmed", checkAdmin, project.removeUnconfirmed);
 router.delete("/deleteProject/:_id", checkAdmin, project.deleteProject);
 router.delete("/deleteVersion", checkAdmin, project.deleteVersion);
 
-router.patch(
-  "/extendExparationDate/:_id",
-  checkAdmin,
-  project.extendExparationDate
-);
+router.patch("/extendExparationDate/:_id", checkAdmin, project.extendExparationDate);
 router.patch("/versionRollback", checkAdmin, project.versionRollback);
 router.patch("/projectFinished/:_id", checkAdmin, project.projectFinished);
 router.patch("/updateProjectStatus", checkUser, project.updateStatus);
