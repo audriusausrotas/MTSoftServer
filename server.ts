@@ -18,7 +18,7 @@ mongoose
 
 server.use(
   cors({
-    origin: ["http://localhost:3000", "https://mtsoft.lt/api", "https://mtsoft.lt"],
+    origin: ["http://localhost:3000", "https://mtsoft.lt/api"],
     credentials: true,
   })
 );
