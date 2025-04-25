@@ -18,13 +18,13 @@ mongoose
 
 server.use(
   cors({
-    origin: ["http://localhost:3000", "https://mtsoft.lt/api"],
+    origin: ["http://localhost:3000", "https://mtsoft.lt"],
     credentials: true,
   })
 );
 server.use("/uploads", express.static(path.join(__dirname, "uploads")));
 server.use(express.json());
 server.use(cookieParser());
-server.use("/api", mainRouter);
+server.use("/", mainRouter);
 
 server.listen(port, () => console.log(`MTSoft server is running on port ${port}`));
