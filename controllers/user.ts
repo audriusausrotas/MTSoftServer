@@ -34,26 +34,22 @@ export default {
       const { _id, password } = req.body;
 
       const user = res.locals.user;
-      console.log(user);
 
       const data: User | null = await userSchema.findById(user.id);
 
       if (!data) return response(res, false, null, "Vartotojas nerastas");
 
       const userToDelete: any = await userSchema.findById(_id);
-      console.log(userToDelete);
-      if (!userToDelete)
-        return response(res, false, null, "Pasirinktas vartotojas nerastas");
+
+      if (!userToDelete) return response(res, false, null, "Pasirinktas vartotojas nerastas");
 
       const isPasswordValid = await bcrypt.compare(password, data.password);
 
-      if (!isPasswordValid)
-        return response(res, false, null, "Klaidingas slaptažodis");
+      if (!isPasswordValid) return response(res, false, null, "Klaidingas slaptažodis");
 
       const deletedUser = await userSchema.findByIdAndDelete(_id);
 
-      if (!deletedUser)
-        return response(res, false, null, "Klaidinga trinant vartotoją");
+      if (!deletedUser) return response(res, false, null, "Klaidinga trinant vartotoją");
 
       emit.toAdmin("deleteUser", { _id });
 
@@ -100,8 +96,7 @@ export default {
 
       const user: any = await userSchema.findById(_id);
 
-      if (!user)
-        return response(res, false, null, "Pasirinktas vartotojas nerastas");
+      if (!user) return response(res, false, null, "Pasirinktas vartotojas nerastas");
 
       if (changeType === "admin") {
         user.accountType = value;
