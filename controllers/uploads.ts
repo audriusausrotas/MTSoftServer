@@ -11,6 +11,7 @@ import fs from "fs";
 export default {
   uploadFiles: (req: Request, res: Response) => {
     upload(req, res, async (err) => {
+      console.log(req.files);
       if (err) {
         return response(res, false, null, "Klaida įkeliant failus");
       }
@@ -18,19 +19,18 @@ export default {
       if (!req.files || (Array.isArray(req.files) && req.files.length === 0)) {
         return response(res, false, null, "Failai neįkelti");
       }
-
       try {
         const filesArray = req.files as Express.Multer.File[];
         const filePaths = filesArray.map((file) => `/uploads/${file.filename}`);
 
         const { category, _id } = req.body;
-
+        console.log(req.body);
         let project;
 
         if (category === "projects") project = await projectSchema.findById(_id);
         else if (category === "production") project = await productionSchema.findById(_id);
         else if (category === "installation") project = await installationSchema.findById(_id);
-
+        console.log(project);
         if (!project) return response(res, false, null, "Klaida įkeliant failus");
 
         project.files = [...(project.files || []), ...filePaths];
