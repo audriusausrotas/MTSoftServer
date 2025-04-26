@@ -204,6 +204,7 @@ router.patch("/updateUser", checkUser, user.updateUser);
 // router.delete("/deleteFiles", checkAdmin, uploads.deleteFiles);
 
 import path from "path";
+import fs from "fs";
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
