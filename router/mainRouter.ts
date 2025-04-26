@@ -200,6 +200,7 @@ router.patch("/updateUser", checkUser, user.updateUser);
 /////////////////////// Uploads //////////////////////////
 
 router.post("/uploadFiles", uploads.upload, checkUser, uploads.uploadFiles);
+
 router.delete("/deleteFiles", checkUser, uploads.deleteFiles);
 
 export default router;
