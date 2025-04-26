@@ -305,6 +305,7 @@ export default {
       }
       const responseData = { _id, files: filePaths };
 
+      console.log(responseData);
       if (category === "projects") {
         emit.toAdmin("updateProjectFiles", responseData);
       } else if (category === "production") {
