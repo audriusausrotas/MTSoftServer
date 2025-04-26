@@ -199,39 +199,7 @@ router.patch("/updateUser", checkUser, user.updateUser);
 
 /////////////////////// Uploads //////////////////////////
 
-// router.post("/uploadFiles", checkUser, uploads.uploadFiles);
-
-// router.delete("/deleteFiles", checkAdmin, uploads.deleteFiles);
-
-import path from "path";
-import fs from "fs";
-
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    const uploadPath = path.join(__dirname, "../uploads");
-
-    // Check if the directory exists, and create it if it doesn't
-    if (!fs.existsSync(uploadPath)) {
-      fs.mkdirSync(uploadPath, { recursive: true });
-      console.log("📁 Created uploads directory:", uploadPath);
-    }
-
-    cb(null, uploadPath);
-  },
-  filename: (req, file, cb) => {
-    const timestamp = Date.now();
-    const uniqueFilename = `${timestamp}-${file.originalname.replace(/\s+/g, "_")}`;
-    cb(null, uniqueFilename);
-  },
-});
-
-const upload = multer({
-  storage: storage,
-  limits: { fileSize: 20 * 1024 * 1024 },
-}).array("files", 20); // Expecting 'files' as the key
-
-// Routes
-router.post("/uploadFiles", upload, checkUser, uploads.uploadFiles);
+router.post("/uploadFiles", uploads.upload, checkUser, uploads.uploadFiles);
 router.delete("/deleteFiles", checkUser, uploads.deleteFiles);
 
 export default router;

@@ -26,7 +26,9 @@ server.use(
   })
 );
 
-server.use("/uploads", express.static(path.join(__dirname, "uploads")));
+// server.use("/uploads", express.static(path.join(__dirname, "uploads")));
+server.use("/uploads", express.static(path.join(__dirname, "dist/uploads")));
+
 server.use(express.json());
 server.use(cookieParser());
 server.use("/api", mainRouter);
