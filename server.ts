@@ -6,7 +6,9 @@ import path from "path";
 import cors from "cors";
 
 require("dotenv").config();
+
 import "./sockets/main";
+import "./cronJobs/main";
 
 const port = process.env.PORT || 3001;
 const server = express();
