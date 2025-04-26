@@ -10,10 +10,11 @@ import "./sockets/main";
 
 const port = process.env.PORT || 3001;
 const server = express();
-
+console.log("testing testing");
 mongoose
   .connect(process.env.MONGODB_URI as string)
   .then(() => console.log("connected to MongoDB"))
+
   .catch((e) => console.log(e));
 server.use(
   cors({
