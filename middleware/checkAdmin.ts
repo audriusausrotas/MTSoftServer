@@ -5,8 +5,9 @@ import jwt from "jsonwebtoken";
 require("dotenv").config();
 
 export default (req: Request, res: Response, next: NextFunction) => {
+  console.log(req);
   const token = req.cookies?.mtud;
-
+  console.log(token);
   if (!token) {
     return response(res, false, null, "Netinkamas žetonas");
   }
