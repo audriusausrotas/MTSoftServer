@@ -7,7 +7,7 @@ import cron from "node-cron";
 import fs from "fs";
 
 export const clearUnconfirmed = () => {
-  cron.schedule("10 0 * * *", async () => {
+  cron.schedule("10 2 * * *", async () => {
     console.log("Cleaning up unconfirmed projects...");
 
     try {

@@ -2,7 +2,7 @@ import { exec } from "child_process";
 import cron from "node-cron";
 import fs from "fs";
 
-cron.schedule("30 0 * * *", () => {
+cron.schedule("30 2 * * *", () => {
   console.log("Starting database backup to Atlas...");
 
   const backupFile = `C:/MTwebsite/mongodbBackups/mongo_backup_${
