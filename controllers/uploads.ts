@@ -251,31 +251,6 @@ import multer from "multer";
 //       return response(res, false, null, "Serverio klaida");
 //     }
 //   },
-
-//   upload: () => {
-//     const storage = multer.diskStorage({
-//       destination: (req, file, cb) => {
-//         const uploadPath = path.join(__dirname, "../uploads");
-
-//         if (!fs.existsSync(uploadPath)) {
-//           fs.mkdirSync(uploadPath, { recursive: true });
-//           console.log("📁 Created uploads directory:", uploadPath);
-//         }
-
-//         cb(null, uploadPath);
-//       },
-//       filename: (req, file, cb) => {
-//         const timestamp = Date.now();
-//         const uniqueFilename = `${timestamp}-${file.originalname.replace(/\s+/g, "_")}`;
-//         cb(null, uniqueFilename);
-//       },
-//     });
-
-//     return multer({
-//       storage: storage,
-//       limits: { fileSize: 20 * 1024 * 1024 },
-//     }).array("files", 20);
-//   },
 // };
 
 const storage = multer.diskStorage({
@@ -319,7 +294,6 @@ export default {
       else if (category === "installation") project = await installationSchema.findById(_id);
 
       if (!project) {
-        console.error("❌ Project not found in DB!");
         return response(res, false, null, "Klaida įkeliant failus");
       }
 
@@ -327,13 +301,25 @@ export default {
       const newData = await project.save();
 
       if (!newData) {
-        console.error("❌ Error saving project files!");
         return response(res, false, null, "Klaida saugant duomenis");
       }
+      const responseData = { _id, files: filePaths };
 
-      return response(res, true, { _id, files: filePaths }, "Failai sėkmingai įkelti");
+      if (category === "projects") {
+        emit.toAdmin("updateProjectFiles", responseData);
+      } else if (category === "production") {
+        emit.toAdmin("updateProductionFiles", responseData);
+        emit.toProduction("updateProductionFiles", responseData);
+        emit.toWarehouse("updateProductionFiles", responseData);
+      } else if (category === "installation") {
+        emit.toAdmin("updateInstallationFiles", responseData);
+        emit.toProduction("updateInstallationFiles", responseData);
+        emit.toWarehouse("updateInstallationFiles", responseData);
+      }
+
+      return response(res, true, responseData, "Failai sėkmingai įkelti");
     } catch (error) {
-      console.error("❌ Server error during file upload:", error);
+      console.error("Error:", error);
       return response(res, false, null, "Serverio klaida");
     }
   },
