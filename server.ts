@@ -15,7 +15,7 @@ mongoose
   .connect(process.env.MONGODB_URI as string)
   .then(() => console.log("connected to MongoDB"))
   .catch((e) => console.log(e));
-
+console.log("testing if pull works");
 server.use(
   cors({
     origin: [
