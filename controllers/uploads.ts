@@ -10,8 +10,10 @@ import fs from "fs";
 
 export default {
   uploadFiles: (req: Request, res: Response) => {
+    console.log("Request received at /uploadFiles");
+    console.log("Body:", req.body);
+    console.log("Files:", req.files);
     upload(req, res, async (err) => {
-      console.log(req.files);
       if (err) {
         return response(res, false, null, "Klaida įkeliant failus");
       }
