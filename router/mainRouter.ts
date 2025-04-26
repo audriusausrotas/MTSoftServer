@@ -20,6 +20,8 @@ import auth from "../controllers/auth";
 import user from "../controllers/user";
 import express from "express";
 
+import multer from "multer";
+
 const router = express.Router();
 
 /////////////////////// Auth /////////////////////////////
@@ -197,8 +199,30 @@ router.patch("/updateUser", checkUser, user.updateUser);
 
 /////////////////////// Uploads //////////////////////////
 
-router.post("/uploadFiles", checkUser, uploads.uploadFiles);
+// router.post("/uploadFiles", checkUser, uploads.uploadFiles);
 
-router.delete("/deleteFiles", checkAdmin, uploads.deleteFiles);
+// router.delete("/deleteFiles", checkAdmin, uploads.deleteFiles);
+
+import path from "path";
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, path.join(__dirname, "../uploads")); // Ensure this path exists
+  },
+  filename: (req, file, cb) => {
+    const timestamp = Date.now();
+    const uniqueFilename = `${timestamp}-${file.originalname.replace(/\s+/g, "_")}`;
+    cb(null, uniqueFilename);
+  },
+});
+
+const upload = multer({
+  storage: storage,
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10 MB limit
+}).array("files", 10); // Expecting 'files' as the key
+
+// Routes
+router.post("/uploadFiles", upload, checkUser, uploads.uploadFiles);
+router.delete("/deleteFiles", checkUser, uploads.deleteFiles);
 
 export default router;
