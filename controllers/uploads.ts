@@ -303,9 +303,8 @@ export default {
       if (!newData) {
         return response(res, false, null, "Klaida saugant duomenis");
       }
-      const responseData = { _id, files: filePaths };
+      const responseData = { _id, files: newData.files };
 
-      console.log(responseData);
       if (category === "projects") {
         emit.toAdmin("updateProjectFiles", responseData);
       } else if (category === "production") {
