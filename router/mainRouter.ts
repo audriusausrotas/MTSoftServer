@@ -207,7 +207,15 @@ import path from "path";
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, path.join(__dirname, "../uploads")); // Ensure this path exists
+    const uploadPath = path.join(__dirname, "../uploads");
+
+    // Check if the directory exists, and create it if it doesn't
+    if (!fs.existsSync(uploadPath)) {
+      fs.mkdirSync(uploadPath, { recursive: true });
+      console.log("📁 Created uploads directory:", uploadPath);
+    }
+
+    cb(null, uploadPath);
   },
   filename: (req, file, cb) => {
     const timestamp = Date.now();
@@ -218,8 +226,8 @@ const storage = multer.diskStorage({
 
 const upload = multer({
   storage: storage,
-  limits: { fileSize: 10 * 1024 * 1024 }, // 10 MB limit
-}).array("files", 10); // Expecting 'files' as the key
+  limits: { fileSize: 20 * 1024 * 1024 },
+}).array("files", 20); // Expecting 'files' as the key
 
 // Routes
 router.post("/uploadFiles", upload, checkUser, uploads.uploadFiles);
