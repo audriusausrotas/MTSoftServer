@@ -30,6 +30,6 @@ server.use(
 server.use("/uploads", express.static(path.join(__dirname, "uploads")));
 server.use(express.json());
 server.use(cookieParser());
-server.use("/", mainRouter);
+server.use("/api", mainRouter);
 
 server.listen(port, () => console.log(`MTSoft server is running on port ${port}`));
