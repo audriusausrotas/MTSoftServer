@@ -99,10 +99,7 @@ export default {
         return response(res, false, null, "Vartotojas jau egzistuoja");
       }
 
-      const hashedPassword = await bcrypt.hash(
-        password,
-        parseInt(process.env.SALT as string)
-      );
+      const hashedPassword = await bcrypt.hash(password, parseInt(process.env.SALT as string));
 
       const user = new userSchema({
         username,
