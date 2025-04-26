@@ -14,10 +14,11 @@ cron.schedule("30 0 * * *", () => {
     return;
   }
 
+  const mongoRestorePath = `"C:\\MTwebsite\\mongodb\\bin\\mongorestore.exe"`;
   const atlasURI = process.env.MONGODB_URI_REMOTE;
 
   exec(
-    `mongorestore --gzip --archive=${backupFile} --uri=${atlasURI}`,
+    `${mongoRestorePath} --gzip --archive=${backupFile} --uri=${atlasURI}`,
     (restoreError, restoreStdout, restoreStderr) => {
       if (restoreError) {
         console.error("Restore to Atlas failed:", restoreStderr);

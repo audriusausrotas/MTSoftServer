@@ -43,8 +43,7 @@ export default {
         return parsedDate >= twoWeeksAgo && parsedDate <= oneMonthAhead;
       });
 
-      if (filtered.length === 0)
-        return response(res, false, null, "Grafikas nerastas");
+      if (filtered.length === 0) return response(res, false, null, "Grafikas nerastas");
 
       return response(res, true, filtered);
     } catch (error) {
@@ -70,8 +69,7 @@ export default {
           worker,
         });
 
-        if (!existingSchedule)
-          return response(res, false, null, "Klaida saugant");
+        if (!existingSchedule) return response(res, false, null, "Klaida saugant");
 
         const responseData = { date, worker };
 
@@ -84,8 +82,7 @@ export default {
       }
 
       const workerFound = await userSchema.findById(worker._id);
-      if (!workerFound)
-        return response(res, false, null, "Darbuotojas nerastas");
+      if (!workerFound) return response(res, false, null, "Darbuotojas nerastas");
 
       if (workerFound.accountType !== "Gamyba") {
         selectedJobs.forEach(async (job: Job) => {
