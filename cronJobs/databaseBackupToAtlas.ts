@@ -54,48 +54,32 @@
 import { exec } from "child_process";
 import cron from "node-cron";
 import fs from "fs";
-import dotenv from "dotenv";
 
-// Load environment variables (optional, if you use .env file)
-dotenv.config();
+export const restoreDatabaseToAtlas = () => {
+  cron.schedule("57 22 * * *", () => {
+    console.log("🚀 Restoring MongoDB backup to Atlas...");
 
-export const databaseBackupToAtlas = () => {
-  // Schedule the backup job
-  cron.schedule("55 22 * * *", () => {
-    console.log("🚀 Starting database backup to Atlas...");
+    const backupFile = `C:/MTwebsite/mongodbBackups/mongo_backup_${
+      new Date().toISOString().split("T")[0]
+    }.gz`;
 
-    const todayDate = new Date().toISOString().split("T")[0];
-    const backupFile = `C:/MTwebsite/mongodbBackups/mongo_backup_${todayDate}.gz`;
-
-    // Check if backup file exists
     if (!fs.existsSync(backupFile)) {
-      console.error("❌ Backup file missing! Skipping Atlas sync.");
+      console.error("❌ Backup file missing! Skipping Atlas restore.");
       return;
     }
 
-    const mongoRestorePath = `"C:\\MTwebsite\\mongodb\\bin\\mongorestore.exe"`;
     const atlasURI = process.env.MONGODB_URI_REMOTE2;
+    const mongoRestorePath = `"C:\\MTwebsite\\mongodb\\bin\\mongorestore.exe"`;
 
-    // STEP 1: Restore the Backup
-    const restoreCommand = `
-      ${mongoRestorePath} 
-      --gzip 
-      --archive="${backupFile}" 
-      --nsFrom=moderniTvora.* 
-      --nsTo=ModerniTvora.* 
-      --drop 
-      --uri="${atlasURI}"
-    `;
+    const restoreCommand = `${mongoRestorePath} --gzip --archive="${backupFile}" --uri="${atlasURI}" --drop`;
 
-    console.log("🔄 Restoring backup to Atlas...");
-
-    exec(restoreCommand.replace(/\s+/g, " "), (error, stdout, stderr) => {
+    exec(restoreCommand, (error, stdout, stderr) => {
       if (error) {
-        console.error("❌ Restore to Atlas failed:", stderr);
-        return;
+        console.error("❌ Restore failed:", stderr);
+      } else {
+        console.log("✅ Database successfully synced to Atlas!");
+        console.log("STDOUT:", stdout);
       }
-      console.log("✅ Database successfully synced to Atlas!");
-      console.log(stdout);
     });
   });
 };
