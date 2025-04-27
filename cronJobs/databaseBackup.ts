@@ -82,20 +82,13 @@ import dotenv from "dotenv";
 dotenv.config();
 
 export const backupDatabase = () => {
-  cron.schedule("37 00 * * *", () => {
+  cron.schedule("48 00 * * *", () => {
     console.log("Running daily MongoDB backup...");
 
     const mongoDumpPath = "C:\\MTwebsite\\mongodb\\bin\\mongodump.exe";
     const gzBackupFile = `C:/MTwebsite/mongodbBackups/mongo_backup_${
       new Date().toISOString().split("T")[0]
     }.gz`;
-    const jsonBackupDir = "C:/MTwebsite/mongodbBackups/json";
-
-    if (!fs.existsSync(jsonBackupDir)) {
-      fs.mkdirSync(jsonBackupDir, { recursive: true });
-    }
-
-    const atlasURI = process.env.MONGODB_URI_REMOTE2;
 
     // Run mongodump to create .gz backup
     exec(
@@ -113,47 +106,46 @@ export const backupDatabase = () => {
     const collections = ["schedule", "clients"];
 
     collections.forEach((collection) => {
-      const jsonBackupFile: any = `C:/MTwebsite/mongodbBackups/${collection}_backup_${
+      const jsonBackupFile = `C:/MTwebsite/mongodbBackups/json/${collection}_backup_${
         new Date().toISOString().split("T")[0]
       }.json`;
 
-      if (!fs.existsSync(jsonBackupFile)) {
-        console.error(`Backup file for collection ${collection} missing! Skipping Atlas restore.`);
-        return;
-      }
+      const exportCommand = `"C:\\MTwebsite\\mongodb\\bin\\mongoexport.exe" --uri="mongodb://localhost:27017" --db=moderniTvora --collection=${collection} --out="${jsonBackupFile}" --jsonArray`;
 
-      const restoreCommand = `"C:\\MTwebsite\\mongodb\\bin\\mongoimport.exe" --uri="${atlasURI}" --db=ModerniTvora --collection=${collection} --file="${jsonBackupFile}" --jsonArray --drop`;
-
-      exec(restoreCommand, (error, stdout, stderr) => {
+      exec(exportCommand, (error, stdout, stderr) => {
         if (error) {
-          console.error(`Restore failed for collection ${collection}:`, stderr);
+          console.error(`Backup failed for collection ${collection}:`, stderr);
         } else {
-          console.log(`Collection ${collection} successfully synced to Atlas!`);
+          console.log(
+            `Backup completed successfully for collection ${collection}:`,
+            jsonBackupFile
+          );
         }
       });
     });
 
-    // Clean up old backups (older than 7 days)
+    // Clean up backups older than 7 days json
     exec(
-      `forfiles /p "C:/MTwebsite/mongodbBackups/" /m mongo_backup_*.gz /d -7 /c "cmd /c del @file"`,
+      `forfiles /p "C:\\MTwebsite\\mongodbBackups\\json" /m *_backup_*.json /d -7 /c "cmd /c del @file"`,
       (error, stdout, stderr) => {
         if (error) {
-          console.error("❌ GZ Old backup cleanup failed:", stderr);
+          console.error("Old backup cleanup failed:", stderr);
         } else {
-          console.log("✅ GZ Old backups deleted.");
-        }
-      }
-    );
-
-    exec(
-      `forfiles /p "${jsonBackupDir}" /m *_backup_*.json /d -7 /c "cmd /c del @file"`,
-      (error, stdout, stderr) => {
-        if (error) {
-          console.error("❌ JSON Old backup cleanup failed:", stderr);
-        } else {
-          console.log("✅ JSON Old backups deleted.");
+          console.log("Old backups deleted.");
         }
       }
     );
   });
+
+  // Clean up old backups older than 7 days .gz
+  exec(
+    `forfiles /p "C:\\MTwebsite\\mongodbBackups\\" /m mongo_backup_*.gz /d -7 /c "cmd /c del @file"`,
+    (error, stdout, stderr) => {
+      if (error) {
+        console.error("❌ GZ Old backup cleanup failed:", stderr);
+      } else {
+        console.log("✅ GZ Old backups deleted.");
+      }
+    }
+  );
 };
