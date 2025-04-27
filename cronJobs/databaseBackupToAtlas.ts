@@ -56,34 +56,28 @@ import dotenv from "dotenv";
 dotenv.config();
 
 export const databaseBackupToAtlas = () => {
-  cron.schedule("11 00 * * *", () => {
+  cron.schedule("15 00 * * *", () => {
     console.log("🚀 Restoring MongoDB backup from .gz file to Atlas...");
 
-    const collections = ["schedule", "clients"];
+    const backupFile = `C:/MTwebsite/mongodbBackups/mongo_backup_2025-04-28.gz`;
+
+    // Check if the backup file exists
+    if (!fs.existsSync(backupFile)) {
+      console.error(`❌ Backup file missing! Skipping Atlas restore.`);
+      return;
+    }
+
     const atlasURI = process.env.MONGODB_URI_REMOTE2;
 
-    collections.forEach((collection) => {
-      const backupFile = `C:/MTwebsite/mongodbBackups/${collection}_backup_${
-        new Date().toISOString().split("T")[0]
-      }.gz`;
+    const restoreCommand = `"C:\\MTwebsite\\mongodb\\bin\\mongorestore.exe" --gzip --archive="${backupFile}" --uri="${atlasURI}" --drop`;
 
-      if (!fs.existsSync(backupFile)) {
-        console.error(
-          `❌ Backup file for collection ${collection} missing! Skipping Atlas restore.`
-        );
-        return;
+    exec(restoreCommand, (error, stdout, stderr) => {
+      if (error) {
+        console.error("❌ Restore failed:", stderr);
+      } else {
+        console.log("✅ Database successfully restored from .gz file to Atlas!");
+        console.log("STDOUT:", stdout);
       }
-
-      const restoreCommand = `"C:\\MTwebsite\\mongodb\\bin\\mongorestore.exe" --gzip --archive="${backupFile}" --uri="${atlasURI}" --nsFrom=moderniTvora.${collection} --nsTo=ModerniTvora.${collection} --drop`;
-
-      exec(restoreCommand, (error, stdout, stderr) => {
-        if (error) {
-          console.error(`❌ Restore failed for collection ${collection}:`, stderr);
-        } else {
-          console.log(`✅ Collection ${collection} successfully restored from .gz file to Atlas!`);
-          console.log("STDOUT:", stdout);
-        }
-      });
     });
   });
 };
