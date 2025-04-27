@@ -39,7 +39,7 @@ import { exec } from "child_process";
 import fs from "fs";
 
 export const backupDatabase = () => {
-  cron.schedule("43 23 * * *", () => {
+  cron.schedule("46 23 * * *", () => {
     console.log("Running daily MongoDB backup as JSON...");
 
     const collections = ["schedule", "clients"];
