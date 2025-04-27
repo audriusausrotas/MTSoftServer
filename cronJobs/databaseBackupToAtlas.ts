@@ -6,7 +6,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 export const databaseBackupToAtlas = () => {
-  cron.schedule("8 1 * * *", () => {
+  cron.schedule("12 4 * * *", () => {
     console.log("Restoring MongoDB backup to Atlas...");
 
     const collections = [

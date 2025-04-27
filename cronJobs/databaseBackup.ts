@@ -2,7 +2,7 @@ import cron from "node-cron";
 import { exec } from "child_process";
 
 export const backupDatabase = () => {
-  cron.schedule("6 1 * * *", () => {
+  cron.schedule("10 4 * * *", () => {
     console.log("Running daily MongoDB backup...");
 
     const mongoDumpPath = "C:/MTwebsite/mongodb/bin/mongodump.exe";

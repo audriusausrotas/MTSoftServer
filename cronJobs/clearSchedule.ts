@@ -26,7 +26,7 @@ import cron from "node-cron";
 import scheduleSchema from "../schemas/scheduleSchema";
 
 export const clearSchedule = () => {
-  cron.schedule("1 4 * * *", async () => {
+  cron.schedule("2 4 * * *", async () => {
     console.log("Cleaning up old schedules...");
 
     try {
