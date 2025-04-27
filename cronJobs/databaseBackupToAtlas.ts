@@ -61,7 +61,7 @@ dotenv.config();
 
 export const databaseBackupToAtlas = () => {
   // Schedule the backup job
-  cron.schedule("36 22 * * *", () => {
+  cron.schedule("50 22 * * *", () => {
     console.log("🚀 Starting database backup to Atlas...");
 
     const todayDate = new Date().toISOString().split("T")[0];
@@ -74,7 +74,7 @@ export const databaseBackupToAtlas = () => {
     }
 
     const mongoRestorePath = `"C:\\MTwebsite\\mongodb\\bin\\mongorestore.exe"`;
-    const atlasURI = process.env.MONGODB_URI_REMOTE;
+    const atlasURI = process.env.MONGODB_URI_REMOTE2;
 
     // STEP 1: Restore the Backup
     const restoreCommand = `
