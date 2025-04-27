@@ -59,7 +59,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 export const databaseBackupToAtlas = () => {
-  cron.schedule("12 23 * * *", () => {
+  cron.schedule("23 23 * * *", () => {
     console.log("🚀 Restoring MongoDB backup to Atlas...");
 
     const backupFile = `C:/MTwebsite/mongodbBackups/mongo_backup_${
@@ -74,13 +74,7 @@ export const databaseBackupToAtlas = () => {
     const atlasURI = process.env.MONGODB_URI_REMOTE2;
     const mongoRestorePath = `"C:\\MTwebsite\\mongodb\\bin\\mongorestore.exe"`;
 
-    const restoreCommand = `${mongoRestorePath} 
-    --gzip 
-    --archive="${backupFile}" 
-    --uri="${atlasURI}" 
-    --nsFrom=moderniTvora.* ^
-    --nsTo=ModerniTvora.* ^ 
-    --drop`;
+    const restoreCommand = `${mongoRestorePath} --gzip --archive="${backupFile}" --uri="${atlasURI}" --nsFrom=moderniTvora.* --nsTo=ModerniTvora.* --drop`;
 
     console.log(restoreCommand);
 
