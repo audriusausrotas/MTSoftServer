@@ -6,12 +6,11 @@ import emit from "../sockets/emits";
 import cron from "node-cron";
 
 export const clearUnconfirmed = () => {
-  cron.schedule("48 9 * * *", async () => {
+  cron.schedule("30 2 * * *", async () => {
     console.log("Cleaning up unconfirmed projects...");
 
     try {
       const projects = await projectSchema.find();
-      console.log(projects);
       if (!projects.length) {
         console.log("No projects found for cleanup.");
         return;
@@ -19,7 +18,6 @@ export const clearUnconfirmed = () => {
 
       const currentDate = new Date();
       const deletedUnconfirmed: any[] = [];
-      console.log(currentDate);
 
       const deletionPromises = projects.map(async (project: any) => {
         try {
@@ -47,7 +45,7 @@ export const clearUnconfirmed = () => {
           console.error(`Error deleting project ${project._id}:`, error);
         }
       });
-      console.log(deletedUnconfirmed);
+
       await Promise.all(deletionPromises);
 
       console.log(`Deleted ${deletedUnconfirmed.length} unconfirmed projects.`);
