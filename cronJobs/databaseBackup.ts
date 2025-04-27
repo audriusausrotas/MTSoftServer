@@ -18,7 +18,6 @@ export const backupDatabase = () => {
       }
     });
 
-    // ✅ Delete backups older than 7 days
     exec(
       `forfiles /p "C:\\MTwebsite\\mongodbBackups" /m mongo_backup_*.gz /d -7 /c "cmd /c del @file"`,
       (error, stdout, stderr) => {
