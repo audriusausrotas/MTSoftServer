@@ -34,16 +34,13 @@ export const clearSchedule = () => {
       const twoWeeksAgo = new Date();
       twoWeeksAgo.setDate(today.getDate() - 14);
 
-      // 1. Get all schedules
       const schedules = await scheduleSchema.find();
 
-      // 2. Filter out the old ones
       const oldSchedules = schedules.filter((s: any) => {
-        const parsedDate = new Date(s.date); // same like in your getSchedules
+        const parsedDate = new Date(s.date);
         return parsedDate < twoWeeksAgo;
       });
 
-      // 3. Delete them by IDs
       const idsToDelete = oldSchedules.map((s) => s._id);
 
       if (idsToDelete.length > 0) {
