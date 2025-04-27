@@ -54,9 +54,12 @@
 import { exec } from "child_process";
 import cron from "node-cron";
 import fs from "fs";
+import dotenv from "dotenv";
 
-export const restoreDatabaseToAtlas = () => {
-  cron.schedule("57 22 * * *", () => {
+dotenv.config();
+
+export const databaseBackupToAtlas = () => {
+  cron.schedule("00 23 * * *", () => {
     console.log("🚀 Restoring MongoDB backup to Atlas...");
 
     const backupFile = `C:/MTwebsite/mongodbBackups/mongo_backup_${
