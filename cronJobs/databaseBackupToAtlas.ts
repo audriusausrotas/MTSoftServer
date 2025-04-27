@@ -3,12 +3,14 @@ import cron from "node-cron";
 import fs from "fs";
 
 export const databaseBackupToAtlas = () => {
-  cron.schedule("38 10 * * *", () => {
+  cron.schedule("45 10 * * *", () => {
     console.log("Starting database backup to Atlas...");
 
     const backupFile = `C:/MTwebsite/mongodbBackups/mongo_backup_${
       new Date().toISOString().split("T")[0]
     }.gz`;
+
+    console.log(backupFile);
 
     if (!fs.existsSync(backupFile)) {
       console.error("Backup file missing! Skipping Atlas sync.");
