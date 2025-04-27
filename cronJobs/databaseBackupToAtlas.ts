@@ -57,8 +57,8 @@ import cron from "node-cron";
 import fs from "fs";
 
 export const databaseBackupToAtlas = () => {
-  cron.schedule("49 21 * * *", () => {
-    console.log("Starting database backup to Atlas...");
+  cron.schedule("55 21 * * *", () => {
+    console.log("🚀 Starting database backup to Atlas...");
 
     const backupFile = `C:/MTwebsite/mongodbBackups/mongo_backup_${
       new Date().toISOString().split("T")[0]
@@ -70,19 +70,33 @@ export const databaseBackupToAtlas = () => {
     }
 
     const mongoRestorePath = `"C:\\MTwebsite\\mongodb\\bin\\mongorestore.exe"`;
+    const mongoShellPath = `"C:\\MTwebsite\\mongodb\\bin\\mongosh.exe"`;
     const atlasURI = process.env.MONGODB_URI_REMOTE;
 
+    // STEP 1: Drop the Entire Database in Atlas Before Restoring
     exec(
-      `${mongoRestorePath} --gzip --archive=${backupFile} 
-       --nsFrom=moderniTvora.* --nsTo=ModerniTvora.* --drop
-       --uri=${atlasURI}`,
-
-      (restoreError, restoreStdout, restoreStderr) => {
-        if (restoreError) {
-          console.error("❌ Restore to Atlas failed:", restoreStderr);
+      `${mongoShellPath} --eval "use ModerniTvora; db.dropDatabase();" --uri=${atlasURI}`,
+      (dropError, dropStdout, dropStderr) => {
+        if (dropError) {
+          console.error("❌ Failed to drop old database:", dropStderr);
           return;
         }
-        console.log("✅ Database successfully synced to Atlas!");
+        console.log("✅ Old database dropped successfully!");
+
+        // STEP 2: Restore the Backup After Dropping
+        exec(
+          `${mongoRestorePath} --gzip --archive=${backupFile} 
+           --nsFrom=moderniTvora.* --nsTo=ModerniTvora.* --drop
+           --uri=${atlasURI}`,
+
+          (restoreError, restoreStdout, restoreStderr) => {
+            if (restoreError) {
+              console.error("❌ Restore to Atlas failed:", restoreStderr);
+              return;
+            }
+            console.log("✅ Database successfully synced to Atlas!");
+          }
+        );
       }
     );
   });
