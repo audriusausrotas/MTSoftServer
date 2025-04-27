@@ -6,10 +6,30 @@ import dotenv from "dotenv";
 dotenv.config();
 
 export const databaseBackupToAtlas = () => {
-  cron.schedule("53 00 * * *", () => {
+  cron.schedule("00 1 * * *", () => {
     console.log("Restoring MongoDB backup to Atlas...");
 
-    const collections = ["schedule", "clients"];
+    const collections = [
+      "archive",
+      "backup",
+      "bonus",
+      "clients",
+      "defaultValues",
+      "gamyba",
+      "gates",
+      "montavimas",
+      "potentialClients",
+      "potentialClientsUnsuscribed",
+      "products",
+      "projects",
+      "projectsDeleted",
+      "projectsUnconfirmed",
+      "projectsVersions",
+      "schedule",
+      "selectData",
+      "userRights",
+      "users",
+    ];
 
     const atlasURI = process.env.MONGODB_URI_REMOTE2;
 
@@ -25,14 +45,11 @@ export const databaseBackupToAtlas = () => {
 
       const restoreCommand = `"C:/MTwebsite/mongodb/bin/mongoimport.exe" --uri="${atlasURI}" --db=ModerniTvora --collection=${collection} --file="${backupFile}" --jsonArray --drop`;
 
-      console.log(`Executing restore command for collection ${collection}: ${restoreCommand}`);
-
       exec(restoreCommand, (error, stdout, stderr) => {
         if (error) {
           console.error(`Restore failed for collection ${collection}:`, stderr);
         } else {
           console.log(`Collection ${collection} successfully synced to Atlas!`);
-          console.log("STDOUT:", stdout);
         }
       });
     });
