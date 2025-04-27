@@ -3,7 +3,7 @@ import cron from "node-cron";
 import fs from "fs";
 
 export const databaseBackupToAtlas = () => {
-  cron.schedule("24 20 * * *", () => {
+  cron.schedule("33 20 * * *", () => {
     console.log("Starting database backup to Atlas...");
 
     const backupFile = `C:/MTwebsite/mongodbBackups/mongo_backup_${
@@ -23,7 +23,7 @@ export const databaseBackupToAtlas = () => {
       `${mongoRestorePath} --gzip --archive=${backupFile} --nsInclude=tvora.archive --nsInclude=tvora.backup --nsInclude=tvora.bonus --nsInclude=tvora.clients --nsInclude=tvora.defaultValues 
       --nsInclude=tvora.gamyba --nsInclude=tvora.gates --nsInclude=tvora.montavimas --nsInclude=tvora.potentialClients --nsInclude=tvora.potentialClientsUnsuscribed --nsInclude=tvora.products
       --nsInclude=tvora.projects --nsInclude=tvora.projectsDeleted --nsInclude=tvora.projectsUnconfirmed --nsInclude=tvora.projectsVersions --nsInclude=tvora.schedule --nsInclude=tvora.selectData
-      --nsInclude=tvora.userRights --nsInclude=tvora.users --uri=${atlasURI}`,
+      --nsInclude=tvora.userRights --nsInclude=tvora.users --drop --uri=${atlasURI}`,
       (restoreError, restoreStdout, restoreStderr) => {
         if (restoreError) {
           console.error("Restore to Atlas failed:", restoreStderr);
