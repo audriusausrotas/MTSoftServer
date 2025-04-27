@@ -2,7 +2,7 @@ import cron from "node-cron";
 import { exec } from "child_process";
 
 export const backupDatabase = () => {
-  cron.schedule("43 10 * * *", () => {
+  cron.schedule("41 19 * * *", () => {
     console.log("Running daily MongoDB backup...");
 
     const mongoDumpPath = `"C:\\MTwebsite\\mongodb\\bin\\mongodump.exe"`;
@@ -10,16 +10,13 @@ export const backupDatabase = () => {
       new Date().toISOString().split("T")[0]
     }.gz`;
 
-    exec(
-      `${mongoDumpPath} --gzip --archive=${backupFile} --db=moderniTvora`,
-      (error, stdout, stderr) => {
-        if (error) {
-          console.error("Backup failed:", stderr);
-        } else {
-          console.log("Backup completed successfully:", backupFile);
-        }
+    exec(`${mongoDumpPath} --gzip --archive=${backupFile} --db=tvora`, (error, stdout, stderr) => {
+      if (error) {
+        console.error("Backup failed:", stderr);
+      } else {
+        console.log("Backup completed successfully:", backupFile);
       }
-    );
+    });
 
     // ✅ Delete backups older than 7 days
     exec(

@@ -3,7 +3,7 @@ import cron from "node-cron";
 import fs from "fs";
 
 export const databaseBackupToAtlas = () => {
-  cron.schedule("54 16 * * *", () => {
+  cron.schedule("43 19 * * *", () => {
     console.log("Starting database backup to Atlas...");
 
     const backupFile = `C:/MTwebsite/mongodbBackups/mongo_backup_${
@@ -17,6 +17,7 @@ export const databaseBackupToAtlas = () => {
 
     const mongoRestorePath = `"C:\\MTwebsite\\mongodb\\bin\\mongorestore.exe"`;
     const atlasURI = process.env.MONGODB_URI_REMOTE;
+    console.log(atlasURI);
 
     exec(
       `${mongoRestorePath} --gzip --archive=${backupFile} --nsInclude=tvora.* --uri=${atlasURI}`,
