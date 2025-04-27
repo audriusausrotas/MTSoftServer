@@ -2,7 +2,7 @@ import cron from "node-cron";
 import scheduleSchema from "../schemas/scheduleSchema";
 
 export const clearSchedule = () => {
-  cron.schedule("55 9 * * *", async () => {
+  cron.schedule("1 10 * * *", async () => {
     console.log("Cleaning up old schedules...");
 
     try {
@@ -12,7 +12,7 @@ export const clearSchedule = () => {
 
       // ✅ Delete schedules older than 2 weeks
       console.log(twoWeeksAgo);
-      const result = await scheduleSchema.deleteMany({ date: { $lt: new Date(twoWeeksAgo) } });
+      const result = await scheduleSchema.deleteMany({ date: { $lte: twoWeeksAgo } });
       console.log(result);
 
       console.log(`Deleted ${result.deletedCount} old schedules.`);
