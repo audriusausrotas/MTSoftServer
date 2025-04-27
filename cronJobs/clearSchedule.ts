@@ -24,25 +24,27 @@
 
 import cron from "node-cron";
 import scheduleSchema from "../schemas/scheduleSchema";
-import { Schedule } from "../data/interfaces";
 
 export const clearSchedule = () => {
-  cron.schedule("20 10 * * *", async () => {
+  cron.schedule("33 10 * * *", async () => {
     console.log("Cleaning up old schedules...");
 
     try {
-      const twoWeeksAgo = new Date(Date.now() - 14 * 24 * 60 * 60 * 1000);
+      const today = new Date();
+      const twoWeeksAgo = new Date();
+      twoWeeksAgo.setDate(today.getDate() - 14);
 
-      const allSchedules: Schedule[] = await scheduleSchema.find();
+      // 1. Get all schedules
+      const schedules = await scheduleSchema.find();
 
-      const oldSchedules = allSchedules.filter((schedule) => {
-        const scheduleDate = new Date(schedule.date);
-        return scheduleDate < twoWeeksAgo;
+      // 2. Filter out the old ones
+      const oldSchedules = schedules.filter((s: any) => {
+        const parsedDate = new Date(s.date); // same like in your getSchedules
+        return parsedDate < twoWeeksAgo;
       });
 
-      console.log(oldSchedules.length);
-
-      const idsToDelete = oldSchedules.map((schedule) => schedule._id);
+      // 3. Delete them by IDs
+      const idsToDelete = oldSchedules.map((s) => s._id);
 
       if (idsToDelete.length > 0) {
         const result = await scheduleSchema.deleteMany({ _id: { $in: idsToDelete } });

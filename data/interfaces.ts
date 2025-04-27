@@ -476,7 +476,7 @@ export interface Job {
 
 export interface Schedule {
   _id: Types.ObjectId;
-  date: string;
+  date: Date;
   worker: Worker;
   jobs: [Job] | [];
   comment: string;
