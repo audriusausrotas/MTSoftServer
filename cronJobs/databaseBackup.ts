@@ -75,17 +75,17 @@ export const backupDatabase = () => {
         }
       }
     );
-  });
 
-  // Clean up old backups older than 7 days .gz
-  exec(
-    `forfiles /p "C:/MTwebsite/mongodbBackups/" /m mongo_backup_*.gz /d -7 /c "cmd /c del @file"`,
-    (error, stdout, stderr) => {
-      if (error) {
-        console.error(".gz old backup cleanup failed:", stderr);
-      } else {
-        console.log(".gz old backups deleted.");
+    // Clean up old backups older than 7 days .gz
+    exec(
+      `forfiles /p "C:/MTwebsite/mongodbBackups/" /m mongo_backup_*.gz /d -7 /c "cmd /c del @file"`,
+      (error, stdout, stderr) => {
+        if (error) {
+          console.error(".gz old backup cleanup failed:", stderr);
+        } else {
+          console.log(".gz old backups deleted.");
+        }
       }
-    }
-  );
+    );
+  });
 };
