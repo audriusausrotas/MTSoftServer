@@ -61,7 +61,7 @@ dotenv.config();
 
 export const databaseBackupToAtlas = () => {
   // Schedule the backup job
-  cron.schedule("50 22 * * *", () => {
+  cron.schedule("55 22 * * *", () => {
     console.log("🚀 Starting database backup to Atlas...");
 
     const todayDate = new Date().toISOString().split("T")[0];
