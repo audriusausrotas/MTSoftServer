@@ -62,29 +62,36 @@ export const databaseBackupToAtlas = () => {
   cron.schedule("23 23 * * *", () => {
     console.log("🚀 Restoring MongoDB backup to Atlas...");
 
-    const backupFile = `C:/MTwebsite/mongodbBackups/mongo_backup_${
-      new Date().toISOString().split("T")[0]
-    }.gz`;
-
-    if (!fs.existsSync(backupFile)) {
-      console.error("❌ Backup file missing! Skipping Atlas restore.");
-      return;
-    }
+    const collections = ["schedule", "clients"];
 
     const atlasURI = process.env.MONGODB_URI_REMOTE2;
-    const mongoRestorePath = `"C:\\MTwebsite\\mongodb\\bin\\mongorestore.exe"`;
 
-    const restoreCommand = `${mongoRestorePath} --gzip --archive="${backupFile}" --uri="${atlasURI}" --nsFrom=moderniTvora.* --nsTo=ModerniTvora.* --drop`;
+    collections.forEach((collection) => {
+      const backupFile = `C:/MTwebsite/mongodbBackups/${collection}_backup_${
+        new Date().toISOString().split("T")[0]
+      }.json`;
 
-    console.log(restoreCommand);
-
-    exec(restoreCommand, (error, stdout, stderr) => {
-      if (error) {
-        console.error("❌ Restore failed:", stderr);
-      } else {
-        console.log("✅ Database successfully synced to Atlas!");
-        console.log("STDOUT:", stdout);
+      if (!fs.existsSync(backupFile)) {
+        console.error(
+          `❌ Backup file for collection ${collection} missing! Skipping Atlas restore.`
+        );
+        return;
       }
+
+      // Command to restore each collection from JSON
+      const restoreCommand = `"C:\\MTwebsite\\mongodb\\bin\\mongoimport.exe" --uri="${atlasURI}" --db=ModerniTvora --collection=${collection} --file="${backupFile}" --jsonArray --drop`;
+
+      console.log(`Restoring collection: ${collection}`);
+      console.log(restoreCommand);
+
+      exec(restoreCommand, (error, stdout, stderr) => {
+        if (error) {
+          console.error(`❌ Restore failed for collection ${collection}:`, stderr);
+        } else {
+          console.log(`✅ Collection ${collection} successfully synced to Atlas!`);
+          console.log("STDOUT:", stdout);
+        }
+      });
     });
   });
 };
