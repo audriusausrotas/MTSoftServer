@@ -51,13 +51,12 @@
 //     );
 //   });
 // };
-
 import { exec } from "child_process";
 import cron from "node-cron";
 import fs from "fs";
 
 export const databaseBackupToAtlas = () => {
-  cron.schedule("3 22 * * *", () => {
+  cron.schedule("9 22 * * *", () => {
     console.log("🚀 Starting database backup to Atlas...");
 
     const backupFile = `C:/MTwebsite/mongodbBackups/mongo_backup_${
@@ -74,9 +73,8 @@ export const databaseBackupToAtlas = () => {
     const atlasURI = process.env.MONGODB_URI_REMOTE;
 
     // STEP 1: Drop the Entire Database in Atlas Before Restoring
-
     exec(
-      `"C:\\MTwebsite\\mongodb\\bin\\mongosh.exe" "mongodb+srv://audrius:Man0pass@tvora.gpj0kpq.mongodb.net/ModerniTvora" --eval "db.dropDatabase();"`,
+      `"C:\\MTwebsite\\mongodb\\bin\\mongosh.exe" --host tvora.gpj0kpq.mongodb.net --username ${process.env.USR} --password ${process.env.PSS} --eval "use  ${process.env.USE}; db.dropDatabase();"`,
       (dropError, dropStdout, dropStderr) => {
         if (dropError) {
           console.error("❌ Failed to drop old database:", dropStderr);
