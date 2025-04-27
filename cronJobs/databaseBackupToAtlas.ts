@@ -57,7 +57,7 @@ import cron from "node-cron";
 import fs from "fs";
 
 export const databaseBackupToAtlas = () => {
-  cron.schedule("55 21 * * *", () => {
+  cron.schedule("3 22 * * *", () => {
     console.log("🚀 Starting database backup to Atlas...");
 
     const backupFile = `C:/MTwebsite/mongodbBackups/mongo_backup_${
@@ -74,8 +74,9 @@ export const databaseBackupToAtlas = () => {
     const atlasURI = process.env.MONGODB_URI_REMOTE;
 
     // STEP 1: Drop the Entire Database in Atlas Before Restoring
+
     exec(
-      `${mongoShellPath} --eval "use ModerniTvora; db.dropDatabase();" --uri=${atlasURI}`,
+      `"C:\\MTwebsite\\mongodb\\bin\\mongosh.exe" "mongodb+srv://audrius:Man0pass@tvora.gpj0kpq.mongodb.net/ModerniTvora" --eval "db.dropDatabase();"`,
       (dropError, dropStdout, dropStderr) => {
         if (dropError) {
           console.error("❌ Failed to drop old database:", dropStderr);
