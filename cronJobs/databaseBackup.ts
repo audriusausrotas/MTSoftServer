@@ -5,7 +5,7 @@
 //   cron.schedule("6 00 * * *", () => {
 //     console.log("🚀 Running daily MongoDB backup...");
 
-//     const mongoDumpPath = "C:\\MTwebsite\\mongodb\\bin\\mongodump.exe";
+//     const mongoDumpPath = "C:/MTwebsite/mongodb/bin/mongodump.exe";
 //     const backupFile = `C:/MTwebsite/mongodbBackups/mongo_backup_${
 //       new Date().toISOString().split("T")[0]
 //     }.gz`;
@@ -23,7 +23,7 @@
 
 //     // Clean up old backups (older than 7 days)
 //     exec(
-//       `forfiles /p "C:\\MTwebsite\\mongodbBackups" /m mongo_backup_*.gz /d -7 /c "cmd /c del @file"`,
+//       `forfiles /p "C:/MTwebsite/mongodbBackups" /m mongo_backup_*.gz /d -7 /c "cmd /c del @file"`,
 //       (error, stdout, stderr) => {
 //         if (error) {
 //           console.error("❌ Old backup cleanup failed:", stderr);
@@ -60,7 +60,7 @@
 //         return;
 //       }
 
-//       const restoreCommand = `"C:\\MTwebsite\\mongodb\\bin\\mongoimport.exe" --uri="${atlasURI}" --db=ModerniTvora --collection=${collection} --file="${backupFile}" --jsonArray --drop`;
+//       const restoreCommand = `"C:/MTwebsite/mongodb/bin/mongoimport.exe" --uri="${atlasURI}" --db=ModerniTvora --collection=${collection} --file="${backupFile}" --jsonArray --drop`;
 
 //       exec(restoreCommand, (error, stdout, stderr) => {
 //         if (error) {
@@ -75,17 +75,12 @@
 
 import cron from "node-cron";
 import { exec } from "child_process";
-import fs from "fs";
-import path from "path";
-import dotenv from "dotenv";
-
-dotenv.config();
 
 export const backupDatabase = () => {
   cron.schedule("48 00 * * *", () => {
     console.log("Running daily MongoDB backup...");
 
-    const mongoDumpPath = "C:\\MTwebsite\\mongodb\\bin\\mongodump.exe";
+    const mongoDumpPath = "C:/MTwebsite/mongodb/bin/mongodump.exe";
     const gzBackupFile = `C:/MTwebsite/mongodbBackups/mongo_backup_${
       new Date().toISOString().split("T")[0]
     }.gz`;
@@ -110,7 +105,7 @@ export const backupDatabase = () => {
         new Date().toISOString().split("T")[0]
       }.json`;
 
-      const exportCommand = `"C:\\MTwebsite\\mongodb\\bin\\mongoexport.exe" --uri="mongodb://localhost:27017" --db=moderniTvora --collection=${collection} --out="${jsonBackupFile}" --jsonArray`;
+      const exportCommand = `"C:/MTwebsite/mongodb/bin/mongoexport.exe" --uri="mongodb://localhost:27017" --db=moderniTvora --collection=${collection} --out="${jsonBackupFile}" --jsonArray`;
 
       exec(exportCommand, (error, stdout, stderr) => {
         if (error) {
@@ -126,12 +121,12 @@ export const backupDatabase = () => {
 
     // Clean up backups older than 7 days json
     exec(
-      `forfiles /p "C:\\MTwebsite\\mongodbBackups\\json" /m *_backup_*.json /d -7 /c "cmd /c del @file"`,
+      `forfiles /p "C:/MTwebsite/mongodbBackups/json" /m *_backup_*.json /d -7 /c "cmd /c del @file"`,
       (error, stdout, stderr) => {
         if (error) {
-          console.error("Old backup cleanup failed:", stderr);
+          console.error("json old backup cleanup failed:", stderr);
         } else {
-          console.log("Old backups deleted.");
+          console.log("json old backups deleted.");
         }
       }
     );
@@ -139,12 +134,12 @@ export const backupDatabase = () => {
 
   // Clean up old backups older than 7 days .gz
   exec(
-    `forfiles /p "C:\\MTwebsite\\mongodbBackups\\" /m mongo_backup_*.gz /d -7 /c "cmd /c del @file"`,
+    `forfiles /p "C:/MTwebsite/mongodbBackups/" /m mongo_backup_*.gz /d -7 /c "cmd /c del @file"`,
     (error, stdout, stderr) => {
       if (error) {
-        console.error("❌ GZ Old backup cleanup failed:", stderr);
+        console.error(".gz old backup cleanup failed:", stderr);
       } else {
-        console.log("✅ GZ Old backups deleted.");
+        console.log(".gz old backups deleted.");
       }
     }
   );
