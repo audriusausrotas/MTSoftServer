@@ -56,7 +56,7 @@ import cron from "node-cron";
 import fs from "fs";
 
 export const databaseBackupToAtlas = () => {
-  cron.schedule("9 22 * * *", () => {
+  cron.schedule("12 22 * * *", () => {
     console.log("🚀 Starting database backup to Atlas...");
 
     const backupFile = `C:/MTwebsite/mongodbBackups/mongo_backup_${
@@ -72,30 +72,54 @@ export const databaseBackupToAtlas = () => {
     const mongoShellPath = `"C:\\MTwebsite\\mongodb\\bin\\mongosh.exe"`;
     const atlasURI = process.env.MONGODB_URI_REMOTE;
 
-    // STEP 1: Drop the Entire Database in Atlas Before Restoring
+    // STEP 1: Drop Collections Instead of Dropping the Database
+    const collections = [
+      "archive",
+      "backup",
+      "bonus",
+      "clients",
+      "defaultValues",
+      "gamyba",
+      "gates",
+      "montavimas",
+      "potentialClients",
+      "potentialClientsUnsuscribed",
+      "products",
+      "projects",
+      "projectsDeleted",
+      "projectsUnconfirmed",
+      "projectsVersions",
+      "schedule",
+      "selectData",
+      "userRights",
+      "users",
+    ];
+
+    collections.forEach((collection) => {
+      exec(
+        `"C:\\MTwebsite\\mongodb\\bin\\mongosh.exe" --host tvora.gpj0kpq.mongodb.net --username ${process.env.USR} --password ${process.env.PSS} --eval "use ${process.env.USE}; db.${collection}.drop();"`,
+        (dropError, dropStdout, dropStderr) => {
+          if (dropError) {
+            console.error(`❌ Failed to drop collection ${collection}:`, dropStderr);
+          } else {
+            console.log(`✅ Dropped collection: ${collection}`);
+          }
+        }
+      );
+    });
+
+    // STEP 2: Restore the Backup After Dropping Collections
     exec(
-      `"C:\\MTwebsite\\mongodb\\bin\\mongosh.exe" --host tvora.gpj0kpq.mongodb.net --username ${process.env.USR} --password ${process.env.PSS} --eval "use  ${process.env.USE}; db.dropDatabase();"`,
-      (dropError, dropStdout, dropStderr) => {
-        if (dropError) {
-          console.error("❌ Failed to drop old database:", dropStderr);
+      `${mongoRestorePath} --gzip --archive=${backupFile} 
+       --nsFrom=moderniTvora.* --nsTo=ModerniTvora.* --drop
+       --uri=${atlasURI}`,
+
+      (restoreError, restoreStdout, restoreStderr) => {
+        if (restoreError) {
+          console.error("❌ Restore to Atlas failed:", restoreStderr);
           return;
         }
-        console.log("✅ Old database dropped successfully!");
-
-        // STEP 2: Restore the Backup After Dropping
-        exec(
-          `${mongoRestorePath} --gzip --archive=${backupFile} 
-           --nsFrom=moderniTvora.* --nsTo=ModerniTvora.* --drop
-           --uri=${atlasURI}`,
-
-          (restoreError, restoreStdout, restoreStderr) => {
-            if (restoreError) {
-              console.error("❌ Restore to Atlas failed:", restoreStderr);
-              return;
-            }
-            console.log("✅ Database successfully synced to Atlas!");
-          }
-        );
+        console.log("✅ Database successfully synced to Atlas!");
       }
     );
   });
