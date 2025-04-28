@@ -15,6 +15,7 @@ const schemaMap = {
   unconfirmed: unconfirmedSchema,
   deleted: deletedSchema,
   backup: backupSchema,
+  finished: finishedSchema,
 };
 
 type Location = keyof typeof schemaMap;
