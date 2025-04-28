@@ -97,8 +97,8 @@ export default {
       const documents: any = await deletedSchema.find();
 
       for (const doc of documents) {
-        const created = doc.dateCreated.toISOString();
-        const exparation = doc.dateExparation.toISOString();
+        const created = doc.dateCreated;
+        const exparation = doc.dateExparation;
 
         console.log(created);
         console.log(exparation);
