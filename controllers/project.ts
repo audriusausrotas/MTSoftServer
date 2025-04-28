@@ -26,8 +26,7 @@ export default {
   getProjects: async (req: Request, res: Response) => {
     try {
       const projects = await projectSchema.find();
-      if (!projects.length)
-        return response(res, false, null, "Projektai nerasti");
+      if (!projects.length) return response(res, false, null, "Projektai nerasti");
 
       projects.reverse();
       return response(res, true, projects, "Prisijungimas sėkmingas");
@@ -55,8 +54,7 @@ export default {
 
       const deletedProject = new deletedSchema({ ...projectData });
       const deletedData = await deletedProject.save();
-      if (!deletedData)
-        return response(res, false, null, "Klaida trinant projektą");
+      if (!deletedData) return response(res, false, null, "Klaida trinant projektą");
 
       await projectSchema.findByIdAndDelete(_id);
       await installationSchema.findByIdAndDelete(_id);
@@ -72,98 +70,106 @@ export default {
 
   removeUnconfirmed: async (req: Request, res: Response) => {
     try {
-      const projects: any = await projectSchema.find();
-      if (!projects.length) return response(res, true, null, "Projektų nėra");
+      // const projects: any = await projectSchema.find();
+      // if (!projects.length) return response(res, true, null, "Projektų nėra");
 
-      for (let project of projects) {
-        if (project.dateCreated && project.dateExparation) {
-          project.dates = {
-            ...project.dates,
-            dateCreated: project.dateCreated,
-            dateExparation: project.dateExparation,
-          };
+      // for (let project of projects) {
+      //   if (project.dateCreated && project.dateExparation) {
+      //     project.dates = {
+      //       ...project.dates,
+      //       dateCreated: project.dateCreated,
+      //       dateExparation: project.dateExparation,
+      //     };
 
-          delete project.dateCreated;
-          delete project.dateExparation;
+      //     delete project.dateCreated;
+      //     delete project.dateExparation;
 
-          await project.save();
+      //     await project.save();
+      //   }
+      // }
+
+      // const unconfirmeds: any = await unconfirmedSchema.find();
+      // if (!unconfirmeds.length)
+      //   return response(res, true, null, "Projektų nėra");
+
+      // for (let unconfirmed of unconfirmeds) {
+      //   if (unconfirmed.dateCreated && unconfirmed.dateExparation) {
+      //     unconfirmed.dates = {
+      //       ...unconfirmed.dates,
+      //       dateCreated: unconfirmed.dateCreated,
+      //       dateExparation: unconfirmed.dateExparation,
+      //       dateArchieved: unconfirmed.dateExparation,
+      //     };
+
+      //     delete unconfirmed.dateCreated;
+      //     delete unconfirmed.dateExparation;
+
+      //     await unconfirmed.save();
+      //   }
+      // }
+
+      // const deleteds: any = await deletedSchema.find();
+      // if (!deleteds.length) return response(res, true, null, "Projektų nėra");
+
+      // for (let deleted of deleteds) {
+      //   if (deleted.dateCreated && deleted.dateExparation) {
+      //     deleted.dates = {
+      //       ...deleted.dates,
+      //       dateCreated: deleted.dateCreated,
+      //       dateExparation: deleted.dateExparation,
+      //       dateArchieved: deleted.dateExparation,
+      //     };
+
+      //     delete deleted.dateCreated;
+      //     delete deleted.dateExparation;
+
+      //     await deleted.save();
+      //   }
+      // }
+
+      await deletedSchema.updateMany(
+        { dateCreated: { $exists: true }, dateExparation: { $exists: true } },
+        {
+          $set: { dates: { dateCreated: "$dateCreated", dateExparation: "$dateExparation" } },
+          $unset: { dateCreated: "", dateExparation: "" },
         }
-      }
+      );
 
-      const unconfirmeds: any = await unconfirmedSchema.find();
-      if (!unconfirmeds.length)
-        return response(res, true, null, "Projektų nėra");
+      // const backups: any = await backupSchema.find();
+      // if (!backups.length) return response(res, true, null, "Projektų nėra");
 
-      for (let unconfirmed of unconfirmeds) {
-        if (unconfirmed.dateCreated && unconfirmed.dateExparation) {
-          unconfirmed.dates = {
-            ...unconfirmed.dates,
-            dateCreated: unconfirmed.dateCreated,
-            dateExparation: unconfirmed.dateExparation,
-            dateArchieved: unconfirmed.dateExparation,
-          };
+      // for (let backup of backups) {
+      //   if (backup.dateCreated && backup.dateExparation) {
+      //     backup.dates = {
+      //       ...backup.dates,
+      //       dateCreated: backup.dateCreated,
+      //       dateExparation: backup.dateExparation,
+      //     };
 
-          delete unconfirmed.dateCreated;
-          delete unconfirmed.dateExparation;
+      //     delete backup.dateCreated;
+      //     delete backup.dateExparation;
 
-          await unconfirmed.save();
-        }
-      }
+      //     await backup.save();
+      //   }
+      // }
 
-      const deleteds: any = await deletedSchema.find();
-      if (!deleteds.length) return response(res, true, null, "Projektų nėra");
+      // const archives: any = await archiveSchema.find();
+      // if (!archives.length) return response(res, true, null, "Projektų nėra");
 
-      for (let deleted of deleteds) {
-        if (deleted.dateCreated && deleted.dateExparation) {
-          deleted.dates = {
-            ...deleted.dates,
-            dateCreated: deleted.dateCreated,
-            dateExparation: deleted.dateExparation,
-            dateArchieved: deleted.dateExparation,
-          };
+      // for (let archive of archives) {
+      //   if (archive.dateCreated && archive.dateExparation) {
+      //     archive.dates = {
+      //       ...archive.dates,
+      //       dateCreated: archive.dateCreated,
+      //       dateExparation: archive.dateExparation,
+      //     };
 
-          delete deleted.dateCreated;
-          delete deleted.dateExparation;
+      //     delete archive.dateCreated;
+      //     delete archive.dateExparation;
 
-          await deleted.save();
-        }
-      }
-
-      const backups: any = await backupSchema.find();
-      if (!backups.length) return response(res, true, null, "Projektų nėra");
-
-      for (let backup of backups) {
-        if (backup.dateCreated && backup.dateExparation) {
-          backup.dates = {
-            ...backup.dates,
-            dateCreated: backup.dateCreated,
-            dateExparation: backup.dateExparation,
-          };
-
-          delete backup.dateCreated;
-          delete backup.dateExparation;
-
-          await backup.save();
-        }
-      }
-
-      const archives: any = await archiveSchema.find();
-      if (!archives.length) return response(res, true, null, "Projektų nėra");
-
-      for (let archive of archives) {
-        if (archive.dateCreated && archive.dateExparation) {
-          archive.dates = {
-            ...archive.dates,
-            dateCreated: archive.dateCreated,
-            dateExparation: archive.dateExparation,
-          };
-
-          delete archive.dateCreated;
-          delete archive.dateExparation;
-
-          await archive.save();
-        }
-      }
+      //     await archive.save();
+      //   }
+      // }
 
       return response(res, true, null, "Nepatvirtinti projektai ištrinti");
     } catch (error) {
@@ -264,8 +270,7 @@ export default {
     try {
       const { _id } = req.params;
 
-      const project: HydratedDocument<Project> | null =
-        await projectSchema.findById(_id);
+      const project: HydratedDocument<Project> | null = await projectSchema.findById(_id);
 
       if (!project) return response(res, false, null, "Projektas nerastas");
 
@@ -301,8 +306,7 @@ export default {
 
       const rollbackVersion = await versionsSchema.findById(_id);
 
-      if (!rollbackVersion)
-        return response(res, false, null, "Projektas nerastas");
+      if (!rollbackVersion) return response(res, false, null, "Projektas nerastas");
 
       rollbackVersion.versions = [...project.versions];
 
@@ -459,8 +463,7 @@ export default {
 
       const orderExist = await projectSchema.findById(_id);
 
-      if (!orderExist)
-        return { success: false, data: null, message: "Projektas nerastas" };
+      if (!orderExist) return { success: false, data: null, message: "Projektas nerastas" };
 
       const versionObject: Project = orderExist.toObject();
       delete versionObject._id;
@@ -468,8 +471,7 @@ export default {
       const newVersion = new versionsSchema(versionObject);
       const version = await newVersion.save();
 
-      if (!version)
-        return response(res, false, null, "Klaida išsaugant versiją");
+      if (!version) return response(res, false, null, "Klaida išsaugant versiją");
 
       orderExist.versions?.push({
         id: version._id,
@@ -537,9 +539,7 @@ export default {
 
       if (_id) projectExist = await projectSchema.findById(_id);
 
-      const creatorUsername = projectExist
-        ? projectExist.creator.username
-        : creator.username;
+      const creatorUsername = projectExist ? projectExist.creator.username : creator.username;
 
       const currentDate = new Date();
 
@@ -569,8 +569,7 @@ export default {
           (a, b) => extractOrderNumber(a) - extractOrderNumber(b)
         );
 
-        let lastOrder =
-          sortedOrderNumbers[sortedOrderNumbers.length - 1]?.orderNumber;
+        let lastOrder = sortedOrderNumbers[sortedOrderNumbers.length - 1]?.orderNumber;
 
         let orderNumbers = +lastOrder.split("-")[1];
         orderNumbers++;

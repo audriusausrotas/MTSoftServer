@@ -37,6 +37,7 @@ export const backupDatabase = () => {
       "products",
       "projects",
       "projectsDeleted",
+      "projectsFinished",
       "projectsUnconfirmed",
       "projectsVersions",
       "schedule",
