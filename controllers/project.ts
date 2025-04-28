@@ -305,9 +305,9 @@ export default {
 
       newProject.dates.dateArchieved = currentDate;
 
-      const archivedProject = new archiveSchema(newProject);
+      const finishedProject = new finishedSchema(newProject);
 
-      const data = await archivedProject.save();
+      const data = await finishedProject.save();
 
       if (!data) response(res, false, null, "Klaida išsaugant projektą");
 
