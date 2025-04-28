@@ -70,7 +70,7 @@ export default {
 
   removeUnconfirmed: async (req: Request, res: Response) => {
     try {
-      const a: any = await archiveSchema.find();
+      const a: any = await unconfirmedSchema.find();
 
       for (const b of a) {
         const created = b.dateCreated;
@@ -85,8 +85,57 @@ export default {
         b.set("dates.dateCompletion", "");
         b.set("dates.dateArchieved", exparation);
 
-        // b.set("dateCreated", undefined);
-        // b.set("dateExparation", undefined);
+        await b.save();
+      }
+      const z: any = await deletedSchema.find();
+
+      for (const b of z) {
+        const created = b.dateCreated;
+        const exparation = b.dateExparation;
+        console.log(created);
+        console.log(exparation);
+
+        b.set("files", []);
+        b.set("dates.dateCreated", created);
+        b.set("dates.dateExparation", exparation);
+        b.set("dates.dateConfirmed", created);
+        b.set("dates.dateCompletion", "");
+        b.set("dates.dateArchieved", exparation);
+
+        await b.save();
+      }
+      const g: any = await backupSchema.find();
+
+      for (const b of g) {
+        const created = b.dateCreated;
+        const exparation = b.dateExparation;
+        console.log(created);
+        console.log(exparation);
+
+        b.set("files", []);
+        b.set("dates.dateCreated", created);
+        b.set("dates.dateExparation", exparation);
+        b.set("dates.dateConfirmed", created);
+        b.set("dates.dateCompletion", "");
+        b.set("dates.dateArchieved", exparation);
+
+        await b.save();
+      }
+      const k: any = await versionsSchema.find();
+
+      for (const b of k) {
+        const created = b.dateCreated;
+        const exparation = b.dateExparation;
+        console.log(created);
+        console.log(exparation);
+
+        b.set("files", []);
+        b.set("dates.dateCreated", created);
+        b.set("dates.dateExparation", exparation);
+        b.set("dates.dateConfirmed", created);
+        b.set("dates.dateCompletion", "");
+        b.set("dates.dateArchieved", exparation);
+
         await b.save();
       }
 
