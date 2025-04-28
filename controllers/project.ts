@@ -94,19 +94,20 @@ export default {
       //     await deletedSchema.findByIdAndDelete(a._id);
       //   }
       // }
+      const documents: any = await deletedSchema.find();
 
-      await deletedSchema.aggregate([
-        {
-          $set: {
-            dates: {
-              dateCreated: "$dateCreated",
-              dateExparation: "$dateExparation",
-              dateArchieved: "$dateExparation",
-            },
-          },
-        },
-        { $unset: ["dateCreated", "dateExparation"] },
-      ]);
+      for (const doc of documents) {
+        doc.dates = {
+          dateCreated: doc.dateCreated,
+          dateExparation: doc.dateExparation,
+          dateArchieved: doc.dateExparation,
+        };
+
+        delete doc.dateCreated;
+        delete doc.dateExparation;
+
+        await doc.save(); // Save the modified document
+      }
 
       // const projects: any = await projectSchema.find();
       // if (!projects.length) return response(res, true, null, "Projektų nėra");
