@@ -100,14 +100,12 @@ export default {
         const created = doc.dateCreated;
         const exparation = doc.dateExparation;
 
-        console.log(created);
-        console.log(exparation);
         doc.files = [];
-        doc.dates.dateCreated = created;
-        doc.dates.dateExparation = exparation;
-        doc.dates.dateConfirmed = "";
-        doc.dates.dateCompletion = "";
-        doc.dates.dateArchieved = exparation;
+        doc.dates.dateCreated = created || "";
+        doc.dates.dateExparation = exparation || "";
+        doc.dates.dateConfirmed = created || "";
+        doc.dates.dateCompletion = exparation || "";
+        doc.dates.dateArchieved = exparation || "";
 
         delete doc.dateCreated;
         delete doc.dateExparation;
