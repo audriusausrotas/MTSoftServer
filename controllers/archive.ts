@@ -219,14 +219,15 @@ export default {
 
       const archivedProject = await schema.findById(_id);
 
-      if (!archivedProject) return response(res, false, null, "Projektas nerastas");
+      if (!archivedProject)
+        return response(res, false, null, "Projektas nerastas");
 
       const currentDate = new Date();
       let expirationDate = new Date(currentDate);
       expirationDate.setDate(currentDate.getDate() + 30);
       const dateExparation = expirationDate.toISOString();
 
-      archivedProject.dateExparation = dateExparation;
+      archivedProject.dates.dateExparation = dateExparation;
       const projectData = archivedProject.toObject();
 
       const project = new projectSchema(projectData);
@@ -244,7 +245,12 @@ export default {
 
       emit.toAdmin("restoreArchive", responseData);
 
-      return response(res, true, responseData, "Projektas perkeltas į projektus");
+      return response(
+        res,
+        true,
+        responseData,
+        "Projektas perkeltas į projektus"
+      );
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");
@@ -267,7 +273,7 @@ export default {
 
       const projectData = project.toObject();
 
-      projectData.dateExparation = new Date().toISOString();
+      projectData.dates.dateExparation = new Date().toISOString();
 
       const archivedProject = new archiveSchema(projectData);
 
@@ -299,7 +305,8 @@ export default {
 
       const responseData = await unconfirmedProject.save();
 
-      if (!responseData) return response(res, false, null, "Klaida perkeliant projektą");
+      if (!responseData)
+        return response(res, false, null, "Klaida perkeliant projektą");
 
       await projectSchema.findByIdAndDelete(_id);
       await backupSchema.findByIdAndDelete(_id);

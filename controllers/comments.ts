@@ -30,7 +30,7 @@ export default {
       const responseData = { _id, comment };
 
       emit.toAdmin("deleteProductionComment", responseData);
-      emit.toInstallation("deleteProductionComment", responseData);
+      emit.toProduction("deleteProductionComment", responseData);
       emit.toWarehouse("deleteProductionComment", responseData);
 
       return response(res, true, responseData, "Komentaras ištrintas");
@@ -74,7 +74,8 @@ export default {
 
       const project = await projectSchema.findById(_id);
 
-      if (!project) return { success: false, project: null, message: "užsakymas nerastas" };
+      if (!project)
+        return { success: false, project: null, message: "užsakymas nerastas" };
 
       project.comments = project.comments.filter(
         (item) => item.date !== comment.date && item.comment !== comment.comment
@@ -105,7 +106,8 @@ export default {
 
       const user = res.locals.user;
 
-      const project: HydratedDocument<Prodution> | null = await productionSchema.findById(_id);
+      const project: HydratedDocument<Prodution> | null =
+        await productionSchema.findById(_id);
 
       if (!project) return response(res, false, null, "Projektas nerastas");
 
@@ -123,7 +125,7 @@ export default {
       const responseData = { _id, comment: newComment };
 
       emit.toAdmin("newProductionComment", responseData);
-      emit.toInstallation("newProductionComment", responseData);
+      emit.toProduction("newProductionComment", responseData);
       emit.toWarehouse("newProductionComment", responseData);
 
       return response(res, true, responseData, "komentaras išsaugotas");
@@ -139,7 +141,8 @@ export default {
 
       const user = res.locals.user;
 
-      const project: HydratedDocument<Installation> | null = await installationSchema.findById(_id);
+      const project: HydratedDocument<Installation> | null =
+        await installationSchema.findById(_id);
 
       if (!project) return response(res, false, null, "Montavimas nerastas");
 
@@ -175,7 +178,8 @@ export default {
 
       const user = res.locals.user;
 
-      const project: HydratedDocument<Project> | null = await projectSchema.findById(_id);
+      const project: HydratedDocument<Project> | null =
+        await projectSchema.findById(_id);
 
       if (!project) return response(res, false, null, "Projektas nerastas");
 

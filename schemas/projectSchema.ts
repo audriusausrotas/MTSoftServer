@@ -54,6 +54,11 @@ const projectSchema = new mongoose.Schema<Project>({
     required: false,
     default: [],
   },
+  workers: {
+    type: [String],
+    required: false,
+    default: [],
+  },
   totalPrice: {
     type: Number,
     required: true,
@@ -82,10 +87,19 @@ const projectSchema = new mongoose.Schema<Project>({
     type: Boolean,
     required: true,
   },
+  dates: {
+    type: Object,
+    required: true,
+    default: {
+      dateCreated: "",
+      dateExparation: "",
+      dateConfirmed: "",
+      dateCompletion: "",
+      dateArchieved: "",
+    },
+  },
   creator: Object,
   orderNumber: String,
-  dateCreated: String,
-  dateExparation: String,
 });
 
 export default mongoose.model("projects", projectSchema, "projects");

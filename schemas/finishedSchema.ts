@@ -1,13 +1,12 @@
 import mongoose from "mongoose";
 import { Project } from "../data/interfaces";
 
-const deletedSchema = new mongoose.Schema<Project>({
+const finishedSchema = new mongoose.Schema<Project>({
   client: {
     type: Object,
     required: false,
     default: {},
   },
-  retail: Boolean,
   fenceMeasures: {
     type: [Object],
     required: false,
@@ -28,7 +27,6 @@ const deletedSchema = new mongoose.Schema<Project>({
     required: false,
     default: [],
   },
-
   advance: {
     type: Number,
     required: false,
@@ -37,17 +35,7 @@ const deletedSchema = new mongoose.Schema<Project>({
   status: {
     type: String,
     required: false,
-    default: "Nepatvirtintas",
-  },
-  files: {
-    type: [String],
-    required: false,
-    default: [],
-  },
-  comments: {
-    type: [Object],
-    required: false,
-    default: [],
+    default: "Baigtas",
   },
   versions: {
     type: [Object],
@@ -82,7 +70,7 @@ const deletedSchema = new mongoose.Schema<Project>({
 });
 
 export default mongoose.model(
-  "projectsDeleted",
-  deletedSchema,
-  "projectsDeleted"
+  "projectsFinished",
+  finishedSchema,
+  "projectsFinished"
 );

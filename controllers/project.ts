@@ -18,6 +18,7 @@ import emit from "../sockets/emits";
 import archiveSchema from "../schemas/archiveSchema";
 import productionSchema from "../schemas/productionSchema";
 import gateSchema from "../schemas/gateSchema";
+import finishedSchema from "../schemas/finishedSchema";
 
 export default {
   //////////////////// get requests ////////////////////////////////////
@@ -25,7 +26,8 @@ export default {
   getProjects: async (req: Request, res: Response) => {
     try {
       const projects = await projectSchema.find();
-      if (!projects.length) return response(res, false, null, "Projektai nerasti");
+      if (!projects.length)
+        return response(res, false, null, "Projektai nerasti");
 
       projects.reverse();
       return response(res, true, projects, "Prisijungimas sėkmingas");
@@ -49,11 +51,12 @@ export default {
 
       const projectData = project.toObject();
 
-      projectData.dateExparation = new Date().toISOString();
+      projectData.dates.dateExparation = new Date().toISOString();
 
       const deletedProject = new deletedSchema({ ...projectData });
       const deletedData = await deletedProject.save();
-      if (!deletedData) return response(res, false, null, "Klaida trinant projektą");
+      if (!deletedData)
+        return response(res, false, null, "Klaida trinant projektą");
 
       await projectSchema.findByIdAndDelete(_id);
       await installationSchema.findByIdAndDelete(_id);
@@ -69,38 +72,122 @@ export default {
 
   removeUnconfirmed: async (req: Request, res: Response) => {
     try {
-      const projects = await projectSchema.find();
+      const projects: any = await projectSchema.find();
       if (!projects.length) return response(res, true, null, "Projektų nėra");
 
-      const currentDate = new Date();
+      for (let project of projects) {
+        if (project.dateCreated && project.dateExparation) {
+          project.dates = {
+            ...project.dates,
+            dateCreated: project.dateCreated,
+            dateExparation: project.dateExparation,
+          };
 
-      const deletedUnconfirmed = [] as Project[];
+          delete project.dateCreated;
+          delete project.dateExparation;
 
-      const deletionPromises = projects.map(async (project) => {
-        if (project.status === "Nepatvirtintas" || project.status === "Netinkamas") {
-          const expirationDate = new Date(project.dateExparation);
+          await project.save();
+        }
+      }
 
-          if (currentDate > expirationDate) {
-            await deleteVersions(project.versions);
+      const unconfirmeds: any = await unconfirmedSchema.find();
+      if (!unconfirmeds.length)
+        return response(res, true, null, "Projektų nėra");
 
-            const projectData = project.toObject();
-            const unconfirmedProject = new unconfirmedSchema({
-              ...projectData,
-            });
-            const data = await unconfirmedProject.save();
+      for (let unconfirmed of unconfirmeds) {
+        if (unconfirmed.dateCreated && unconfirmed.dateExparation) {
+          unconfirmed.dates = {
+            ...unconfirmed.dates,
+            dateCreated: unconfirmed.dateCreated,
+            dateExparation: unconfirmed.dateExparation,
+            dateArchieved: unconfirmed.dateExparation,
+          };
 
-            await projectSchema.findByIdAndDelete(project._id);
-            await backupSchema.findByIdAndDelete(project._id);
+          delete unconfirmed.dateCreated;
+          delete unconfirmed.dateExparation;
 
-            emit.toAdmin("addUnconfirmed", project);
-            deletedUnconfirmed.push(data);
+          await unconfirmed.save();
+        }
+      }
+
+      const deleteds: any = await deletedSchema.find();
+      if (!deleteds.length) return response(res, true, null, "Projektų nėra");
+
+      for (let deleted of deleteds) {
+        if (deleted.dateCreated && deleted.dateExparation) {
+          deleted.dates = {
+            ...deleted.dates,
+            dateCreated: deleted.dateCreated,
+            dateExparation: deleted.dateExparation,
+            dateArchieved: deleted.dateExparation,
+          };
+
+          delete deleted.dateCreated;
+          delete deleted.dateExparation;
+
+          await deleted.save();
+        }
+      }
+
+      const backups: any = await backupSchema.find();
+      if (!backups.length) return response(res, true, null, "Projektų nėra");
+
+      for (let backup of backups) {
+        if (backup.dateCreated && backup.dateExparation) {
+          backup.dates = {
+            ...backup.dates,
+            dateCreated: backup.dateCreated,
+            dateExparation: backup.dateExparation,
+          };
+
+          delete backup.dateCreated;
+          delete backup.dateExparation;
+
+          await backup.save();
+        }
+      }
+
+      const archives: any = await archiveSchema.find();
+      if (!archives.length) return response(res, true, null, "Projektų nėra");
+
+      for (let archive of archives) {
+        if (archive.status === "Baigtas") {
+          const newFinished = archive.toObject();
+
+          newFinished.dates = {
+            ...archive.dates,
+            dateCreated: archive.dateCreated,
+            dateExparation: archive.dateExparation,
+            dateArchieved: archive.dateExparation,
+          };
+
+          delete newFinished.dateCreated;
+          delete newFinished.dateExparation;
+
+          const newData = new finishedSchema(newFinished);
+
+          const data = await newData.save();
+
+          if (data) {
+            await archiveSchema.findByIdAndDelete(archive._id);
+          }
+        } else {
+          if (archive.dateCreated && archive.dateExparation) {
+            archive.dates = {
+              ...archive.dates,
+              dateCreated: archive.dateCreated,
+              dateExparation: archive.dateExparation,
+            };
+
+            delete archive.dateCreated;
+            delete archive.dateExparation;
+
+            await archive.save();
           }
         }
-      });
+      }
 
-      await Promise.all(deletionPromises);
-
-      return response(res, true, deletedUnconfirmed, "Nepatvirtinti projektai ištrinti");
+      return response(res, true, null, "Nepatvirtinti projektai ištrinti");
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");
@@ -152,6 +239,7 @@ export default {
 
       project.advance = advance;
       project.status = "Patvirtintas";
+      project.dates.dateConfirmed = new Date().toISOString();
 
       const data = await project.save();
 
@@ -198,7 +286,8 @@ export default {
     try {
       const { _id } = req.params;
 
-      const project: HydratedDocument<Project> | null = await projectSchema.findById(_id);
+      const project: HydratedDocument<Project> | null =
+        await projectSchema.findById(_id);
 
       if (!project) return response(res, false, null, "Projektas nerastas");
 
@@ -207,7 +296,7 @@ export default {
       expirationDate.setDate(currentDate.getDate() + 30);
       const dateExparation = expirationDate.toISOString();
 
-      project.dateExparation = dateExparation;
+      project.dates.dateExparation = dateExparation;
 
       const data = await project.save();
 
@@ -234,7 +323,8 @@ export default {
 
       const rollbackVersion = await versionsSchema.findById(_id);
 
-      if (!rollbackVersion) return response(res, false, null, "Projektas nerastas");
+      if (!rollbackVersion)
+        return response(res, false, null, "Projektas nerastas");
 
       rollbackVersion.versions = [...project.versions];
 
@@ -284,6 +374,7 @@ export default {
       if (!data) return response(res, true, null, "Serverio klaida");
 
       if (value === "Patvirtintas") {
+        data.dates.dateConfirmed = new Date().toISOString();
         const backupProject = await backupSchema.findById(_id);
         if (!backupProject) {
           const projectData = data.toObject();
@@ -303,33 +394,9 @@ export default {
         });
       }
 
-      if (value === "Baigtas") {
-        await backupSchema.findByIdAndDelete(_id);
-
-        if (project.creator.username === "Audrius") {
-          const currentDate = new Date();
-          const dateFinished = currentDate.toISOString();
-
-          const bonus = new bonusSchema({
-            address: project.client.address,
-            dateFinished: dateFinished,
-            price: project.totalPrice,
-            cost: project.totalCost,
-            profit: project.totalProfit,
-            margin: project.totalMargin,
-            bonus: Math.round(project.totalProfit * 0.03),
-          });
-
-          const bonusData = await bonus.save();
-          if (!bonusData) return response(res, true, null, "Klaida išsaugant bonusus");
-        }
-      }
-
       const responseData = { _id, status: value };
 
       emit.toAdmin("changeProjectStatus", responseData);
-
-      if (value === "Baigtas") emit.toAdmin("finishProject", { _id });
 
       return response(res, true, responseData, "Būsena atnaujinta");
     } catch (error) {
@@ -355,7 +422,7 @@ export default {
 
       const newProject = project.toObject();
 
-      newProject.dateExparation = currentDate;
+      newProject.dates.dateArchieved = currentDate;
 
       const archivedProject = new archiveSchema(newProject);
 
@@ -410,16 +477,12 @@ export default {
         retail,
       } = req.body;
 
-      const currentDate = new Date();
-
-      const dateCreated = currentDate.toISOString();
-      let expirationDate = new Date(currentDate);
-      expirationDate.setDate(currentDate.getDate() + 30);
-      const dateExparation = expirationDate.toISOString();
+      const today = new Date().toISOString();
 
       const orderExist = await projectSchema.findById(_id);
 
-      if (!orderExist) return { success: false, data: null, message: "Projektas nerastas" };
+      if (!orderExist)
+        return { success: false, data: null, message: "Projektas nerastas" };
 
       const versionObject: Project = orderExist.toObject();
       delete versionObject._id;
@@ -427,13 +490,13 @@ export default {
       const newVersion = new versionsSchema(versionObject);
       const version = await newVersion.save();
 
-      if (!version) return response(res, false, null, "Klaida išsaugant versiją");
+      if (!version)
+        return response(res, false, null, "Klaida išsaugant versiją");
 
       orderExist.versions?.push({
         id: version._id,
-        date: dateCreated,
+        date: today,
       });
-      orderExist.dateCreated = dateCreated;
       orderExist.client = client;
       orderExist.fenceMeasures = fenceMeasures;
       orderExist.results = results;
@@ -446,7 +509,6 @@ export default {
       orderExist.priceVAT = priceVAT;
       orderExist.priceWithDiscount = priceWithDiscount;
       orderExist.discount = discount;
-      orderExist.dateExparation = dateExparation;
       orderExist.retail = retail;
 
       const responseData = await orderExist.save();
@@ -497,7 +559,9 @@ export default {
 
       if (_id) projectExist = await projectSchema.findById(_id);
 
-      const creatorUsername = projectExist ? projectExist.creator.username : creator.username;
+      const creatorUsername = projectExist
+        ? projectExist.creator.username
+        : creator.username;
 
       const currentDate = new Date();
 
@@ -527,7 +591,8 @@ export default {
           (a, b) => extractOrderNumber(a) - extractOrderNumber(b)
         );
 
-        let lastOrder = sortedOrderNumbers[sortedOrderNumbers.length - 1]?.orderNumber;
+        let lastOrder =
+          sortedOrderNumbers[sortedOrderNumbers.length - 1]?.orderNumber;
 
         let orderNumbers = +lastOrder.split("-")[1];
         orderNumbers++;
@@ -541,9 +606,9 @@ export default {
         const newProjectData = projectExist.toObject() as Project;
 
         delete newProjectData._id;
-        newProjectData.dateCreated = dateCreated;
+        newProjectData.dates.dateCreated = dateCreated;
         newProjectData.orderNumber = orderNumber;
-        newProjectData.dateExparation = dateExparation;
+        newProjectData.dates.dateExparation = dateExparation;
         newProjectData.status = "Nepatvirtintas";
         newProjectData.advance = 0;
         newProjectData.versions = [];
@@ -555,6 +620,14 @@ export default {
 
         return response(res, true, responseData, "Projektas nukopijuotas");
       } else {
+        const dates = {
+          dateCreated,
+          dateExparation,
+          dateConfirmed: "",
+          dateCompletion: "",
+          dateArchieved: "",
+        };
+
         const project = new projectSchema({
           creator,
           client,
@@ -574,8 +647,7 @@ export default {
           payed,
           status,
           advance,
-          dateCreated,
-          dateExparation,
+          dates,
           retail,
         });
 

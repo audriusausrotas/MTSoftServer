@@ -1,5 +1,4 @@
 import { Date, Types } from "mongoose";
-import { ObjectId } from "mongodb";
 
 export interface Response {
   success: boolean;
@@ -32,16 +31,24 @@ export interface Project {
   status: string;
   advance: number;
   orderNumber: string;
-  dateCreated: string;
-  dateExparation: string;
   files: string[];
   comments: Comment[];
   versions: Version[];
+  dates: Dates;
+  workers: string[];
 }
 export interface Version {
   _id?: Types.ObjectId;
   id: Types.ObjectId;
   date: string;
+}
+
+export interface Dates {
+  dateCreated: string;
+  dateExparation: string;
+  dateConfirmed: string;
+  dateCompletion: string;
+  dateArchieved: string;
 }
 
 export interface Client {
@@ -110,6 +117,7 @@ export interface Result {
   margin: number;
   isNew: boolean;
   width: number | null;
+  delivered: boolean;
 }
 
 export interface InstallationResult {

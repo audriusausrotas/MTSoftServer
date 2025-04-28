@@ -31,7 +31,7 @@ export default {
       if (!deletedClient)
         return response(res, false, null, "Klientas nerastas");
 
-      emit.toAdmin("deleteClient", _id);
+      emit.toAdmin("deleteClient", { _id });
 
       return response(res, true, { _id }, "Klientas ištrintas");
     } catch (error) {

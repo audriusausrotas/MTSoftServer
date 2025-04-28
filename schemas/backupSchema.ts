@@ -47,6 +47,22 @@ const backupSchema = new mongoose.Schema<Project>({
     required: false,
     default: [],
   },
+  workers: {
+    type: [String],
+    required: false,
+    default: [],
+  },
+  dates: {
+    type: Object,
+    required: true,
+    default: {
+      dateCreated: "",
+      dateExparation: "",
+      dateConfirmed: "",
+      dateCompletion: "",
+      dateArchieved: "",
+    },
+  },
   creator: Object,
   orderNumber: String,
   totalPrice: Number,
@@ -56,8 +72,6 @@ const backupSchema = new mongoose.Schema<Project>({
   priceVAT: Number,
   priceWithDiscount: Number,
   discount: Boolean,
-  dateCreated: String,
-  dateExparation: String,
 });
 
 export default mongoose.model("backup", backupSchema, "backup");
