@@ -95,7 +95,7 @@ export default {
       //   }
       // }
 
-      const documents: any = await finishedSchema.find();
+      const documents: any = await backupSchema.find();
 
       for (const doc of documents) {
         doc.set("files", []);
