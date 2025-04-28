@@ -8,32 +8,32 @@ const userRightsSchema = new mongoose.Schema<UserRights>({
   },
   project: {
     type: Boolean,
-    required: false,
+    required: true,
     default: false,
   },
   schedule: {
     type: Boolean,
-    required: false,
+    required: true,
     default: false,
   },
   production: {
     type: Boolean,
-    required: false,
+    required: true,
     default: false,
   },
   installation: {
     type: Boolean,
-    required: false,
+    required: true,
     default: false,
   },
   gate: {
     type: Boolean,
-    required: false,
+    required: true,
     default: false,
   },
   admin: {
     type: Boolean,
-    required: false,
+    required: true,
     default: false,
   },
 });

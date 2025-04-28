@@ -4,47 +4,47 @@ import { Project } from "../data/interfaces";
 const archiveSchema = new mongoose.Schema<Project>({
   client: {
     type: Object,
-    required: false,
+    required: true,
     default: {},
   },
   fenceMeasures: {
     type: [Object],
-    required: false,
+    required: true,
     default: [],
   },
   results: {
     type: [Object],
-    required: false,
+    required: true,
     default: [],
   },
   works: {
     type: [Object],
-    required: false,
+    required: true,
     default: [],
   },
   gates: {
     type: [Object],
-    required: false,
+    required: true,
     default: [],
   },
   advance: {
     type: Number,
-    required: false,
+    required: true,
     default: 0,
   },
   status: {
     type: String,
-    required: false,
+    required: true,
     default: "Nepatvirtintas",
   },
   versions: {
     type: [Object],
-    required: false,
+    required: true,
     default: [],
   },
   workers: {
     type: [String],
-    required: false,
+    required: true,
     default: [],
   },
   dates: {

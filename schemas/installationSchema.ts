@@ -50,13 +50,13 @@ const resultSchema = new mongoose.Schema<InstallationResult>({
   color: { type: String, default: "" },
   width: { type: Number, default: 0 },
   category: { type: String, default: "" },
-  delivered: { type: Boolean, required: false, default: false },
+  delivered: { type: Boolean, required: true, default: false },
 });
 
 const workSchema = new mongoose.Schema<InstallationWorks>({
   name: { type: String, default: "" },
   quantity: { type: Number, default: 0 },
-  delivered: { type: Boolean, required: false, default: false },
+  delivered: { type: Boolean, required: true, default: false },
 });
 
 const fenceSchema = new mongoose.Schema<InstallationFence>({
@@ -87,7 +87,7 @@ const installationSchema = new mongoose.Schema<Installation>({
   workers: [String],
   status: {
     type: String,
-    required: false,
+    required: true,
     default: "Montuojama",
   },
   fences: {
@@ -104,12 +104,12 @@ const installationSchema = new mongoose.Schema<Installation>({
   },
   comments: {
     type: [Object],
-    required: false,
+    required: true,
     default: [],
   },
   files: {
     type: [String],
-    required: false,
+    required: true,
     default: [],
   },
 });

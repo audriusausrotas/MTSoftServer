@@ -7,27 +7,27 @@ const userSchema = new mongoose.Schema<User>({
   username: String,
   lastName: {
     type: String,
-    required: false,
+    required: true,
     default: "",
   },
   phone: {
     type: String,
-    required: false,
+    required: true,
     default: "",
   },
   verified: {
     type: Boolean,
-    required: false,
+    required: true,
     default: false,
   },
   accountType: {
     type: String,
-    required: false,
+    required: true,
     default: "Paprastas vartotojas",
   },
   photo: {
     type: String,
-    required: false,
+    required: true,
     default: "",
   },
 });

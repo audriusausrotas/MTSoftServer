@@ -34,6 +34,7 @@ router.post("/login", inputVerification, auth.login);
 
 router.get("/getUnconfirmed", checkAdmin, archive.getUnconfirmed);
 router.get("/getArchives", checkAdmin, archive.getArchives);
+router.get("/getFinished", checkAdmin, archive.getFinished);
 router.get("/getDeleted", checkAdmin, archive.getDeleted);
 router.get("/getBackup", checkAdmin, archive.getBackup);
 router.get("/serviceSearch", archive.serviceSearch);

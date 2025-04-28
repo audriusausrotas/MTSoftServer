@@ -10,7 +10,7 @@ const scheduleSchema = new mongoose.Schema<Schedule>({
   jobs: [Object],
   comment: {
     type: String,
-    required: false,
+    required: true,
     default: "",
   },
 });

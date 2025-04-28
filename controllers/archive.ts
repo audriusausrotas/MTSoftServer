@@ -8,6 +8,7 @@ import backupSchema from "../schemas/backupSchema";
 import { Response, Request } from "express";
 import response from "../modules/response";
 import emit from "../sockets/emits";
+import finishedSchema from "../schemas/finishedSchema";
 
 const schemaMap = {
   archive: archiveSchema,
@@ -41,6 +42,32 @@ export default {
   getArchives: async (req: Request, res: Response) => {
     try {
       const data = await archiveSchema.aggregate([
+        { $sort: { dateExparation: -1 } },
+        {
+          $project: {
+            _id: 1,
+            orderNumber: 1,
+            client: 1,
+            priceVAT: 1,
+            priceWithDiscount: 1,
+            status: 1,
+            discount: 1,
+          },
+        },
+      ]);
+
+      if (!data) return response(res, false, null, "Projektai nerasti");
+
+      return response(res, true, data);
+    } catch (error) {
+      console.error("Klaida gaunant projektus:", error);
+      return response(res, false, null, "Serverio klaida");
+    }
+  },
+
+  getFinished: async (req: Request, res: Response) => {
+    try {
+      const data = await finishedSchema.aggregate([
         { $sort: { dateExparation: -1 } },
         {
           $project: {

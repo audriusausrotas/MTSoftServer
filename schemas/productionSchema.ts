@@ -1,5 +1,10 @@
 import mongoose from "mongoose";
-import { Prodution, ProdutionFence, ProdutionMeasure, GateInfo } from "../data/interfaces";
+import {
+  Prodution,
+  ProdutionFence,
+  ProdutionMeasure,
+  GateInfo,
+} from "../data/interfaces";
 
 const gatesSchema = new mongoose.Schema<GateInfo>({
   exist: { type: Boolean, default: false },
@@ -64,7 +69,7 @@ const productionSchema = new mongoose.Schema<Prodution>({
   orderNumber: String,
   status: {
     type: String,
-    required: false,
+    required: true,
     default: "Negaminti",
   },
   fences: {
@@ -73,17 +78,17 @@ const productionSchema = new mongoose.Schema<Prodution>({
   },
   bindings: {
     type: [Object],
-    required: false,
+    required: true,
     default: [],
   },
   comments: {
     type: [Object],
-    required: false,
+    required: true,
     default: [],
   },
   files: {
     type: [String],
-    required: false,
+    required: true,
     default: [],
   },
 });

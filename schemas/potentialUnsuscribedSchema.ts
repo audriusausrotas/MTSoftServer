@@ -4,32 +4,32 @@ import { PotentialClient } from "../data/interfaces";
 const potentialUnsuscribedSchema = new mongoose.Schema<PotentialClient>({
   name: {
     type: String,
-    required: false,
+    required: true,
     default: "",
   },
   email: {
     type: String,
-    required: false,
+    required: true,
     default: "",
   },
   phone: {
     type: String,
-    required: false,
+    required: true,
     default: "",
   },
   address: {
     type: String,
-    required: false,
+    required: true,
     default: "",
   },
   status: {
     type: String,
-    required: false,
+    required: true,
     default: "",
   },
   send: {
     type: Boolean,
-    required: false,
+    required: true,
     default: true,
   },
 });

@@ -151,39 +151,17 @@ export default {
       if (!archives.length) return response(res, true, null, "Projektų nėra");
 
       for (let archive of archives) {
-        if (archive.status === "Baigtas") {
-          const newFinished = archive.toObject();
-
-          newFinished.dates = {
+        if (archive.dateCreated && archive.dateExparation) {
+          archive.dates = {
             ...archive.dates,
             dateCreated: archive.dateCreated,
             dateExparation: archive.dateExparation,
-            dateArchieved: archive.dateExparation,
           };
 
-          delete newFinished.dateCreated;
-          delete newFinished.dateExparation;
+          delete archive.dateCreated;
+          delete archive.dateExparation;
 
-          const newData = new finishedSchema(newFinished);
-
-          const data = await newData.save();
-
-          if (data) {
-            await archiveSchema.findByIdAndDelete(archive._id);
-          }
-        } else {
-          if (archive.dateCreated && archive.dateExparation) {
-            archive.dates = {
-              ...archive.dates,
-              dateCreated: archive.dateCreated,
-              dateExparation: archive.dateExparation,
-            };
-
-            delete archive.dateCreated;
-            delete archive.dateExparation;
-
-            await archive.save();
-          }
+          await archive.save();
         }
       }
 

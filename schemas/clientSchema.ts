@@ -4,22 +4,22 @@ import { Client } from "../data/interfaces";
 const clientSchema = new mongoose.Schema<Client>({
   username: {
     type: String,
-    required: false,
+    required: true,
     default: "",
   },
   email: {
     type: String,
-    required: false,
+    required: true,
     default: "",
   },
   phone: {
     type: String,
-    required: false,
+    required: true,
     default: "",
   },
   address: {
     type: String,
-    required: false,
+    required: true,
     default: "",
   },
 });

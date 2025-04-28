@@ -13,14 +13,14 @@ const seeThroughSchema = new mongoose.Schema({
 const productSchema = new mongoose.Schema<Product>({
   name: { type: String, required: true },
   price: { type: Number, required: true },
-  cost: { type: Number, required: false, default: 0 },
-  category: { type: String, required: false, default: "Kita" },
-  image: { type: String, required: false },
-  height: { type: Number, required: false },
-  width: { type: Number, required: false },
-  isFenceBoard: { type: Boolean, required: false },
-  defaultDirection: { type: String, required: false },
-  seeThrough: { type: seeThroughSchema, required: false },
+  cost: { type: Number, required: true, default: 0 },
+  category: { type: String, required: true, default: "Kita" },
+  image: { type: String, required: true },
+  height: { type: Number, required: true },
+  width: { type: Number, required: true },
+  isFenceBoard: { type: Boolean, required: true },
+  defaultDirection: { type: String, required: true },
+  seeThrough: { type: seeThroughSchema, required: true },
 });
 
 export default mongoose.model("products", productSchema, "products");
