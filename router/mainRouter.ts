@@ -20,6 +20,8 @@ import auth from "../controllers/auth";
 import user from "../controllers/user";
 import express from "express";
 
+import multer from "multer";
+
 const router = express.Router();
 
 /////////////////////// Auth /////////////////////////////
@@ -237,8 +239,8 @@ router.patch("/updateUser", checkUser, user.updateUser);
 
 /////////////////////// Uploads //////////////////////////
 
-router.post("/uploadFiles", checkUser, uploads.uploadFiles);
+router.post("/uploadFiles", uploads.upload, checkUser, uploads.uploadFiles);
 
-router.delete("/deleteFiles", checkAdmin, uploads.deleteFiles);
+router.delete("/deleteFiles", checkUser, uploads.deleteFiles);
 
 export default router;

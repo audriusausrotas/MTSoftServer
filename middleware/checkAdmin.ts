@@ -6,7 +6,6 @@ require("dotenv").config();
 
 export default (req: Request, res: Response, next: NextFunction) => {
   const token = req.cookies?.mtud;
-
   if (!token) {
     return response(res, false, null, "Netinkamas žetonas");
   }

@@ -107,7 +107,6 @@ export default {
     try {
       const { name, email, phone, address, status } = req.body;
 
-      console.log(name);
       const user = await potentialClientSchema.findOne({ email });
 
       const userUnsuscribed = await potentialUnsuscribedSchema.findOne({
