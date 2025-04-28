@@ -79,9 +79,6 @@ const unconfirmedSchema = new mongoose.Schema<Project>({
   priceVAT: Number,
   priceWithDiscount: Number,
   discount: Boolean,
-
-  dateCreated: String,
-  dateExparation: String,
 });
 
 export default mongoose.model("projectsUnconfirmed", unconfirmedSchema, "projectsUnconfirmed");

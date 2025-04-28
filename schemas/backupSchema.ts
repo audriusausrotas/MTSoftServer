@@ -63,10 +63,6 @@ const backupSchema = new mongoose.Schema<Project>({
       dateArchieved: "",
     },
   },
-
-  dateCreated: String,
-  dateExparation: String,
-
   creator: Object,
   orderNumber: String,
   totalPrice: Number,

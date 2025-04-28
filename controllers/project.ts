@@ -70,41 +70,6 @@ export default {
 
   removeUnconfirmed: async (req: Request, res: Response) => {
     try {
-      const a: any = await projectSchema.find();
-
-      for (const b of a) {
-        const created = b.dateCreated;
-        const exparation = b.dateExparation;
-
-        b.set("files", []); // ✅ reset files to empty array
-        b.set("dates.dateCreated", created);
-        b.set("dates.dateExparation", exparation);
-        b.set("dates.dateConfirmed", created);
-        b.set("dates.dateCompletion", "");
-        b.set("dates.dateArchieved", exparation);
-
-        b.set("totalMargin", b.totalMargin || 0);
-        b.set("totalProfit", b.totalProfit || 0);
-        b.set("totalCost", b.totalCost || 0);
-        b.set("totalPrice", b.totalPrice || 0);
-
-        await b.save();
-      }
-
-      const z: any = await archiveSchema.find();
-
-      for (const b of z) {
-        if (b.status === "Baigtas") {
-          const asdf = b.toObject();
-          const newData = new finishedSchema(asdf);
-          const data = await newData.save();
-
-          if (data) {
-            await archiveSchema.findByIdAndDelete(b._id);
-          }
-        }
-      }
-
       return response(res, true, null, "Nepatvirtinti projektai ištrinti");
     } catch (error) {
       console.error("Klaida:", error);
