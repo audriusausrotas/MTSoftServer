@@ -95,25 +95,17 @@ export default {
       //   }
       // }
 
-      const asdf: any = await deletedSchema.find();
-
-      for (const a of asdf) {
-        await deletedSchema.updateOne(
-          { _id: a._id },
-          {
-            $set: {
-              dates: {
-                dateCreated: a.dateCreated,
-                dateExparation: a.dateExparation,
-                dateConfirmed: "",
-                dateCompletion: "",
-                dateArchieved: a.dateExparation,
-              },
-            },
-            $unset: { dateCreated: "", dateExparation: "" },
-          }
-        );
-      }
+      await deletedSchema.updateMany(
+        { dateCreated: { $exists: true }, dateExparation: { $exists: true } },
+        {
+          $set: {
+            "dates.dateCreated": "$dateCreated",
+            "dates.dateExparation": "$dateExparation",
+            "dates.dateArchieved": "$dateExparation",
+          },
+          $unset: { dateCreated: "", dateExparation: "" },
+        }
+      );
 
       // const projects: any = await projectSchema.find();
       // if (!projects.length) return response(res, true, null, "Projektų nėra");
