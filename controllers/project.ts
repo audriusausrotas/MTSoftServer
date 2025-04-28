@@ -76,6 +76,7 @@ export default {
         const created = b.dateCreated;
         const exparation = b.dateExparation;
 
+        console.log(b.files);
         const temp = [...b.files];
         if (temp.length > 0) {
           const indexes: any = [];
