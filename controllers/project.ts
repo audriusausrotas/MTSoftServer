@@ -97,15 +97,15 @@ export default {
       const documents: any = await deletedSchema.find();
 
       for (const doc of documents) {
-        const created = doc.dateCreated;
-        const exparation = doc.dateExparation;
+        const created = doc.dateCreated || "";
+        const exparation = doc.dateExparation || "";
 
         doc.files = [];
-        doc.dates.dateCreated = created || "";
-        doc.dates.dateExparation = exparation || "";
-        doc.dates.dateConfirmed = created || "";
-        doc.dates.dateCompletion = exparation || "";
-        doc.dates.dateArchieved = exparation || "";
+        doc.dates.dateCreated = created;
+        doc.dates.dateExparation = exparation;
+        doc.dates.dateConfirmed = created;
+        doc.dates.dateCompletion = exparation;
+        doc.dates.dateArchieved = exparation;
 
         delete doc.dateCreated;
         delete doc.dateExparation;
