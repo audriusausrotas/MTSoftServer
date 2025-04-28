@@ -76,7 +76,7 @@ export default {
         const created = b.dateCreated;
         const exparation = b.dateExparation;
 
-        const temp = [...b.files];
+        const temp = Array.isArray(b.files) ? [...b.files] : [];
         if (b.files.length) {
           const indexes: any = [];
           temp.forEach((item: any, index: any) => {
