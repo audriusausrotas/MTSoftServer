@@ -70,6 +70,51 @@ export default {
 
   removeUnconfirmed: async (req: Request, res: Response) => {
     try {
+      // const asdf: any = await deletedSchema.find();
+
+      // for (const a of asdf) {
+      //   const object = a.toObject();
+
+      //   object.dates = {
+      //     dateCreated: a.dateCreated,
+      //     dateExparation: a.dateExparation,
+      //     dateConfirmed: "",
+      //     dateCompletion: "",
+      //     dateArchieved: a.dateExparation,
+      //   };
+
+      //   delete object.dateCreated;
+      //   delete object.dateExparation;
+
+      //   const aaa = new deletedSchema(object);
+
+      //   const newData = await aaa.save();
+
+      //   if (newData) {
+      //     await deletedSchema.findByIdAndDelete(a._id);
+      //   }
+      // }
+
+      const asdf: any = await deletedSchema.find();
+
+      for (const a of asdf) {
+        await deletedSchema.updateOne(
+          { _id: a._id },
+          {
+            $set: {
+              dates: {
+                dateCreated: a.dateCreated,
+                dateExparation: a.dateExparation,
+                dateConfirmed: "",
+                dateCompletion: "",
+                dateArchieved: a.dateExparation,
+              },
+            },
+            $unset: { dateCreated: "", dateExparation: "" },
+          }
+        );
+      }
+
       // const projects: any = await projectSchema.find();
       // if (!projects.length) return response(res, true, null, "Projektų nėra");
 
@@ -126,16 +171,6 @@ export default {
       //     await deleted.save();
       //   }
       // }
-      console.log("veikia");
-      const asdf = await deletedSchema.updateMany(
-        {},
-        {
-          $set: { dates: { dateCreated: "$dateCreated", dateExparation: "$dateExparation" } },
-          $unset: { dateCreated: "", dateExparation: "" },
-        }
-      );
-
-      console.log(asdf);
 
       // const backups: any = await backupSchema.find();
       // if (!backups.length) return response(res, true, null, "Projektų nėra");

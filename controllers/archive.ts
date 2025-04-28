@@ -146,7 +146,7 @@ export default {
   getDeleted: async (req: Request, res: Response) => {
     try {
       const asdf = await deletedSchema.find();
-      console.log(asdf);
+      console.log(asdf[0]);
 
       const data = await deletedSchema.aggregate([
         { $sort: { dateExparation: -1 } },
