@@ -97,16 +97,15 @@ export default {
       const documents: any = await deletedSchema.find();
 
       for (const doc of documents) {
-        doc.dates = {
-          dateCreated: doc.dateCreated,
-          dateExparation: doc.dateExparation,
-          dateArchieved: doc.dateExparation,
-        };
+        doc.files = [];
+        doc.dates.dateCreated = doc.dateCreated;
+        doc.dates.dateExparation = doc.dateExparation;
+        doc.dates.dateArchieved = doc.dateExparation;
 
         delete doc.dateCreated;
         delete doc.dateExparation;
 
-        await doc.save(); // Save the modified document
+        await doc.save();
       }
 
       // const projects: any = await projectSchema.find();
