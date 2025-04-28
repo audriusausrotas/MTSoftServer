@@ -95,9 +95,37 @@ export default {
       //   }
       // }
 
-      const documents: any = await backupSchema.find();
+      const documents: any = await versionsSchema.find();
 
       for (const doc of documents) {
+        doc.set("files", []);
+        doc.set("dates.dateCreated", "");
+        doc.set("dates.dateExparation", "");
+        doc.set("dates.dateConfirmed", "");
+        doc.set("dates.dateCompletion", "");
+        doc.set("dates.dateArchieved", "");
+
+        doc.set("dateCreated", undefined);
+        doc.set("dateExparation", undefined);
+        await doc.save();
+      }
+      const documents2: any = await unconfirmedSchema.find();
+
+      for (const doc of documents2) {
+        doc.set("files", []);
+        doc.set("dates.dateCreated", "");
+        doc.set("dates.dateExparation", "");
+        doc.set("dates.dateConfirmed", "");
+        doc.set("dates.dateCompletion", "");
+        doc.set("dates.dateArchieved", "");
+
+        doc.set("dateCreated", undefined);
+        doc.set("dateExparation", undefined);
+        await doc.save();
+      }
+      const documents3: any = await archiveSchema.find();
+
+      for (const doc of documents3) {
         doc.set("files", []);
         doc.set("dates.dateCreated", "");
         doc.set("dates.dateExparation", "");
