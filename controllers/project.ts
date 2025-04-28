@@ -76,6 +76,21 @@ export default {
         const created = b.dateCreated;
         const exparation = b.dateExparation;
 
+        const temp = [...b.files];
+        if (temp.length > 0) {
+          const indexes: any = [];
+          temp.forEach((item: any, index: any) => {
+            if (typeof item !== "string") {
+              indexes.push(index);
+            }
+          });
+          indexes.sort((a: number, b: number) => b - a);
+          indexes.forEach((item: any) => {
+            temp.splice(item, 1);
+          });
+        }
+
+        b.set("files", temp);
         b.set("dates.dateCreated", created);
         b.set("dates.dateExparation", exparation);
         b.set("dates.dateConfirmed", created);
