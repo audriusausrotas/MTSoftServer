@@ -70,15 +70,12 @@ export default {
 
   removeUnconfirmed: async (req: Request, res: Response) => {
     try {
-      const a: any = await unconfirmedSchema.find();
+      const a: any = await projectSchema.find();
 
       for (const b of a) {
         const created = b.dateCreated;
         const exparation = b.dateExparation;
-        console.log(created);
-        console.log(exparation);
 
-        b.set("files", []);
         b.set("dates.dateCreated", created);
         b.set("dates.dateExparation", exparation);
         b.set("dates.dateConfirmed", created);
@@ -87,56 +84,19 @@ export default {
 
         await b.save();
       }
-      const z: any = await deletedSchema.find();
+
+      const z: any = await archiveSchema.find();
 
       for (const b of z) {
-        const created = b.dateCreated;
-        const exparation = b.dateExparation;
-        console.log(created);
-        console.log(exparation);
+        if (b.status === "Baigtas") {
+          const asdf = b.toObject();
+          const newData = new finishedSchema(asdf);
+          const data = await newData.save();
 
-        b.set("files", []);
-        b.set("dates.dateCreated", created);
-        b.set("dates.dateExparation", exparation);
-        b.set("dates.dateConfirmed", created);
-        b.set("dates.dateCompletion", "");
-        b.set("dates.dateArchieved", exparation);
-
-        await b.save();
-      }
-      const g: any = await backupSchema.find();
-
-      for (const b of g) {
-        const created = b.dateCreated;
-        const exparation = b.dateExparation;
-        console.log(created);
-        console.log(exparation);
-
-        b.set("files", []);
-        b.set("dates.dateCreated", created);
-        b.set("dates.dateExparation", exparation);
-        b.set("dates.dateConfirmed", created);
-        b.set("dates.dateCompletion", "");
-        b.set("dates.dateArchieved", exparation);
-
-        await b.save();
-      }
-      const k: any = await versionsSchema.find();
-
-      for (const b of k) {
-        const created = b.dateCreated;
-        const exparation = b.dateExparation;
-        console.log(created);
-        console.log(exparation);
-
-        b.set("files", []);
-        b.set("dates.dateCreated", created);
-        b.set("dates.dateExparation", exparation);
-        b.set("dates.dateConfirmed", created);
-        b.set("dates.dateCompletion", "");
-        b.set("dates.dateArchieved", exparation);
-
-        await b.save();
+          if (data) {
+            await archiveSchema.findByIdAndDelete(b._id);
+          }
+        }
       }
 
       return response(res, true, null, "Nepatvirtinti projektai ištrinti");
