@@ -58,6 +58,10 @@ const finishedSchema = new mongoose.Schema<Project>({
       dateArchieved: "",
     },
   },
+
+  dateCreated: String,
+  dateExparation: String,
+
   creator: Object,
   orderNumber: String,
   totalPrice: Number,
@@ -69,8 +73,4 @@ const finishedSchema = new mongoose.Schema<Project>({
   discount: Boolean,
 });
 
-export default mongoose.model(
-  "projectsFinished",
-  finishedSchema,
-  "projectsFinished"
-);
+export default mongoose.model("projectsFinished", finishedSchema, "projectsFinished");

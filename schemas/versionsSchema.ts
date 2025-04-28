@@ -67,10 +67,9 @@ const versionsSchema = new mongoose.Schema<Project>({
   priceVAT: Number,
   priceWithDiscount: Number,
   discount: Boolean,
+
+  dateCreated: String,
+  dateExparation: String,
 });
 
-export default mongoose.model(
-  "projectsVersions",
-  versionsSchema,
-  "projectsVersions"
-);
+export default mongoose.model("projectsVersions", versionsSchema, "projectsVersions");

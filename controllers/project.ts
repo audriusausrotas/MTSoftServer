@@ -75,19 +75,19 @@ export default {
       for (const b of a) {
         const created = b.dateCreated;
         const exparation = b.dateExparation;
-        console.log("asdf");
-        console.log(b);
-        console.log(b.dateCreated);
-        // b.set("files", []);
-        // b.set("dates.dateCreated", "");
-        // b.set("dates.dateExparation", "");
-        // b.set("dates.dateConfirmed", "");
-        // b.set("dates.dateCompletion", "");
-        // b.set("dates.dateArchieved", "");
+        console.log(created);
+        console.log(exparation);
+
+        b.set("files", []);
+        b.set("dates.dateCreated", created);
+        b.set("dates.dateExparation", exparation);
+        b.set("dates.dateConfirmed", created);
+        b.set("dates.dateCompletion", "");
+        b.set("dates.dateArchieved", exparation);
 
         // b.set("dateCreated", undefined);
         // b.set("dateExparation", undefined);
-        // await b.save();
+        await b.save();
       }
 
       return response(res, true, null, "Nepatvirtinti projektai ištrinti");

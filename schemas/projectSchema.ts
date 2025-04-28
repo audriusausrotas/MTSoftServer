@@ -100,6 +100,9 @@ const projectSchema = new mongoose.Schema<Project>({
   },
   creator: Object,
   orderNumber: String,
+
+  dateCreated: String,
+  dateExparation: String,
 });
 
 export default mongoose.model("projects", projectSchema, "projects");
