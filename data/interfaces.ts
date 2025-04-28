@@ -36,6 +36,8 @@ export interface Project {
   versions: Version[];
   dates: Dates;
   workers: string[];
+  dateCreated: string;
+  dateExparation: string;
 }
 export interface Version {
   _id?: Types.ObjectId;
