@@ -76,9 +76,8 @@ export default {
         const created = b.dateCreated;
         const exparation = b.dateExparation;
 
-        console.log(b.files);
-        const temp = [...b.files];
-        if (temp.length > 0) {
+        if (b.files.length > 0) {
+          const temp = [...b.files];
           const indexes: any = [];
           temp.forEach((item: any, index: any) => {
             if (typeof item !== "string") {
@@ -89,9 +88,9 @@ export default {
           indexes.forEach((item: any) => {
             temp.splice(item, 1);
           });
+          b.set("files", temp);
         }
 
-        b.set("files", temp);
         b.set("dates.dateCreated", created);
         b.set("dates.dateExparation", exparation);
         b.set("dates.dateConfirmed", created);
