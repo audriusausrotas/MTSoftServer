@@ -100,6 +100,8 @@ export default {
         doc.files = [];
         doc.dates.dateCreated = doc.dateCreated;
         doc.dates.dateExparation = doc.dateExparation;
+        doc.dates.dateConfirmed = "";
+        doc.dates.dateCompletion = "";
         doc.dates.dateArchieved = doc.dateExparation;
 
         delete doc.dateCreated;
