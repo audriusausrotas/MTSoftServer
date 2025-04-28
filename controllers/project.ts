@@ -101,11 +101,11 @@ export default {
         const exparation = doc.dateExparation || "";
 
         doc.files = [];
-        doc.dates.dateCreated = created;
-        doc.dates.dateExparation = exparation;
-        doc.dates.dateConfirmed = created;
-        doc.dates.dateCompletion = exparation;
-        doc.dates.dateArchieved = exparation;
+        doc.dates.dateCreated = "";
+        doc.dates.dateExparation = "";
+        doc.dates.dateConfirmed = "";
+        doc.dates.dateCompletion = "";
+        doc.dates.dateArchieved = "";
 
         delete doc.dateCreated;
         delete doc.dateExparation;
