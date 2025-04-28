@@ -75,8 +75,9 @@ export default {
       for (const b of a) {
         const created = b.dateCreated;
         const exparation = b.dateExparation;
-        console.log(created);
-        console.log(exparation);
+        console.log("asdf");
+        console.log(b);
+        console.log(b.dateCreated);
         // b.set("files", []);
         // b.set("dates.dateCreated", "");
         // b.set("dates.dateExparation", "");
@@ -86,7 +87,7 @@ export default {
 
         // b.set("dateCreated", undefined);
         // b.set("dateExparation", undefined);
-        await b.save();
+        // await b.save();
       }
 
       return response(res, true, null, "Nepatvirtinti projektai ištrinti");
