@@ -126,14 +126,16 @@ export default {
       //     await deleted.save();
       //   }
       // }
-
-      await deletedSchema.updateMany(
-        { dateCreated: { $exists: true }, dateExparation: { $exists: true } },
+      console.log("veikia");
+      const asdf = await deletedSchema.updateMany(
+        {},
         {
           $set: { dates: { dateCreated: "$dateCreated", dateExparation: "$dateExparation" } },
           $unset: { dateCreated: "", dateExparation: "" },
         }
       );
+
+      console.log(asdf);
 
       // const backups: any = await backupSchema.find();
       // if (!backups.length) return response(res, true, null, "Projektų nėra");
