@@ -76,12 +76,17 @@ export default {
         const created = b.dateCreated;
         const exparation = b.dateExparation;
 
-        b.set("files", []);
+        b.set("files", []); // ✅ reset files to empty array
         b.set("dates.dateCreated", created);
         b.set("dates.dateExparation", exparation);
         b.set("dates.dateConfirmed", created);
         b.set("dates.dateCompletion", "");
         b.set("dates.dateArchieved", exparation);
+
+        b.set("totalMargin", b.totalMargin || 0);
+        b.set("totalProfit", b.totalProfit || 0);
+        b.set("totalCost", b.totalCost || 0);
+        b.set("totalPrice", b.totalPrice || 0);
 
         await b.save();
       }
