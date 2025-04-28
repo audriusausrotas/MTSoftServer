@@ -94,21 +94,20 @@ export default {
       //     await deletedSchema.findByIdAndDelete(a._id);
       //   }
       // }
+
       const documents: any = await deletedSchema.find();
-
       for (const doc of documents) {
-        const created = doc.dateCreated || "";
-        const exparation = doc.dateExparation || "";
+        // Clear arrays and dates correctly
+        doc.set("files", []);
+        doc.set("dates.dateCreated", "");
+        doc.set("dates.dateExparation", "");
+        doc.set("dates.dateConfirmed", "");
+        doc.set("dates.dateCompletion", "");
+        doc.set("dates.dateArchieved", "");
 
-        doc.files = [];
-        doc.dates.dateCreated = "";
-        doc.dates.dateExparation = "";
-        doc.dates.dateConfirmed = "";
-        doc.dates.dateCompletion = "";
-        doc.dates.dateArchieved = "";
-
-        delete doc.dateCreated;
-        delete doc.dateExparation;
+        // Correctly remove old fields
+        doc.set("dateCreated", undefined);
+        doc.set("dateExparation", undefined);
 
         await doc.save();
       }
