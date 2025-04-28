@@ -18,10 +18,10 @@ jobs:
         with:
           node-version: "20.18.0"
 
-      # - name: Install dependencies
-      #   run: npm install
-      #   env:
-      #     NODE_NO_WARNINGS: "1"
+      - name: Install dependencies
+        run: npm install
+        env:
+          NODE_NO_WARNINGS: "1"
 
       - name: Build the application
         run: npm run build
@@ -43,7 +43,7 @@ jobs:
           $projectPath = $env:PROJECT_PATH
 
           echo y | & "C:\Program Files\PuTTY\plink.exe" -v -pw $vpsPassword $vpsUsername@$vpsIP "cd $projectPath && git pull"
-          # echo y | & "C:\Program Files\PuTTY\plink.exe" -v -pw $vpsPassword $vpsUsername@$vpsIP "cd $projectPath && npm install"
+          echo y | & "C:\Program Files\PuTTY\plink.exe" -v -pw $vpsPassword $vpsUsername@$vpsIP "cd $projectPath && npm install"
           echo y | & "C:\Program Files\PuTTY\plink.exe" -v -pw $vpsPassword $vpsUsername@$vpsIP "cd $projectPath && pm2 stop MTSoftServer"  
           echo y | & "C:\Program Files\PuTTY\plink.exe" -v -pw $vpsPassword $vpsUsername@$vpsIP "cd $projectPath && npm run build"  
           echo y | & "C:\Program Files\PuTTY\plink.exe" -v -pw $vpsPassword $vpsUsername@$vpsIP "cd $projectPath && pm2 start ecosystem.config.cjs"  
