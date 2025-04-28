@@ -96,19 +96,18 @@ export default {
       // }
 
       const documents: any = await finishedSchema.find();
-      console.log(documents[0].dateCreated);
+
       for (const doc of documents) {
-        // Clear arrays and dates correctly
-        // doc.set("files", []);
-        // doc.set("dates.dateCreated", "");
-        // doc.set("dates.dateExparation", "");
-        // doc.set("dates.dateConfirmed", "");
-        // doc.set("dates.dateCompletion", "");
-        // doc.set("dates.dateArchieved", "");
-        // Correctly remove old fields
-        // doc.set("dateCreated", undefined);
-        // doc.set("dateExparation", undefined);
-        // await doc.save();
+        doc.set("files", []);
+        doc.set("dates.dateCreated", "");
+        doc.set("dates.dateExparation", "");
+        doc.set("dates.dateConfirmed", "");
+        doc.set("dates.dateCompletion", "");
+        doc.set("dates.dateArchieved", "");
+
+        doc.set("dateCreated", undefined);
+        doc.set("dateExparation", undefined);
+        await doc.save();
       }
 
       // const projects: any = await projectSchema.find();
