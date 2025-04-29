@@ -114,4 +114,4 @@ const installationSchema = new mongoose.Schema<Installation>({
   },
 });
 
-export default mongoose.model("montavimas", installationSchema, "montavimas");
+export default mongoose.model("installation", installationSchema, "installation");

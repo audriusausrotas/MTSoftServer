@@ -69,4 +69,4 @@ const archiveSchema = new mongoose.Schema<Project>({
   discount: Boolean,
 });
 
-export default mongoose.model("archive", archiveSchema, "archive");
+export default mongoose.model("projectsArchived", archiveSchema, "projectsArchived");

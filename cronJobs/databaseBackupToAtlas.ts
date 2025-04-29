@@ -10,7 +10,6 @@ export const databaseBackupToAtlas = () => {
     console.log("Restoring MongoDB backup to Atlas...");
 
     const collections = [
-      "archive",
       "backup",
       "bonus",
       "clients",
@@ -22,6 +21,7 @@ export const databaseBackupToAtlas = () => {
       "potentialClientsUnsuscribed",
       "products",
       "projects",
+      "projectsArchived",
       "projectsDeleted",
       "projectsFinished",
       "projectsUnconfirmed",
