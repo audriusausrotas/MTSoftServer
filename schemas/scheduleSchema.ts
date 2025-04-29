@@ -3,8 +3,7 @@ import { Schedule } from "../data/interfaces";
 
 const scheduleSchema = new mongoose.Schema<Schedule>({
   date: {
-    type: Date,
-    required: true,
+    type: String,
   },
   worker: Object,
   jobs: [Object],

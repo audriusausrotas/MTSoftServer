@@ -16,14 +16,6 @@ export default {
 
       if (!user) return response(res, false, null, "Klaidingas vartotojas");
 
-      const today = new Date();
-
-      const twoWeeksAgo = new Date();
-      twoWeeksAgo.setDate(today.getDate() - 14);
-
-      const oneMonthAhead = new Date();
-      oneMonthAhead.setMonth(today.getMonth() + 1);
-
       let schedule: Schedule[] = [];
 
       if (
@@ -38,15 +30,10 @@ export default {
         });
       }
 
-      const filtered = schedule.filter((s: any) => {
-        const parsedDate = new Date(s.date);
-        return parsedDate >= twoWeeksAgo && parsedDate <= oneMonthAhead;
-      });
-
-      if (filtered.length === 0)
+      if (schedule.length === 0)
         return response(res, false, null, "Grafikas nerastas");
 
-      return response(res, true, filtered);
+      return response(res, true, schedule);
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");
@@ -69,7 +56,6 @@ export default {
           date,
           worker,
         });
-
         if (!existingSchedule)
           return response(res, false, null, "Klaida saugant");
 
@@ -93,10 +79,13 @@ export default {
         });
       }
 
-      const existingSchedule = await scheduleSchema.findOne({ date, worker });
+      const existingSchedule = await scheduleSchema.findOne({
+        date,
+        worker,
+      });
 
       if (existingSchedule) {
-        existingSchedule.comment = comment || "";
+        existingSchedule.comment = comment;
         existingSchedule.jobs = selectedJobs;
 
         const responseData = await existingSchedule.save();
