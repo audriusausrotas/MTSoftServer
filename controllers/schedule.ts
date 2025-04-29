@@ -43,7 +43,8 @@ export default {
         return parsedDate >= twoWeeksAgo && parsedDate <= oneMonthAhead;
       });
 
-      if (filtered.length === 0) return response(res, false, null, "Grafikas nerastas");
+      if (filtered.length === 0)
+        return response(res, false, null, "Grafikas nerastas");
 
       return response(res, true, filtered);
     } catch (error) {
@@ -69,7 +70,8 @@ export default {
           worker,
         });
 
-        if (!existingSchedule) return response(res, false, null, "Klaida saugant");
+        if (!existingSchedule)
+          return response(res, false, null, "Klaida saugant");
 
         const responseData = { date, worker };
 
@@ -82,7 +84,8 @@ export default {
       }
 
       const workerFound = await userSchema.findById(worker._id);
-      if (!workerFound) return response(res, false, null, "Darbuotojas nerastas");
+      if (!workerFound)
+        return response(res, false, null, "Darbuotojas nerastas");
 
       if (workerFound.accountType !== "Gamyba") {
         selectedJobs.forEach(async (job: Job) => {
@@ -93,7 +96,7 @@ export default {
       const existingSchedule = await scheduleSchema.findOne({ date, worker });
 
       if (existingSchedule) {
-        existingSchedule.comment = comment;
+        existingSchedule.comment = comment || "";
         existingSchedule.jobs = selectedJobs;
 
         const responseData = await existingSchedule.save();
@@ -107,7 +110,7 @@ export default {
       } else {
         const newSchedule = new scheduleSchema({
           date,
-          comment,
+          comment: comment || "",
           jobs: selectedJobs,
           worker,
         });
