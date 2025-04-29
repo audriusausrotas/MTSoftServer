@@ -69,8 +69,4 @@ const versionsSchema = new mongoose.Schema<Project>({
   discount: Boolean,
 });
 
-export default mongoose.model(
-  "projectsVersions",
-  versionsSchema,
-  "projectsVersions"
-);
+export default mongoose.model("projectsVersions", versionsSchema, "projectsVersions");

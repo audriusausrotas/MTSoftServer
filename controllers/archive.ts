@@ -15,6 +15,7 @@ const schemaMap = {
   unconfirmed: unconfirmedSchema,
   deleted: deletedSchema,
   backup: backupSchema,
+  finished: finishedSchema,
 };
 
 type Location = keyof typeof schemaMap;
@@ -145,6 +146,9 @@ export default {
 
   getDeleted: async (req: Request, res: Response) => {
     try {
+      const asdf = await deletedSchema.find();
+      console.log(asdf[0]);
+
       const data = await deletedSchema.aggregate([
         { $sort: { dateExparation: -1 } },
         {
@@ -246,8 +250,7 @@ export default {
 
       const archivedProject = await schema.findById(_id);
 
-      if (!archivedProject)
-        return response(res, false, null, "Projektas nerastas");
+      if (!archivedProject) return response(res, false, null, "Projektas nerastas");
 
       const currentDate = new Date();
       let expirationDate = new Date(currentDate);
@@ -272,12 +275,7 @@ export default {
 
       emit.toAdmin("restoreArchive", responseData);
 
-      return response(
-        res,
-        true,
-        responseData,
-        "Projektas perkeltas į projektus"
-      );
+      return response(res, true, responseData, "Projektas perkeltas į projektus");
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");
@@ -332,8 +330,7 @@ export default {
 
       const responseData = await unconfirmedProject.save();
 
-      if (!responseData)
-        return response(res, false, null, "Klaida perkeliant projektą");
+      if (!responseData) return response(res, false, null, "Klaida perkeliant projektą");
 
       await projectSchema.findByIdAndDelete(_id);
       await backupSchema.findByIdAndDelete(_id);

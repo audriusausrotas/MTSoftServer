@@ -81,8 +81,4 @@ const unconfirmedSchema = new mongoose.Schema<Project>({
   discount: Boolean,
 });
 
-export default mongoose.model(
-  "projectsUnconfirmed",
-  unconfirmedSchema,
-  "projectsUnconfirmed"
-);
+export default mongoose.model("projectsUnconfirmed", unconfirmedSchema, "projectsUnconfirmed");

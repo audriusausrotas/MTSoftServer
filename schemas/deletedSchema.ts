@@ -81,8 +81,4 @@ const deletedSchema = new mongoose.Schema<Project>({
   discount: Boolean,
 });
 
-export default mongoose.model(
-  "projectsDeleted",
-  deletedSchema,
-  "projectsDeleted"
-);
+export default mongoose.model("projectsDeleted", deletedSchema, "projectsDeleted");
