@@ -4,64 +4,64 @@ import { Project } from "../data/interfaces";
 const deletedSchema = new mongoose.Schema<Project>({
   client: {
     type: Object,
-    required: true,
+    required: false,
     default: {},
   },
   retail: Boolean,
   fenceMeasures: {
     type: [Object],
-    required: true,
+    required: false,
     default: [],
   },
   results: {
     type: [Object],
-    required: true,
+    required: false,
     default: [],
   },
   works: {
     type: [Object],
-    required: true,
+    required: false,
     default: [],
   },
   gates: {
     type: [Object],
-    required: true,
+    required: false,
     default: [],
   },
 
   advance: {
     type: Number,
-    required: true,
+    required: false,
     default: 0,
   },
   status: {
     type: String,
-    required: true,
+    required: false,
     default: "Nepatvirtintas",
   },
   files: {
     type: [String],
-    required: true,
+    required: false,
     default: [],
   },
   comments: {
     type: [Object],
-    required: true,
+    required: false,
     default: [],
   },
   versions: {
     type: [Object],
-    required: true,
+    required: false,
     default: [],
   },
   workers: {
     type: [String],
-    required: true,
+    required: false,
     default: [],
   },
   dates: {
     type: Object,
-    required: true,
+    required: false,
     default: {
       dateCreated: "",
       dateExparation: "",
@@ -81,4 +81,8 @@ const deletedSchema = new mongoose.Schema<Project>({
   discount: Boolean,
 });
 
-export default mongoose.model("projectsDeleted", deletedSchema, "projectsDeleted");
+export default mongoose.model(
+  "projectsDeleted",
+  deletedSchema,
+  "projectsDeleted"
+);

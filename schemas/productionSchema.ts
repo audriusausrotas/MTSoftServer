@@ -69,7 +69,7 @@ const productionSchema = new mongoose.Schema<Prodution>({
   orderNumber: String,
   status: {
     type: String,
-    required: true,
+    required: false,
     default: "Negaminti",
   },
   fences: {
@@ -78,17 +78,17 @@ const productionSchema = new mongoose.Schema<Prodution>({
   },
   bindings: {
     type: [Object],
-    required: true,
+    required: false,
     default: [],
   },
   comments: {
     type: [Object],
-    required: true,
+    required: false,
     default: [],
   },
   files: {
     type: [String],
-    required: true,
+    required: false,
     default: [],
   },
 });

@@ -4,92 +4,92 @@ import { Project } from "../data/interfaces";
 const projectSchema = new mongoose.Schema<Project>({
   client: {
     type: Object,
-    required: true,
+    required: false,
     default: {},
   },
   retail: Boolean,
   fenceMeasures: {
     type: [Object],
-    required: true,
+    required: false,
     default: [],
   },
   results: {
     type: [Object],
-    required: true,
+    required: false,
     default: [],
   },
   works: {
     type: [Object],
-    required: true,
+    required: false,
     default: [],
   },
   gates: {
     type: [Object],
-    required: true,
+    required: false,
     default: [],
   },
 
   advance: {
     type: Number,
-    required: true,
+    required: false,
     default: 0,
   },
   status: {
     type: String,
-    required: true,
+    required: false,
     default: "Nepatvirtintas",
   },
   files: {
     type: [String],
-    required: true,
+    required: false,
     default: [],
   },
   comments: {
     type: [Object],
-    required: true,
+    required: false,
     default: [],
   },
   versions: {
     type: [Object],
-    required: true,
+    required: false,
     default: [],
   },
   workers: {
     type: [String],
-    required: true,
+    required: false,
     default: [],
   },
   totalPrice: {
     type: Number,
-    required: true,
+    required: false,
   },
   totalCost: {
     type: Number,
-    required: true,
+    required: false,
   },
   totalProfit: {
     type: Number,
-    required: true,
+    required: false,
   },
   totalMargin: {
     type: Number,
-    required: true,
+    required: false,
   },
   priceVAT: {
     type: Number,
-    required: true,
+    required: false,
   },
   priceWithDiscount: {
     type: Number,
-    required: true,
+    required: false,
   },
   discount: {
     type: Boolean,
-    required: true,
+    required: false,
   },
   dates: {
     type: Object,
-    required: true,
+    required: false,
     default: {
       dateCreated: "",
       dateExparation: "",

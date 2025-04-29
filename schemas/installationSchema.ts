@@ -50,13 +50,13 @@ const resultSchema = new mongoose.Schema<InstallationResult>({
   color: { type: String, default: "" },
   width: { type: Number, default: 0 },
   category: { type: String, default: "" },
-  delivered: { type: Boolean, required: true, default: false },
+  delivered: { type: Boolean, required: false, default: false },
 });
 
 const workSchema = new mongoose.Schema<InstallationWorks>({
   name: { type: String, default: "" },
   quantity: { type: Number, default: 0 },
-  delivered: { type: Boolean, required: true, default: false },
+  delivered: { type: Boolean, required: false, default: false },
 });
 
 const fenceSchema = new mongoose.Schema<InstallationFence>({

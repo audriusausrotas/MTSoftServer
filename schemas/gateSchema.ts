@@ -7,17 +7,17 @@ const gateSchema = new mongoose.Schema<GateSchema>({
   manager: String,
   orderNr: {
     type: String,
-    required: true,
+    required: false,
     default: "",
   },
   comments: {
     type: [Object],
-    required: true,
+    required: false,
     default: [],
   },
   measure: {
     type: String,
-    required: true,
+    required: false,
     default: "Eilėje",
   },
   gates: [Object],
