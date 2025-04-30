@@ -37,8 +37,8 @@ router.get("/getArchives", checkAdmin, archive.getArchives);
 router.get("/getFinished", checkAdmin, archive.getFinished);
 router.get("/getDeleted", checkAdmin, archive.getDeleted);
 router.get("/getBackup", checkAdmin, archive.getBackup);
-router.get("/serviceSearch", archive.serviceSearch);
-router.get("/getArchive/:_id", archive.getArchive);
+router.get("/serviceSearch", checkUser, archive.serviceSearch);
+router.get("/getArchive/:_id", checkAdmin, archive.getArchive);
 
 router.delete("/deleteArchive", checkAdmin, archive.deleteArchive);
 

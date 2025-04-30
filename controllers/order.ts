@@ -27,7 +27,7 @@ export default {
 
   changeOrderStatus: async (req: Request, res: Response) => {
     try {
-      const { _id, value } = req.params;
+      const { _id, value } = req.body;
 
       const order: any = await projectSchema.findById(_id);
 
