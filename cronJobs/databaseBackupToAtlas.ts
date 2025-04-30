@@ -10,18 +10,18 @@ export const databaseBackupToAtlas = () => {
     console.log("Restoring MongoDB backup to Atlas...");
 
     const collections = [
-      "archive",
       "backup",
       "bonus",
       "clients",
       "defaultValues",
-      "gamyba",
       "gates",
-      "montavimas",
+      "installation",
       "potentialClients",
       "potentialClientsUnsuscribed",
       "products",
       "projects",
+      "production",
+      "projectsArchived",
       "projectsDeleted",
       "projectsFinished",
       "projectsUnconfirmed",
@@ -40,7 +40,9 @@ export const databaseBackupToAtlas = () => {
       }.json`;
 
       if (!fs.existsSync(backupFile)) {
-        console.error(`Backup file for collection ${collection} missing! Skipping Atlas restore.`);
+        console.error(
+          `Backup file for collection ${collection} missing! Skipping Atlas restore.`
+        );
         return;
       }
 

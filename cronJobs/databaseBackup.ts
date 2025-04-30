@@ -24,18 +24,18 @@ export const backupDatabase = () => {
 
     // Run mongoexport to create .json backup for collections
     const collections = [
-      "archive",
       "backup",
       "bonus",
       "clients",
       "defaultValues",
-      "gamyba",
       "gates",
-      "montavimas",
+      "installation",
       "potentialClients",
       "potentialClientsUnsuscribed",
       "products",
       "projects",
+      "production",
+      "projectsArchived",
       "projectsDeleted",
       "projectsFinished",
       "projectsUnconfirmed",
