@@ -1,32 +1,8 @@
-// import cron from "node-cron";
-// import scheduleSchema from "../schemas/scheduleSchema";
-
-// export const clearSchedule = () => {
-//   cron.schedule("1 10 * * *", async () => {
-//     console.log("Cleaning up old schedules...");
-
-//     try {
-//       const today = new Date();
-//       const twoWeeksAgo = new Date();
-//       twoWeeksAgo.setDate(today.getDate() - 14);
-
-//       // ✅ Delete schedules older than 2 weeks
-//       console.log(twoWeeksAgo);
-//       const result = await scheduleSchema.deleteMany({ date: { $lte: twoWeeksAgo } });
-//       console.log(result);
-
-//       console.log(`Deleted ${result.deletedCount} old schedules.`);
-//     } catch (error) {
-//       console.error("Error deleting old schedules:", error);
-//     }
-//   });
-// };
-
 import cron from "node-cron";
 import scheduleSchema from "../schemas/scheduleSchema";
 
 export const clearSchedule = () => {
-  cron.schedule("2 4 * * *", async () => {
+  cron.schedule("00 4 * * *", async () => {
     console.log("Cleaning up old schedules...");
 
     try {

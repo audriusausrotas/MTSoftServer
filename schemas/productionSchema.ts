@@ -1,10 +1,5 @@
 import mongoose from "mongoose";
-import {
-  Prodution,
-  ProdutionFence,
-  ProdutionMeasure,
-  GateInfo,
-} from "../data/interfaces";
+import { Prodution, ProdutionFence, ProdutionMeasure, GateInfo } from "../data/interfaces";
 
 const gatesSchema = new mongoose.Schema<GateInfo>({
   exist: { type: Boolean, default: false },
@@ -93,4 +88,4 @@ const productionSchema = new mongoose.Schema<Prodution>({
   },
 });
 
-export default mongoose.model("gamyba", productionSchema, "gamyba");
+export default mongoose.model("production", productionSchema, "production");

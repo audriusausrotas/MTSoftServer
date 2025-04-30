@@ -120,9 +120,13 @@ export default {
           message: "Projektas nerastas",
         };
 
+      const afterTwoMonths = new Date();
+      afterTwoMonths.setMonth(afterTwoMonths.getMonth() + 2);
+
       project.advance = advance;
       project.status = "Patvirtintas";
       project.dates.dateConfirmed = new Date().toISOString();
+      project.dates.dateCompletion = afterTwoMonths.toISOString();
 
       const data = await project.save();
 
@@ -246,23 +250,27 @@ export default {
       const { _id, value } = req.body;
 
       const project = await projectSchema.findById(_id);
-
       if (!project) return response(res, false, null, "Projektas nerastas");
 
       project.status = value;
-      const data = await project.save();
-
-      if (!data) return response(res, true, null, "Serverio klaida");
 
       if (value === "Patvirtintas") {
-        data.dates.dateConfirmed = new Date().toISOString();
+        const afterTwoMonths = new Date();
+        afterTwoMonths.setMonth(afterTwoMonths.getMonth() + 2);
+
+        project.dates.dateConfirmed = new Date().toISOString();
+        project.dates.dateCompletion = afterTwoMonths.toISOString();
+
         const backupProject = await backupSchema.findById(_id);
         if (!backupProject) {
-          const projectData = data.toObject();
+          const projectData = project.toObject();
           const newBackup = new backupSchema(projectData);
           await newBackup.save();
         }
       }
+
+      const data = await project.save();
+      if (!data) return response(res, true, null, "Serverio klaida");
 
       if (value === "Apmokėjimas") {
         const html = generateHTML(project);
