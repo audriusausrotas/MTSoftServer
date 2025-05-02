@@ -9,6 +9,7 @@ import { Response, Request } from "express";
 import response from "../modules/response";
 import emit from "../sockets/emits";
 import finishedSchema from "../schemas/finishedSchema";
+import versionsSchema from "../schemas/versionsSchema";
 
 const schemaMap = {
   archive: archiveSchema,
@@ -116,6 +117,20 @@ export default {
       return response(res, true, data);
     } catch (error) {
       console.error("Klaida gaunant projektą:", error);
+      return response(res, false, null, "Serverio klaida");
+    }
+  },
+
+  getVersion: async (req: Request, res: Response) => {
+    const { _id } = req.params;
+    try {
+      const data = await versionsSchema.findById(_id);
+
+      if (!data) return response(res, false, null, "Versija nerasta");
+
+      return response(res, true, data);
+    } catch (error) {
+      console.error("Klaida gaunant versiją:", error);
       return response(res, false, null, "Serverio klaida");
     }
   },
@@ -249,8 +264,7 @@ export default {
 
       const archivedProject = await schema.findById(_id);
 
-      if (!archivedProject)
-        return response(res, false, null, "Projektas nerastas");
+      if (!archivedProject) return response(res, false, null, "Projektas nerastas");
 
       const currentDate = new Date();
       let expirationDate = new Date(currentDate);
@@ -275,12 +289,7 @@ export default {
 
       emit.toAdmin("restoreArchive", responseData);
 
-      return response(
-        res,
-        true,
-        responseData,
-        "Projektas perkeltas į projektus"
-      );
+      return response(res, true, responseData, "Projektas perkeltas į projektus");
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");
@@ -335,8 +344,7 @@ export default {
 
       const responseData = await unconfirmedProject.save();
 
-      if (!responseData)
-        return response(res, false, null, "Klaida perkeliant projektą");
+      if (!responseData) return response(res, false, null, "Klaida perkeliant projektą");
 
       await projectSchema.findByIdAndDelete(_id);
       await backupSchema.findByIdAndDelete(_id);

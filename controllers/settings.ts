@@ -155,7 +155,8 @@ export default {
 
   newUserRights: async (req: Request, res: Response) => {
     try {
-      const { accountType, project, schedule, production, installation, gate, admin } = req.body;
+      const { accountType, project, schedule, production, installation, gate, admin, warehouse } =
+        req.body;
 
       let doesExist = await userRightsSchema.findOne({ accountType });
       if (doesExist) {
@@ -165,6 +166,7 @@ export default {
         doesExist.installation = installation;
         doesExist.gate = gate;
         doesExist.admin = admin;
+        doesExist.warehouse = warehouse;
       } else
         doesExist = new userRightsSchema({
           accountType,
@@ -174,6 +176,7 @@ export default {
           installation,
           gate,
           admin,
+          warehouse,
         });
 
       const responseData = await doesExist.save();
