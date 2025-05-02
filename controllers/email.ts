@@ -23,12 +23,8 @@ export default {
 
       const user = res.locals.user;
 
-      const title = Array.isArray(fields.title)
-        ? fields.title[0]
-        : fields.title;
-      const message = Array.isArray(fields.message)
-        ? fields.message[0]
-        : fields.message;
+      const title = Array.isArray(fields.title) ? fields.title[0] : fields.title;
+      const message = Array.isArray(fields.message) ? fields.message[0] : fields.message;
 
       if (!fields.to) throw new Error("Missing recipients");
 
@@ -167,6 +163,129 @@ export default {
         emailResult.success,
         null,
         emailResult.success ? "Pasiūlymas išsiūstas" : emailResult.message
+      );
+    } catch (error) {
+      console.error("Klaida:", error);
+      return response(res, false, null, "Serverio klaida");
+    }
+  },
+
+  orderProducts: async (req: Request, res: Response) => {
+    try {
+      const { data, client, date, deliveryMethod } = req.body;
+
+      const user = res.locals.user;
+
+      const materialsList = data
+        .map(
+          (result: any) => ` 
+                <tr>
+                  <td>${result.name}</td>
+                  <td>${result.color}</td>
+                  <td>${result.quantity}</td>
+                </tr>`
+        )
+        .join("");
+
+      const html = `
+      <html>
+      <head>
+        <style>
+          body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 20px;
+          }
+          h2 {
+            color: #333;
+          }
+          .section-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 8px;
+          }
+          .info-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+          }
+          .info-table th, .info-table td
+           {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: left;
+          }
+          .info-table th {
+            background-color: #f4f4f4;
+            font-weight: bold;
+          }
+          .highlight {
+            font-weight: bold;
+            color: #2c3e50;
+          }
+        </style>
+      </head>
+      <body>
+
+        <h2>Naujas užsakymas</h2>
+
+        <table class="info-table">
+          <tr>
+            <th>Klientas</th>
+            <td>${client.username}</td>
+          </tr>
+          <tr>
+            <th>Adresas</th>
+            <td>${client.address}</td>
+          </tr>
+          <tr>
+            <th>Telefono numeris</th>
+            <td>${client.phone}</td>
+          </tr>
+          <tr>
+            <th>Elektroninio pašto adresas</th>
+            <td>${client.email}</td>
+          </tr>
+          <tr>
+            <th>Pristatymo vieta</th>
+            <td>${deliveryMethod}</td>
+          </tr>
+          <tr>
+            <th>Pristatymo data iki</th>
+            <td>${date}</td>
+          </tr>
+        </table>
+
+        <h2>Medžiagos</h2>
+        <table class="info-table">
+          <thead>
+            <tr>
+              <th>Pavadinimas</th>
+              <th>Spalva</th>
+              <th>Kiekis</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${materialsList}
+          </tbody>
+        </table>
+
+      </body>
+      </html>
+    `;
+
+      const emailResult = await sendEmail({
+        to: "dainius.palubinskas@klinkera.lt",
+        subject: `Naujas užsakymas - ${client.address}`,
+        html,
+        user,
+      });
+
+      return response(
+        res,
+        emailResult.success,
+        null,
+        emailResult.success ? "Medžiagos užsakytos" : emailResult.message
       );
     } catch (error) {
       console.error("Klaida:", error);

@@ -75,6 +75,7 @@ router.post("/addProjectComment", checkUser, comments.addProjectComment);
 router.post("/sendRetailOffers", checkAdmin, email.sendRetailOffers);
 router.post("/sendGateInfo", checkAdmin, email.sendGateInfo);
 router.post("/sendOffer", checkAdmin, email.sendOffer);
+router.post("/orderProducts", checkUser, email.orderProducts);
 
 /////////////////////// Gates ////////////////////////////
 
