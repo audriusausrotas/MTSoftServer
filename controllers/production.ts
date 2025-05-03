@@ -53,6 +53,7 @@ export default {
       emit.toAdmin("deleteProduction", { _id });
       emit.toProduction("deleteProduction", { _id });
       emit.toWarehouse("deleteProduction", { _id });
+      emit.toInstallation("deleteProduction", { _id });
 
       return response(res, true, { _id }, "Užsakymas ištrintas");
     } catch (error) {
@@ -78,6 +79,7 @@ export default {
       emit.toAdmin("deleteProductionBinding", responseData);
       emit.toProduction("deleteProductionBinding", responseData);
       emit.toWarehouse("deleteProductionBinding", responseData);
+      emit.toInstallation("deleteProductionBinding", responseData);
 
       return response(res, true, responseData, "Apkaustas ištrintas");
     } catch (error) {
@@ -103,6 +105,7 @@ export default {
       emit.toAdmin("deleteProductionFence", responseData);
       emit.toProduction("deleteProductionFence", responseData);
       emit.toWarehouse("deleteProductionFence", responseData);
+      emit.toInstallation("deleteProductionFence", responseData);
 
       return response(res, true, responseData, "Išsaugota");
     } catch (error) {
@@ -130,6 +133,7 @@ export default {
       emit.toAdmin("deleteProductionMeasure", responseData);
       emit.toProduction("deleteProductionMeasure", responseData);
       emit.toWarehouse("deleteProductionMeasure", responseData);
+      emit.toInstallation("deleteProductionMeasure", responseData);
 
       return response(res, true, responseData, "Išsaugota");
     } catch (error) {
@@ -161,6 +165,7 @@ export default {
       emit.toAdmin("updateProductionPostone", responseData);
       emit.toProduction("updateProductionPostone", responseData);
       emit.toWarehouse("updateProductionPostone", responseData);
+      emit.toInstallation("updateProductionPostone", responseData);
 
       return response(res, true, responseData, "Išsaugota");
     } catch (error) {
@@ -216,6 +221,7 @@ export default {
       emit.toAdmin("updateProductionMeasure", responseData);
       emit.toProduction("updateProductionMeasure", responseData);
       emit.toWarehouse("updateProductionMeasure", responseData);
+      emit.toInstallation("updateProductionMeasure", responseData);
 
       return response(res, true, responseData, "issaugota");
     } catch (error) {
@@ -288,6 +294,7 @@ export default {
       emit.toAdmin("newProductionBinding", responseData);
       emit.toProduction("newProductionBinding", responseData);
       emit.toWarehouse("newProductionBinding", responseData);
+      emit.toInstallation("newProductionBinding", responseData);
 
       return response(res, true, responseData, "Apkaustas pridėtas");
     } catch (error) {
@@ -345,6 +352,7 @@ export default {
       emit.toAdmin("newProductionMeasure", responseData);
       emit.toProduction("newProductionMeasure", responseData);
       emit.toWarehouse("newProductionMeasure", responseData);
+      emit.toInstallation("newProductionMeasure", responseData);
 
       return response(res, true, responseData, "issaugota");
     } catch (error) {
