@@ -62,11 +62,9 @@ router.post("/newClient", checkAdmin, clients.newClient);
 
 /////////////////////// Comments /////////////////////////
 
-router.delete("/deleteInstallationComment", checkUser, comments.deleteInstallationComment);
 router.delete("/deleteProductionComment", checkUser, comments.deleteProductionComment);
 router.delete("/deleteProjectComment", checkUser, comments.deleteProjectComment);
 
-router.post("/addInstallationComment", checkUser, comments.addInstallationComment);
 router.post("/addProductionComment", checkUser, comments.addProductionComment);
 router.post("/addProjectComment", checkUser, comments.addProjectComment);
 
