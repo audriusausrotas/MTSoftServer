@@ -130,7 +130,8 @@ router.post("/newProduct", checkAdmin, product.newProduct);
 
 /////////////////////// Production ///////////////////////
 
-router.get("/getProduction", checkUser, production.getProduction);
+router.get("/getProductions", checkUser, production.getProductions);
+router.get("/getProduction/:_id", checkUser, production.getProduction);
 
 router.delete("/deleteProduction/:_id", checkAdmin, production.deleteProduction);
 router.delete("/deleteBindings", checkAdmin, production.deleteBindings);
