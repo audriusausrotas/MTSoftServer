@@ -1,7 +1,9 @@
+import projectSchema from "../schemas/projectSchema";
 import sendEmail from "../modules/sendEmail";
 import { Request, Response } from "express";
 import response from "../modules/response";
 import formidable from "formidable";
+import emit from "../sockets/emits";
 import fs from "fs";
 
 export default {
@@ -172,7 +174,7 @@ export default {
 
   orderProducts: async (req: Request, res: Response) => {
     try {
-      const { data, client, date, deliveryMethod } = req.body;
+      const { _id, data, client, date, deliveryMethod } = req.body;
 
       const user = res.locals.user;
 
@@ -275,16 +277,32 @@ export default {
     `;
 
       const emailResult = await sendEmail({
-        to: "dainius.palubinskas@klinkera.lt",
+        // to: "dainius.palubinskas@klinkera.lt",
+        to: "audrius@modernitvora.lt",
         subject: `Naujas užsakymas - ${client.address}`,
         html,
         user,
       });
 
+      const project = await projectSchema.findById(_id);
+
+      if (!project) return response(res, false, null, "Projektas nerastas");
+
+      for (const item of data) {
+        project.results[item.measureIndex].delivered = true;
+
+        const responseData = { _id, measureIndex: item.measureIndex, value: true };
+        const savedProject = await project.save();
+
+        emit.toAdmin("partsDelivered", responseData);
+        emit.toInstallation("partsDelivered", responseData);
+        emit.toWarehouse("partsDelivered", responseData);
+      }
+
       return response(
         res,
         emailResult.success,
-        null,
+        { _id, data },
         emailResult.success ? "Medžiagos užsakytos" : emailResult.message
       );
     } catch (error) {

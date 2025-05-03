@@ -96,7 +96,6 @@ router.delete("/deleteInstallation/:_id", checkAdmin, installation.deleteInstall
 router.delete("/deleteWorker", checkAdmin, installation.deleteWorker);
 
 router.patch("/updateInstallation", checkUser, installation.updateInstallation);
-router.patch("/partsDelivered", checkUser, installation.partsDelivered);
 router.patch("/updateInstallationPostone", checkUser, installation.updatePostone);
 router.patch("/updateInstallationStatus", checkUser, installation.updateStatus);
 
@@ -150,15 +149,16 @@ router.post("/addMeasure", checkAdmin, production.addMeasure);
 /////////////////////// Project //////////////////////////
 
 router.get("/getProjects", checkUser, project.getProjects);
-router.get("/getProject", checkUser, project.getProjects);
+router.get("/getProject/:_id", checkUser, project.getProject);
 
 router.delete("/removeUnconfirmed", checkAdmin, project.removeUnconfirmed);
 router.delete("/deleteProject/:_id", checkAdmin, project.deleteProject);
 router.delete("/deleteVersion", checkAdmin, project.deleteVersion);
 
 router.patch("/extendExparationDate/:_id", checkAdmin, project.extendExparationDate);
-router.patch("/versionRollback", checkAdmin, project.versionRollback);
 router.patch("/projectFinished/:_id", checkAdmin, project.projectFinished);
+router.patch("/partsDelivered", checkUser, project.partsDelivered);
+router.patch("/versionRollback", checkAdmin, project.versionRollback);
 router.patch("/updateProjectStatus", checkUser, project.updateStatus);
 router.patch("/changeAdvance", checkAdmin, project.changeAdvance);
 router.patch("/changeManager", checkAdmin, project.changeManager);

@@ -15,7 +15,6 @@ import { HydratedDocument } from "mongoose";
 import { Request, Response } from "express";
 import response from "../modules/response";
 import emit from "../sockets/emits";
-import archiveSchema from "../schemas/archiveSchema";
 import productionSchema from "../schemas/productionSchema";
 import gateSchema from "../schemas/gateSchema";
 import finishedSchema from "../schemas/finishedSchema";
@@ -30,6 +29,20 @@ export default {
 
       projects.reverse();
       return response(res, true, projects, "Prisijungimas sėkmingas");
+    } catch (error) {
+      console.error("Klaida gaunant projektus:", error);
+      return response(res, false, null, "Serverio klaida");
+    }
+  },
+
+  getProject: async (req: Request, res: Response) => {
+    try {
+      const { _id } = req.params;
+
+      const project = await projectSchema.findById(_id);
+      if (!project) return response(res, false, null, "Projektai nerasti");
+
+      return response(res, true, project, "Prisijungimas sėkmingas");
     } catch (error) {
       console.error("Klaida gaunant projektus:", error);
       return response(res, false, null, "Serverio klaida");
@@ -288,6 +301,31 @@ export default {
       emit.toAdmin("changeProjectStatus", responseData);
 
       return response(res, true, responseData, "Būsena atnaujinta");
+    } catch (error) {
+      console.error("Klaida:", error);
+      return response(res, false, null, "Serverio klaida");
+    }
+  },
+
+  partsDelivered: async (req: Request, res: Response) => {
+    try {
+      const { _id, measureIndex, value } = req.body;
+
+      const project = await projectSchema.findById(_id);
+
+      if (!project) return response(res, false, null, "Projektas nerastas");
+
+      project.results[measureIndex].delivered = value;
+
+      const data = await project.save();
+
+      const responseData = { _id, measureIndex, value };
+
+      emit.toAdmin("partsDelivered", responseData);
+      emit.toInstallation("partsDelivered", responseData);
+      emit.toWarehouse("partsDelivered", responseData);
+
+      return response(res, true, responseData, "Pristatymas patvirtintas");
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");

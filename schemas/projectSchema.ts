@@ -1,6 +1,28 @@
 import mongoose from "mongoose";
 import { Project } from "../data/interfaces";
 
+const resultSchema = new mongoose.Schema({
+  id: { type: String, required: true },
+  type: { type: String },
+  price: { type: Number },
+  cost: { type: Number },
+  category: { type: String },
+  quantity: { type: Number },
+  height: { type: Number },
+  twoSided: { type: String },
+  direction: { type: String },
+  seeThrough: { type: String },
+  space: { type: Number },
+  color: { type: String },
+  totalPrice: { type: Number },
+  totalCost: { type: Number },
+  profit: { type: Number },
+  margin: { type: Number },
+  isNew: { type: Boolean },
+  width: { type: Number, default: null },
+  delivered: { type: Boolean, default: false },
+});
+
 const projectSchema = new mongoose.Schema<Project>({
   client: {
     type: Object,
@@ -14,7 +36,7 @@ const projectSchema = new mongoose.Schema<Project>({
     default: [],
   },
   results: {
-    type: [Object],
+    type: [resultSchema],
     required: false,
     default: [],
   },

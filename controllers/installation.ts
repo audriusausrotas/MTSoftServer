@@ -72,31 +72,6 @@ export default {
 
   //////////////////// update requests /////////////////////////////////
 
-  partsDelivered: async (req: Request, res: Response) => {
-    try {
-      const { _id, measureIndex, value } = req.body;
-
-      const project = await installationSchema.findById(_id);
-
-      if (!project) return response(res, false, null, "Projektas nerastas");
-
-      project.results[measureIndex].delivered = value;
-
-      const data = await project.save();
-
-      const responseData = { _id, measureIndex, value };
-
-      emit.toAdmin("installationPartsDelivered", responseData);
-      emit.toInstallation("installationPartsDelivered", responseData);
-      emit.toWarehouse("installationPartsDelivered", responseData);
-
-      return response(res, true, responseData, "Pristatymas patvirtintas");
-    } catch (error) {
-      console.error("Klaida:", error);
-      return response(res, false, null, "Serverio klaida");
-    }
-  },
-
   updatePostone: async (req: Request, res: Response) => {
     try {
       const { _id, index, measureIndex, value } = req.body;
