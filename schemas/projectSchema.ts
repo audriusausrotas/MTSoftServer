@@ -23,6 +23,14 @@ const resultSchema = new mongoose.Schema({
   delivered: { type: Boolean, default: false },
 });
 
+const datesSchema = new mongoose.Schema({
+  dateCreated: { type: String, required: false },
+  dateExparation: { type: String, required: false },
+  dateConfirmed: { type: String, required: false },
+  dateCompletion: { type: String, required: false },
+  dateArchieved: { type: String, required: false },
+});
+
 const projectSchema = new mongoose.Schema<Project>({
   client: {
     type: Object,
@@ -110,7 +118,7 @@ const projectSchema = new mongoose.Schema<Project>({
     required: false,
   },
   dates: {
-    type: Object,
+    type: datesSchema,
     required: false,
     default: {
       dateCreated: "",

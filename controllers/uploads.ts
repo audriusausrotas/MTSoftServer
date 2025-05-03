@@ -44,9 +44,8 @@ export default {
       const { category, _id } = req.body;
 
       let project;
-      if (category === "projects") project = await projectSchema.findById(_id);
-      else if (category === "production") project = await productionSchema.findById(_id);
-      else if (category === "installation") project = await installationSchema.findById(_id);
+      if (category === "production") project = await productionSchema.findById(_id);
+      else project = await projectSchema.findById(_id);
 
       if (!project) {
         return response(res, false, null, "Klaida įkeliant failus");
@@ -60,16 +59,15 @@ export default {
       }
       const responseData = { _id, files: newData.files };
 
-      if (category === "projects") {
-        emit.toAdmin("updateProjectFiles", responseData);
-      } else if (category === "production") {
+      if (category === "production") {
         emit.toAdmin("updateProductionFiles", responseData);
         emit.toProduction("updateProductionFiles", responseData);
         emit.toWarehouse("updateProductionFiles", responseData);
-      } else if (category === "installation") {
-        emit.toAdmin("updateInstallationFiles", responseData);
-        emit.toProduction("updateInstallationFiles", responseData);
-        emit.toWarehouse("updateInstallationFiles", responseData);
+      } else {
+        emit.toAdmin("updateProjectFiles", responseData);
+        emit.toInstallation("updateProjectFiles", responseData);
+        emit.toProduction("updateProjectFiles", responseData);
+        emit.toWarehouse("updateProjectFiles", responseData);
       }
 
       return response(res, true, responseData, "Failai sėkmingai įkelti");
@@ -84,9 +82,8 @@ export default {
       const { files, category, _id } = req.body;
 
       let data;
-      if (category === "projects") data = await projectSchema.findById(_id);
-      else if (category === "production") data = await productionSchema.findById(_id);
-      else if (category === "installation") data = await installationSchema.findById(_id);
+      if (category === "production") data = await productionSchema.findById(_id);
+      else data = await projectSchema.findById(_id);
 
       if (!data) return response(res, false, null, "Serverio klaida");
 
@@ -114,16 +111,15 @@ export default {
 
       const responseData = { _id, files: newData.files };
 
-      if (category === "projects") {
-        emit.toAdmin("updateProjectFiles", responseData);
-      } else if (category === "production") {
+      if (category === "production") {
         emit.toAdmin("updateProductionFiles", responseData);
         emit.toProduction("updateProductionFiles", responseData);
         emit.toWarehouse("updateProductionFiles", responseData);
-      } else if (category === "installation") {
-        emit.toAdmin("updateInstallationFiles", responseData);
-        emit.toProduction("updateInstallationFiles", responseData);
-        emit.toWarehouse("updateInstallationFiles", responseData);
+      } else {
+        emit.toAdmin("updateProjectFiles", responseData);
+        emit.toProduction("updateProjectFiles", responseData);
+        emit.toWarehouse("updateProjectFiles", responseData);
+        emit.toInstallation("updateProjectFiles", responseData);
       }
 
       return response(res, true, responseData, "Failai sėkmingai ištrinti");

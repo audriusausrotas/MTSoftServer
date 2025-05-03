@@ -233,31 +233,6 @@ export default {
     }
   },
 
-  addFiles: async (req: Request, res: Response) => {
-    try {
-      const { _id, files } = req.body;
-
-      const project = await projectSchema.findById(_id);
-
-      if (!project) return response(res, false, null, "Projektas nerastas");
-
-      project.files.push(...files);
-
-      const data = await project.save();
-
-      if (!data) return response(res, false, null, "Klaida saugant projektą");
-
-      const responseData = { _id, files };
-
-      emit.toAdmin("updateProjectAddFiles", responseData);
-
-      return response(res, true, responseData, "Failai sėkmingai įkelti");
-    } catch (error) {
-      console.error("Klaida:", error);
-      return response(res, false, null, "Serverio klaida");
-    }
-  },
-
   updateStatus: async (req: Request, res: Response) => {
     try {
       const { _id, value } = req.body;
@@ -324,6 +299,32 @@ export default {
       emit.toAdmin("partsDelivered", responseData);
       emit.toInstallation("partsDelivered", responseData);
       emit.toWarehouse("partsDelivered", responseData);
+
+      return response(res, true, responseData, "Pristatymas patvirtintas");
+    } catch (error) {
+      console.error("Klaida:", error);
+      return response(res, false, null, "Serverio klaida");
+    }
+  },
+
+  changeCompletionDate: async (req: Request, res: Response) => {
+    try {
+      const { _id, date } = req.body;
+
+      const project = await projectSchema.findById(_id);
+
+      if (!project) return response(res, false, null, "Projektas nerastas");
+
+      project.dates.dateCompletion = date;
+
+      const data = await project.save();
+      console.log(date);
+      console.log(data);
+      const responseData = { _id, date };
+
+      emit.toAdmin("changeCompletionDate", responseData);
+      emit.toInstallation("changeCompletionDate", responseData);
+      emit.toWarehouse("changeCompletionDate", responseData);
 
       return response(res, true, responseData, "Pristatymas patvirtintas");
     } catch (error) {

@@ -157,6 +157,7 @@ router.delete("/deleteProject/:_id", checkAdmin, project.deleteProject);
 router.delete("/deleteVersion", checkAdmin, project.deleteVersion);
 
 router.patch("/extendExparationDate/:_id", checkAdmin, project.extendExparationDate);
+router.patch("/changeCompletionDate", checkUser, project.changeCompletionDate);
 router.patch("/projectFinished/:_id", checkAdmin, project.projectFinished);
 router.patch("/partsDelivered", checkUser, project.partsDelivered);
 router.patch("/versionRollback", checkAdmin, project.versionRollback);
@@ -164,7 +165,6 @@ router.patch("/updateProjectStatus", checkUser, project.updateStatus);
 router.patch("/changeAdvance", checkAdmin, project.changeAdvance);
 router.patch("/changeManager", checkAdmin, project.changeManager);
 router.patch("/updateProject", checkAdmin, project.updateProject);
-router.patch("/addFileProject", checkUser, project.addFiles);
 
 router.post("/newProject", checkAdmin, project.newProject);
 
