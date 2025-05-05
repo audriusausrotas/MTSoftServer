@@ -5,7 +5,7 @@ import cron from "node-cron";
 
 export const deleteUnconfirmed = () => {
   cron.schedule("6 4 * * *", async () => {
-    console.log("Cleaning up unconfirmed projects...");
+    console.log("deleting unconfirmed projects...");
 
     try {
       const unconfirmedProjects = await unconfirmedSchema.find();
@@ -23,7 +23,9 @@ export const deleteUnconfirmed = () => {
           nineMonthAgo.setMonth(nineMonthAgo.getMonth() - 9);
 
           if (dateArchived < nineMonthAgo) {
-            const responseData: any = await unconfirmedSchema.findByIdAndDelete(project._id);
+            const responseData: any = await unconfirmedSchema.findByIdAndDelete(
+              project._id
+            );
 
             emit.toAdmin("deleteDeleted", responseData);
             unconfirmedDeleted.push(responseData);
