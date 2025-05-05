@@ -25,8 +25,12 @@ export default {
 
       const user = res.locals.user;
 
-      const title = Array.isArray(fields.title) ? fields.title[0] : fields.title;
-      const message = Array.isArray(fields.message) ? fields.message[0] : fields.message;
+      const title = Array.isArray(fields.title)
+        ? fields.title[0]
+        : fields.title;
+      const message = Array.isArray(fields.message)
+        ? fields.message[0]
+        : fields.message;
 
       if (!fields.to) throw new Error("Missing recipients");
 
@@ -277,8 +281,7 @@ export default {
     `;
 
       const emailResult = await sendEmail({
-        // to: "dainius.palubinskas@klinkera.lt",
-        to: "audrius@modernitvora.lt",
+        to: "dainius.palubinskas@klinkera.lt",
         subject: `Naujas užsakymas - ${client.address}`,
         html,
         user,
@@ -291,7 +294,11 @@ export default {
       for (const item of data) {
         project.results[item.measureIndex].delivered = true;
 
-        const responseData = { _id, measureIndex: item.measureIndex, value: true };
+        const responseData = {
+          _id,
+          measureIndex: item.measureIndex,
+          value: true,
+        };
         const savedProject = await project.save();
 
         emit.toAdmin("partsDelivered", responseData);
