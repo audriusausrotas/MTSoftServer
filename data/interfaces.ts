@@ -115,7 +115,6 @@ export interface Result {
   totalCost: number;
   profit: number;
   margin: number;
-  isNew: boolean;
   width: number | null;
   delivered: boolean;
   ordered: boolean;
@@ -291,8 +290,15 @@ export interface Works {
   totalPrice: number;
   margin: number;
   profit: number;
-  isNew: boolean;
   done: boolean;
+}
+
+export interface Supplier {
+  _id?: string;
+  address: string;
+  username: string;
+  phone: string;
+  email: string;
 }
 
 export interface InstallationWorks {

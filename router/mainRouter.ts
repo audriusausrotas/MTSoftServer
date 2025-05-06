@@ -19,6 +19,7 @@ import order from "../controllers/order";
 import auth from "../controllers/auth";
 import user from "../controllers/user";
 import express from "express";
+import suppliers from "../controllers/suppliers";
 
 const router = express.Router();
 
@@ -59,6 +60,14 @@ router.get("/getClients", checkAdmin, clients.getClients);
 router.delete("/deleteClient/:_id", checkAdmin, clients.deleteClient);
 
 router.post("/newClient", checkAdmin, clients.newClient);
+
+/////////////////////// Suppliers //////////////////////////
+
+router.get("/getSuppliers", checkAdmin, suppliers.getSuppliers);
+
+router.delete("/deleteSupplier/:_id", checkAdmin, suppliers.deleteSupplier);
+
+router.post("/newSupplier", checkAdmin, suppliers.newSupplier);
 
 /////////////////////// Comments /////////////////////////
 

@@ -174,7 +174,7 @@ export default {
 
   orderProducts: async (req: Request, res: Response) => {
     try {
-      const { _id, data, client, date, deliveryMethod, message } = req.body;
+      const { _id, data, client, date, deliveryMethod, message, to } = req.body;
 
       const user = res.locals.user;
 
@@ -280,8 +280,7 @@ export default {
     `;
 
       const emailResult = await sendEmail({
-        to: "audrius@modernitvora.lt",
-        // to: "dainius.palubinskas@klinkera.lt",
+        to,
         subject: `Naujas užsakymas - ${client.address}`,
         html,
         user,

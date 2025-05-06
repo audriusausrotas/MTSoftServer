@@ -18,7 +18,6 @@ const resultSchema = new mongoose.Schema({
   totalCost: { type: Number },
   profit: { type: Number },
   margin: { type: Number },
-  isNew: { type: Boolean },
   width: { type: Number, default: null },
   delivered: { type: Boolean, default: false },
   ordered: { type: Boolean, default: false },
@@ -34,7 +33,6 @@ const workSchema = new mongoose.Schema({
   totalCost: { type: Number },
   profit: { type: Number },
   margin: { type: Number },
-  isNew: { type: Boolean },
   done: { type: Boolean, default: false },
 });
 
