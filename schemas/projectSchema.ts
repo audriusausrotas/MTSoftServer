@@ -21,6 +21,21 @@ const resultSchema = new mongoose.Schema({
   isNew: { type: Boolean },
   width: { type: Number, default: null },
   delivered: { type: Boolean, default: false },
+  ordered: { type: Boolean, default: false },
+});
+
+const workSchema = new mongoose.Schema({
+  id: { type: String, required: true },
+  name: { type: String },
+  price: { type: Number },
+  cost: { type: Number },
+  quantity: { type: Number },
+  totalPrice: { type: Number },
+  totalCost: { type: Number },
+  profit: { type: Number },
+  margin: { type: Number },
+  isNew: { type: Boolean },
+  done: { type: Boolean, default: false },
 });
 
 const datesSchema = new mongoose.Schema({
@@ -49,7 +64,7 @@ const projectSchema = new mongoose.Schema<Project>({
     default: [],
   },
   works: {
-    type: [Object],
+    type: [workSchema],
     required: false,
     default: [],
   },

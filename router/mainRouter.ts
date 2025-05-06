@@ -158,6 +158,8 @@ router.patch("/extendExparationDate/:_id", checkAdmin, project.extendExparationD
 router.patch("/changeCompletionDate", checkUser, project.changeCompletionDate);
 router.patch("/projectFinished/:_id", checkAdmin, project.projectFinished);
 router.patch("/partsDelivered", checkUser, project.partsDelivered);
+router.patch("/partsOrdered", checkUser, project.partsOrdered);
+router.patch("/workDone", checkUser, project.workDone);
 router.patch("/versionRollback", checkAdmin, project.versionRollback);
 router.patch("/updateProjectStatus", checkUser, project.updateStatus);
 router.patch("/changeAdvance", checkAdmin, project.changeAdvance);

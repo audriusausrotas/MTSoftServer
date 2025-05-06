@@ -307,6 +307,56 @@ export default {
     }
   },
 
+  partsOrdered: async (req: Request, res: Response) => {
+    try {
+      const { _id, measureIndex, value } = req.body;
+
+      const project = await projectSchema.findById(_id);
+
+      if (!project) return response(res, false, null, "Projektas nerastas");
+
+      project.results[measureIndex].ordered = value;
+
+      const data = await project.save();
+
+      const responseData = { _id, measureIndex, value };
+
+      emit.toAdmin("partsOrdered", responseData);
+      emit.toInstallation("partsOrdered", responseData);
+      emit.toWarehouse("partsOrdered", responseData);
+
+      return response(res, true, responseData, "Pristatymas patvirtintas");
+    } catch (error) {
+      console.error("Klaida:", error);
+      return response(res, false, null, "Serverio klaida");
+    }
+  },
+
+  workDone: async (req: Request, res: Response) => {
+    try {
+      const { _id, measureIndex, value } = req.body;
+
+      const project = await projectSchema.findById(_id);
+
+      if (!project) return response(res, false, null, "Projektas nerastas");
+
+      project.works[measureIndex].done = value;
+
+      const data = await project.save();
+
+      const responseData = { _id, measureIndex, value };
+
+      emit.toAdmin("workDone", responseData);
+      emit.toInstallation("workDone", responseData);
+      emit.toWarehouse("workDone", responseData);
+
+      return response(res, true, responseData, "Pristatymas patvirtintas");
+    } catch (error) {
+      console.error("Klaida:", error);
+      return response(res, false, null, "Serverio klaida");
+    }
+  },
+
   changeCompletionDate: async (req: Request, res: Response) => {
     try {
       const { _id, date } = req.body;

@@ -118,6 +118,7 @@ export interface Result {
   isNew: boolean;
   width: number | null;
   delivered: boolean;
+  ordered: boolean;
 }
 
 export interface InstallationResult {
@@ -291,6 +292,7 @@ export interface Works {
   margin: number;
   profit: number;
   isNew: boolean;
+  done: boolean;
 }
 
 export interface InstallationWorks {

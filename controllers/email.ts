@@ -25,12 +25,8 @@ export default {
 
       const user = res.locals.user;
 
-      const title = Array.isArray(fields.title)
-        ? fields.title[0]
-        : fields.title;
-      const message = Array.isArray(fields.message)
-        ? fields.message[0]
-        : fields.message;
+      const title = Array.isArray(fields.title) ? fields.title[0] : fields.title;
+      const message = Array.isArray(fields.message) ? fields.message[0] : fields.message;
 
       if (!fields.to) throw new Error("Missing recipients");
 
@@ -178,11 +174,12 @@ export default {
 
   orderProducts: async (req: Request, res: Response) => {
     try {
-      const { _id, data, client, date, deliveryMethod } = req.body;
+      const { _id, data, client, date, deliveryMethod, message } = req.body;
 
       const user = res.locals.user;
 
       const materialsList = data
+
         .map(
           (result: any) => ` 
                 <tr>
@@ -235,6 +232,8 @@ export default {
 
         <h2>Naujas užsakymas</h2>
 
+        <p>${message}</p>
+
         <table class="info-table">
           <tr>
             <th>Klientas</th>
@@ -281,7 +280,8 @@ export default {
     `;
 
       const emailResult = await sendEmail({
-        to: "dainius.palubinskas@klinkera.lt",
+        to: "audrius@modernitvora.lt",
+        // to: "dainius.palubinskas@klinkera.lt",
         subject: `Naujas užsakymas - ${client.address}`,
         html,
         user,
@@ -292,7 +292,7 @@ export default {
       if (!project) return response(res, false, null, "Projektas nerastas");
 
       for (const item of data) {
-        project.results[item.measureIndex].delivered = true;
+        project.results[item.measureIndex].ordered = true;
 
         const responseData = {
           _id,
@@ -301,9 +301,9 @@ export default {
         };
         const savedProject = await project.save();
 
-        emit.toAdmin("partsDelivered", responseData);
-        emit.toInstallation("partsDelivered", responseData);
-        emit.toWarehouse("partsDelivered", responseData);
+        emit.toAdmin("partsOrdered", responseData);
+        emit.toInstallation("partsOrdered", responseData);
+        emit.toWarehouse("partsOrdered", responseData);
       }
 
       return response(
