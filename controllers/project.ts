@@ -318,8 +318,6 @@ export default {
       project.dates.dateCompletion = date;
 
       const data = await project.save();
-      console.log(date);
-      console.log(data);
       const responseData = { _id, date };
 
       emit.toAdmin("changeCompletionDate", responseData);
