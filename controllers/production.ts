@@ -289,7 +289,7 @@ export default {
 
       const data = await order.save();
 
-      const responseData = { _id, data };
+      const responseData = { _id, data: newBinding };
 
       emit.toAdmin("newProductionBinding", responseData);
       emit.toProduction("newProductionBinding", responseData);
