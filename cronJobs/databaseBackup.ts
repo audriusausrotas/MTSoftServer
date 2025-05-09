@@ -2,7 +2,7 @@ import cron from "node-cron";
 import { exec } from "child_process";
 
 export const backupDatabase = () => {
-  cron.schedule("13 15 * * *", () => {
+  cron.schedule("17 15 * * *", () => {
     // cron.schedule("10 4 * * *", () => {
     console.log("Running daily MongoDB backup...");
 
@@ -69,7 +69,7 @@ export const backupDatabase = () => {
 
     // Clean up backups older than 7 days json
     exec(
-      `forfiles /p "C:/MTwebsite/mongodbBackups/json" /m *_backup_*.json /d -7 /c "cmd /c del @file"`,
+      `forfiles /p "C:\\MTwebsite\\mongodbBackups\\json" /m *_backup_*.json /d -7 /c "cmd /c del @file"`,
       (error, stdout, stderr) => {
         if (error) {
           console.error("json old backup cleanup failed:", stderr);
