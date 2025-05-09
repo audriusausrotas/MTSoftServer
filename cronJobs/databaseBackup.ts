@@ -42,6 +42,7 @@ export const backupDatabase = () => {
       "projectsVersions",
       "schedule",
       "selectData",
+      "suppliers",
       "userRights",
       "users",
     ];
