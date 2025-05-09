@@ -2,7 +2,8 @@ import cron from "node-cron";
 import { exec } from "child_process";
 
 export const backupDatabase = () => {
-  cron.schedule("10 4 * * *", () => {
+  cron.schedule("13 15 * * *", () => {
+    // cron.schedule("10 4 * * *", () => {
     console.log("Running daily MongoDB backup...");
 
     const mongoDumpPath = "C:/MTwebsite/mongodb/bin/mongodump.exe";
@@ -80,7 +81,7 @@ export const backupDatabase = () => {
 
     // Clean up old backups older than 7 days .gz
     exec(
-      `forfiles /p "C:/MTwebsite/mongodbBackups/" /m mongo_backup_*.gz /d -7 /c "cmd /c del @file"`,
+      `forfiles /p "C:\\MTwebsite\\mongodbBackups" /m mongo_backup_*.gz /d -7 /c "cmd /c del @file"`,
       (error, stdout, stderr) => {
         if (error) {
           console.error(".gz old backup cleanup failed:", stderr);
