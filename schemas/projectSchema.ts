@@ -44,6 +44,13 @@ const datesSchema = new mongoose.Schema({
   dateArchieved: { type: String, required: false },
 });
 
+const creatorSchema = new mongoose.Schema({
+  username: { type: String, required: false },
+  lastName: { type: String, required: false },
+  email: { type: String, required: false },
+  phone: { type: String, required: false },
+});
+
 const projectSchema = new mongoose.Schema<Project>({
   client: {
     type: Object,
@@ -141,7 +148,7 @@ const projectSchema = new mongoose.Schema<Project>({
       dateArchieved: "",
     },
   },
-  creator: Object,
+  creator: creatorSchema,
   orderNumber: String,
 });
 
