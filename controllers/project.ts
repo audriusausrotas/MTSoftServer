@@ -522,6 +522,8 @@ export default {
 
       const user = res.locals.user;
 
+      console.log(user);
+
       const creator = {
         username: user.username,
         lastName: user.lastname,
