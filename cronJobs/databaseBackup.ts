@@ -42,6 +42,7 @@ export const backupDatabase = () => {
       "projectsVersions",
       "schedule",
       "selectData",
+      "suppliers",
       "userRights",
       "users",
     ];
@@ -67,7 +68,7 @@ export const backupDatabase = () => {
 
     // Clean up backups older than 7 days json
     exec(
-      `forfiles /p "C:/MTwebsite/mongodbBackups/json" /m *_backup_*.json /d -7 /c "cmd /c del @file"`,
+      `forfiles /p "C:\\MTwebsite\\mongodbBackups\\json" /m *_backup_*.json /d -7 /c "cmd /c del @file"`,
       (error, stdout, stderr) => {
         if (error) {
           console.error("json old backup cleanup failed:", stderr);
@@ -79,7 +80,7 @@ export const backupDatabase = () => {
 
     // Clean up old backups older than 7 days .gz
     exec(
-      `forfiles /p "C:/MTwebsite/mongodbBackups/" /m mongo_backup_*.gz /d -7 /c "cmd /c del @file"`,
+      `forfiles /p "C:\\MTwebsite\\mongodbBackups" /m mongo_backup_*.gz /d -7 /c "cmd /c del @file"`,
       (error, stdout, stderr) => {
         if (error) {
           console.error(".gz old backup cleanup failed:", stderr);

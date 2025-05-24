@@ -28,6 +28,7 @@ export const databaseBackupToAtlas = () => {
       "projectsVersions",
       "schedule",
       "selectData",
+      "suppliers",
       "userRights",
       "users",
     ];
