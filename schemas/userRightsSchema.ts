@@ -31,6 +31,11 @@ const userRightsSchema = new mongoose.Schema<UserRights>({
     required: false,
     default: false,
   },
+  orders: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
   admin: {
     type: Boolean,
     required: false,

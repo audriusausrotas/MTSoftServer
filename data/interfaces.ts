@@ -568,9 +568,12 @@ export interface UserRights {
   production: boolean;
   installation: boolean;
   gate: boolean;
+  orders: boolean;
   admin: boolean;
   warehouse: boolean;
 }
+
+export interface Orders {}
 
 export interface PotentialClient {
   _id?: Types.ObjectId;
