@@ -5,6 +5,7 @@ import response from "../modules/response";
 import formidable from "formidable";
 import emit from "../sockets/emits";
 import fs from "fs";
+import orderSchema from "../schemas/orderSchema";
 
 export default {
   sendRetailOffers: async (req: Request, res: Response) => {
@@ -178,6 +179,21 @@ export default {
 
       const user = res.locals.user;
 
+      const orderDate = new Date();
+
+      const newOrder = new orderSchema({
+        user,
+        client,
+        data,
+        orderDate,
+        deliveryDate: date,
+        deliveryMethod,
+        message,
+        recipient: to,
+      });
+
+      const responseData = await newOrder.save();
+
       const materialsList = data
 
         .map(
@@ -279,38 +295,39 @@ export default {
       </html>
     `;
 
-      const emailResult = await sendEmail({
-        to,
-        subject: `Naujas užsakymas - ${client.address}`,
-        html,
-        user,
-      });
+      // const emailResult = await sendEmail({
+      //   to,
+      //   subject: `Naujas užsakymas - ${client.address}`,
+      //   html,
+      //   user,
+      // });
 
-      const project = await projectSchema.findById(_id);
+      // const project = await projectSchema.findById(_id);
 
-      if (!project) return response(res, false, null, "Projektas nerastas");
+      // if (!project) return response(res, false, null, "Projektas nerastas");
 
-      for (const item of data) {
-        project.results[item.measureIndex].ordered = true;
+      // for (const item of data) {
+      //   project.results[item.measureIndex].ordered = true;
 
-        const responseData = {
-          _id,
-          measureIndex: item.measureIndex,
-          value: true,
-        };
-        const savedProject = await project.save();
+      //   const responseData = {
+      //     _id,
+      //     measureIndex: item.measureIndex,
+      //     value: true,
+      //   };
+      //   const savedProject = await project.save();
 
-        emit.toAdmin("partsOrdered", responseData);
-        emit.toInstallation("partsOrdered", responseData);
-        emit.toWarehouse("partsOrdered", responseData);
-      }
+      // emit.toAdmin("partsOrdered", responseData);
+      // emit.toInstallation("partsOrdered", responseData);
+      // emit.toWarehouse("partsOrdered", responseData);
+      // }
 
-      return response(
-        res,
-        emailResult.success,
-        { _id, data },
-        emailResult.success ? "Medžiagos užsakytos" : emailResult.message
-      );
+      return response(res, true, { _id, data }, "asdf");
+      // return response(
+      //   res,
+      //   emailResult.success,
+      //   { _id, data },
+      //   emailResult.success ? "Medžiagos užsakytos" : emailResult.message
+      // );
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");

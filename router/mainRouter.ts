@@ -20,6 +20,7 @@ import auth from "../controllers/auth";
 import user from "../controllers/user";
 import express from "express";
 import suppliers from "../controllers/suppliers";
+import orders from "../controllers/orders";
 
 const router = express.Router();
 
@@ -113,6 +114,14 @@ router.post("/addInstallation", checkAdmin, installation.addInstallation);
 router.get("/getOrder/:_id", order.getOrder);
 
 router.patch("/changeOrderStatus", order.changeOrderStatus);
+
+/////////////////////// Product orders ///////////////////
+
+// router.get("/getOrder/:_id", order.getOrder);
+
+// router.patch("/changeOrderStatus", order.changeOrderStatus);
+
+router.get("/getOrders", checkUser, orders.getOrders);
 
 /////////////////////// Potential Clients ////////////////
 
