@@ -548,10 +548,7 @@ export default {
       let newOrderNumbers = "0001";
 
       const userProjects = await projectSchema.find({
-        $and: [
-          { "creator.username": creatorUsername },
-          { orderNumber: { $regex: `^${firstThreeLetters}`, $options: "i" } },
-        ],
+        orderNumber: { $regex: `^${firstThreeLetters}`, $options: "i" },
       });
 
       if (userProjects.length > 0) {
