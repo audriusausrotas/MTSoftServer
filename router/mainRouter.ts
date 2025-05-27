@@ -15,7 +15,7 @@ import archive from "../controllers/archive";
 import bonus from "../controllers/bonus";
 import email from "../controllers/email";
 import gates from "../controllers/gates";
-import order from "../controllers/order";
+import offer from "../controllers/offer";
 import auth from "../controllers/auth";
 import user from "../controllers/user";
 import express from "express";
@@ -83,7 +83,6 @@ router.post("/addProjectComment", checkUser, comments.addProjectComment);
 router.post("/sendRetailOffers", checkAdmin, email.sendRetailOffers);
 router.post("/sendGateInfo", checkAdmin, email.sendGateInfo);
 router.post("/sendOffer", checkAdmin, email.sendOffer);
-router.post("/orderProducts", checkUser, email.orderProducts);
 
 /////////////////////// Gates ////////////////////////////
 
@@ -92,9 +91,9 @@ router.get("/getGates", checkUser, gates.getGates);
 router.delete("/cancelOrder/:_id", checkAdmin, gates.cancelOrder);
 router.delete("/finishOrder/:_id", checkUser, gates.finishOrder);
 
-router.patch("/updateOrder", checkUser, gates.updateOrder);
+router.patch("/updateGateOrder", checkUser, gates.updateGateOrder);
 
-router.post("/newOrder", checkAdmin, gates.newOrder);
+router.post("/newGateOrder", checkAdmin, gates.newOrder);
 
 /////////////////////// Installation /////////////////////
 
@@ -109,19 +108,21 @@ router.patch("/updateInstallationStatus", checkUser, installation.updateStatus);
 
 router.post("/addInstallation", checkAdmin, installation.addInstallation);
 
-/////////////////////// Orders ///////////////////////////
+/////////////////////// Offer //////////////////////////////
 
-router.get("/getOrder/:_id", order.getOrder);
+router.get("/getOffer/:_id", offer.getOffer);
 
-router.patch("/changeOrderStatus", order.changeOrderStatus);
+router.patch("/changeOfferStatus", offer.changeOfferStatus);
 
-/////////////////////// Product orders ///////////////////
-
-// router.get("/getOrder/:_id", order.getOrder);
-
-// router.patch("/changeOrderStatus", order.changeOrderStatus);
+/////////////////////// Orders ////////////////////////////
 
 router.get("/getOrders", checkUser, orders.getOrders);
+
+router.delete("/deleteOrder/:_id", checkAdmin, orders.deleteOrder);
+
+router.patch("/updateOrder", checkUser, orders.updateOrder);
+
+router.post("/newOrder", checkUser, orders.newOrder);
 
 /////////////////////// Potential Clients ////////////////
 

@@ -6,7 +6,7 @@ import emit from "../sockets/emits";
 export default {
   //////////////////// get requests ////////////////////////////////////
 
-  getOrder: async (req: Request, res: Response) => {
+  getOffer: async (req: Request, res: Response) => {
     try {
       const { _id } = req.params;
 
@@ -25,7 +25,7 @@ export default {
 
   //////////////////// update requests /////////////////////////////////
 
-  changeOrderStatus: async (req: Request, res: Response) => {
+  changeOfferStatus: async (req: Request, res: Response) => {
     try {
       const { _id, value } = req.body;
 

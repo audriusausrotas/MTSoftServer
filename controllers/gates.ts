@@ -68,7 +68,7 @@ export default {
   },
   //////////////////// update requests /////////////////////////////////
 
-  updateOrder: async (req: Request, res: Response) => {
+  updateGateOrder: async (req: Request, res: Response) => {
     try {
       const { _id, change, value } = req.body;
 
@@ -127,14 +127,11 @@ export default {
 
       if (!project) return response(res, false, null, "Projektas nerastas");
 
-      if (project.gates.length === 0)
-        return response(res, false, null, "Projektas vartų neturi");
+      if (project.gates.length === 0) return response(res, false, null, "Projektas vartų neturi");
 
       const gates = await gateSchema.find();
 
-      const gatesExist = gates.some(
-        (item) => item._id.toString() === project._id.toString()
-      );
+      const gatesExist = gates.some((item) => item._id.toString() === project._id.toString());
 
       if (gatesExist) return response(res, false, null, "Vartai jau užsakyti");
 
