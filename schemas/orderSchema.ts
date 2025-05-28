@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { Orders } from "../data/interfaces";
+import { Order } from "../data/interfaces";
 
 const user = new mongoose.Schema({
   username: String,
@@ -22,14 +22,24 @@ const data = new mongoose.Schema({
   measureIndex: Number,
 });
 
-const orderSchema = new mongoose.Schema<Orders>({
+const comment = new mongoose.Schema({
+  date: String,
+  creator: String,
+  comment: String,
+});
+
+const orderSchema = new mongoose.Schema<Order>({
   user,
   client,
   data: [data],
   orderDate: String,
   deliveryDate: String,
   deliveryMethod: String,
-  message: String,
+  comments: {
+    type: [comment],
+    required: false,
+    default: [],
+  },
   recipient: String,
 });
 

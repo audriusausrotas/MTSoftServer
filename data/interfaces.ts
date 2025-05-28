@@ -573,7 +573,24 @@ export interface UserRights {
   warehouse: boolean;
 }
 
-export interface Orders {}
+export interface Order {
+  _id?: string;
+  user: Creator;
+  client: Client;
+  data: [OrderData];
+  orderDate: string;
+  deliveryDate: string;
+  deliveryMethod: string;
+  comments: Comment[];
+  recipient: string;
+}
+
+export interface OrderData {
+  name: string;
+  color: string;
+  quantity: number;
+  measureIndex: number;
+}
 
 export interface PotentialClient {
   _id?: Types.ObjectId;

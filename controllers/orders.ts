@@ -27,7 +27,8 @@ export default {
 
       const responseData = await orderSchema.findByIdAndDelete(_id);
 
-      if (!responseData) return response(res, false, null, "Užsakymas nerastas");
+      if (!responseData)
+        return response(res, false, null, "Užsakymas nerastas");
 
       emit.toAdmin("deleteOrder", { _id });
       emit.toWarehouse("deleteOrder", { _id });
@@ -67,16 +68,22 @@ export default {
 
       const user = res.locals.user;
 
-      const orderDate = new Date().toISOString().slice(0, 10);
+      const orderDate = new Date().toISOString();
+
+      const newComment = {
+        date: orderDate.slice(0, 16).replace("T", " "),
+        creator: user.username,
+        comment: message,
+      };
 
       const newOrder = new orderSchema({
         user,
         client,
         data,
-        orderDate,
+        orderDate: orderDate.slice(0, 10),
         deliveryDate: date,
         deliveryMethod,
-        message,
+        comments: newComment,
         recipient: to,
       });
 
