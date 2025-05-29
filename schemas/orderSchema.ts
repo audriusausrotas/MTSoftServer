@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import { Order } from "../data/interfaces";
 
-const user = new mongoose.Schema({
+const creator = new mongoose.Schema({
   username: String,
   lastName: String,
   email: String,
@@ -29,9 +29,11 @@ const comment = new mongoose.Schema({
 });
 
 const orderSchema = new mongoose.Schema<Order>({
-  user,
+  creator,
   client,
-  data: [data],
+  recipient: String,
+  status: String,
+  orderNr: String,
   orderDate: String,
   deliveryDate: String,
   deliveryMethod: String,
@@ -40,7 +42,7 @@ const orderSchema = new mongoose.Schema<Order>({
     required: false,
     default: [],
   },
-  recipient: String,
+  data: [data],
 });
 
 export default mongoose.model("orders", orderSchema, "orders");

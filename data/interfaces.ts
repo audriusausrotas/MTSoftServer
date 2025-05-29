@@ -575,7 +575,7 @@ export interface UserRights {
 
 export interface Order {
   _id?: string;
-  user: Creator;
+  creator: Creator;
   client: Client;
   data: [OrderData];
   orderDate: string;
@@ -583,6 +583,8 @@ export interface Order {
   deliveryMethod: string;
   comments: Comment[];
   recipient: string;
+  status: string;
+  orderNr: string;
 }
 
 export interface OrderData {
