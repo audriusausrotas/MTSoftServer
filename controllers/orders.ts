@@ -292,12 +292,12 @@ export default {
       </html>
     `;
 
-      // const emailResult = await sendEmail({
-      //   to,
-      //   subject: `Naujas užsakymas - ${client.address}`,
-      //   html,
-      //   user,
-      // });
+      const emailResult = await sendEmail({
+        to,
+        subject: `Naujas užsakymas - ${client.address}`,
+        html,
+        user,
+      });
 
       const project = await projectSchema.findById(_id);
 
@@ -318,12 +318,12 @@ export default {
         emit.toWarehouse("partsOrdered", responseData);
       }
 
-      // return response(
-      //   res,
-      //   emailResult.success,
-      //   { _id, data, orderData },
-      //   emailResult.success ? "Medžiagos užsakytos" : emailResult.message
-      // );
+      return response(
+        res,
+        emailResult.success,
+        { _id, data, orderData },
+        emailResult.success ? "Medžiagos užsakytos" : emailResult.message
+      );
       return response(res, true, { _id, data, orderData }, "Medžiagos užsakytos");
     } catch (error) {
       console.error("Klaida:", error);
