@@ -324,7 +324,6 @@ export default {
         { _id, data, orderData },
         emailResult.success ? "Medžiagos užsakytos" : emailResult.message
       );
-      return response(res, true, { _id, data, orderData }, "Medžiagos užsakytos");
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");
