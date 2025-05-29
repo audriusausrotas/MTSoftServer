@@ -4,13 +4,21 @@ import emit from "../sockets/emits";
 import orderSchema from "../schemas/orderSchema";
 import projectSchema from "../schemas/projectSchema";
 import sendEmail from "../modules/sendEmail";
+import { truncate } from "fs/promises";
 
 export default {
   //////////////////// get requests ////////////////////////////////////
 
   getOrders: async (req: Request, res: Response) => {
     try {
-      const responseData = await orderSchema.find();
+      const user = res.locals.user;
+
+      const data = await orderSchema.find();
+
+      const responseData =
+        user.accountType === "Administratorius"
+          ? data
+          : data.filter((item) => item.recipient === user.email && item.status);
 
       if (!responseData) return response(res, false, null, "Užsakymai nerasti");
 
@@ -29,10 +37,10 @@ export default {
 
       const responseData = await orderSchema.findByIdAndDelete(_id);
 
-      if (!responseData)
-        return response(res, false, null, "Užsakymas nerastas");
+      if (!responseData) return response(res, false, null, "Užsakymas nerastas");
 
       emit.toAdmin("deleteOrder", { _id });
+      emit.toOrders("deleteOrder", { _id });
       emit.toWarehouse("deleteOrder", { _id });
 
       return response(res, true, { _id }, "Užsakymas ištrintas");
@@ -46,16 +54,101 @@ export default {
 
   updateOrder: async (req: Request, res: Response) => {
     try {
-      const { _id } = req.body;
+      const { _id, dataIndex, data } = req.body;
 
-      // const responseData = await orderSchema.findByIdAndDelete(_id);
+      const updatePath = `data.${dataIndex}`;
+      const updated = await orderSchema.findByIdAndUpdate(
+        _id,
+        { $set: { [updatePath]: data } },
+        { new: true }
+      );
 
-      // if (!responseData) return response(res, false, null, "Užsakymas nerastas");
+      if (!updated) return response(res, false, null, "Užsakymas nerastas");
 
-      // emit.toAdmin("deleteOrder", { _id });
-      // emit.toWarehouse("deleteOrder", { _id });
+      const responseData = { _id, dataIndex, data: updated.data[dataIndex] };
 
-      return response(res, true, { _id }, "Užsakymas ištrintas");
+      emit.toAdmin("updateOrder", responseData);
+      emit.toOrders("updateOrder", responseData);
+      emit.toWarehouse("updateOrder", responseData);
+
+      return response(res, true, responseData, "Išsaugota");
+    } catch (error) {
+      console.error("Klaida:", error);
+      return response(res, false, null, "Serverio klaida");
+    }
+  },
+
+  finishOrder: async (req: Request, res: Response) => {
+    try {
+      const { _id, projectID } = req.body;
+
+      const data = await orderSchema.findByIdAndUpdate(_id, { status: false }, { new: true });
+      if (!data) return response(res, false, null, "Užsakymas nerastas");
+
+      const project = await projectSchema.findById(projectID);
+      if (!project) return response(res, false, null, "Užsakymas nerastas");
+
+      data.data.forEach((item) => {
+        project.results[item.measureIndex].delivered = item.delivered;
+      });
+
+      await project.save();
+
+      const responseData = { _id, projectID };
+
+      emit.toAdmin("finishOrder", responseData);
+      emit.toOrders("finishOrder", responseData);
+      emit.toWarehouse("finishOrder", responseData);
+
+      return response(res, true, responseData, "Išsaugota");
+    } catch (error) {
+      console.error("Klaida:", error);
+      return response(res, false, null, "Serverio klaida");
+    }
+  },
+
+  updateOrderNr: async (req: Request, res: Response) => {
+    try {
+      const { _id, value } = req.body;
+
+      const data = await orderSchema.findByIdAndUpdate({ _id }, { orderNr: value });
+
+      if (!data) return response(res, false, null, "Užsakymas nerastas");
+
+      const responseData = { _id, value };
+
+      emit.toAdmin("updateOrderNr", responseData);
+      emit.toOrders("updateOrderNr", responseData);
+      emit.toWarehouse("updateOrderNr", responseData);
+
+      return response(res, true, responseData, "Išsaugota");
+    } catch (error) {
+      console.error("Klaida:", error);
+      return response(res, false, null, "Serverio klaida");
+    }
+  },
+
+  updateOrderFields: async (req: Request, res: Response) => {
+    try {
+      const { _id, dataIndex, field, value } = req.body;
+
+      const updatePath = `data.${dataIndex}.${field}`;
+
+      const data = await orderSchema.findOneAndUpdate(
+        { _id },
+        { $set: { [updatePath]: value } },
+        { new: true }
+      );
+
+      if (!data) return response(res, false, null, "Užsakymas nerastas");
+
+      const responseData = { _id, dataIndex, field, value };
+
+      emit.toAdmin("updateOrderFields", responseData);
+      emit.toOrders("updateOrderFields", responseData);
+      emit.toWarehouse("updateOrderFields", responseData);
+
+      return response(res, true, responseData, "Išsaugota");
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");
@@ -79,11 +172,10 @@ export default {
       };
 
       const newOrder = new orderSchema({
+        projectID: _id,
         creator: user,
         client,
         recipient: to,
-        status: "Užsakyta",
-        orderNr: "",
         orderDate: orderDate.slice(0, 10),
         deliveryDate: date,
         deliveryMethod,
@@ -96,6 +188,7 @@ export default {
       if (!orderData) return response(res, false, null, "Serverio klaida");
 
       emit.toAdmin("newOrder", orderData);
+      emit.toOrders("newOrder", orderData);
       emit.toWarehouse("newOrder", orderData);
 
       const materialsList = data
@@ -199,12 +292,12 @@ export default {
       </html>
     `;
 
-      const emailResult = await sendEmail({
-        to,
-        subject: `Naujas užsakymas - ${client.address}`,
-        html,
-        user,
-      });
+      // const emailResult = await sendEmail({
+      //   to,
+      //   subject: `Naujas užsakymas - ${client.address}`,
+      //   html,
+      //   user,
+      // });
 
       const project = await projectSchema.findById(_id);
 
@@ -225,12 +318,13 @@ export default {
         emit.toWarehouse("partsOrdered", responseData);
       }
 
-      return response(
-        res,
-        emailResult.success,
-        { _id, data, orderData },
-        emailResult.success ? "Medžiagos užsakytos" : emailResult.message
-      );
+      // return response(
+      //   res,
+      //   emailResult.success,
+      //   { _id, data, orderData },
+      //   emailResult.success ? "Medžiagos užsakytos" : emailResult.message
+      // );
+      return response(res, true, { _id, data, orderData }, "Medžiagos užsakytos");
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");

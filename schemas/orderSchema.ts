@@ -20,6 +20,21 @@ const data = new mongoose.Schema({
   color: String,
   quantity: Number,
   measureIndex: Number,
+  ordered: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
+  inWarehouse: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
+  delivered: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
 });
 
 const comment = new mongoose.Schema({
@@ -29,14 +44,23 @@ const comment = new mongoose.Schema({
 });
 
 const orderSchema = new mongoose.Schema<Order>({
+  projectID: String,
   creator,
   client,
   recipient: String,
-  status: String,
-  orderNr: String,
   orderDate: String,
   deliveryDate: String,
   deliveryMethod: String,
+  orderNr: {
+    type: String,
+    required: false,
+    default: "",
+  },
+  status: {
+    type: Boolean,
+    required: false,
+    default: true,
+  },
   comments: {
     type: [comment],
     required: false,

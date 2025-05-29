@@ -575,6 +575,7 @@ export interface UserRights {
 
 export interface Order {
   _id?: string;
+  projectID: string;
   creator: Creator;
   client: Client;
   data: [OrderData];
@@ -583,7 +584,7 @@ export interface Order {
   deliveryMethod: string;
   comments: Comment[];
   recipient: string;
-  status: string;
+  status: boolean;
   orderNr: string;
 }
 
@@ -592,6 +593,9 @@ export interface OrderData {
   color: string;
   quantity: number;
   measureIndex: number;
+  ordered: boolean;
+  inWarehouse: boolean;
+  delivered: boolean;
 }
 
 export interface PotentialClient {

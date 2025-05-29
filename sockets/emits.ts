@@ -16,6 +16,9 @@ export default {
   toGates: (event: string, data: any) => {
     io.to("gates-room").emit(event, data);
   },
+  toOrders: (event: string, data: any) => {
+    io.to("orders-room").emit(event, data);
+  },
   toEveryone: (event: string, data: any) => {
     io.emit(event, data);
   },

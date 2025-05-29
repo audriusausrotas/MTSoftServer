@@ -9,7 +9,7 @@ const roomMapping: Record<string, string> = {
   Montavimas: "installation-room",
   Sandėlys: "warehouse-room",
   Vartonas: "gates-room",
-  Gigasta: "gates-room",
+  Tiekėjas: "orders-room",
 };
 
 export default async (socket: Socket): Promise<boolean> => {
@@ -21,6 +21,7 @@ export default async (socket: Socket): Promise<boolean> => {
     if (!secret) {
       console.error("Nerastas TOKEN_SECRET");
       socket.disconnect(true);
+
       return false;
     }
 
@@ -41,6 +42,7 @@ export default async (socket: Socket): Promise<boolean> => {
     });
 
     const room = roomMapping[user.accountType];
+    console.log(user.accountType);
     if (room) {
       socket.join(room);
       console.log(`${user.email} prisijungė prie ${room}`);

@@ -74,9 +74,11 @@ router.post("/newSupplier", checkAdmin, suppliers.newSupplier);
 
 router.delete("/deleteProductionComment", checkUser, comments.deleteProductionComment);
 router.delete("/deleteProjectComment", checkUser, comments.deleteProjectComment);
+router.delete("/deleteOrderComment", checkUser, comments.deleteOrderComment);
 
 router.post("/addProductionComment", checkUser, comments.addProductionComment);
 router.post("/addProjectComment", checkUser, comments.addProjectComment);
+router.post("/addOrderComment", checkUser, comments.addOrderComment);
 
 /////////////////////// Email ////////////////////////////
 
@@ -89,7 +91,7 @@ router.post("/sendOffer", checkAdmin, email.sendOffer);
 router.get("/getGates", checkUser, gates.getGates);
 
 router.delete("/cancelOrder/:_id", checkAdmin, gates.cancelOrder);
-router.delete("/finishOrder/:_id", checkUser, gates.finishOrder);
+router.delete("/finishGateOrder/:_id", checkUser, gates.finishOrder);
 
 router.patch("/updateGateOrder", checkUser, gates.updateGateOrder);
 
@@ -121,6 +123,9 @@ router.get("/getOrders", checkUser, orders.getOrders);
 router.delete("/deleteOrder/:_id", checkAdmin, orders.deleteOrder);
 
 router.patch("/updateOrder", checkUser, orders.updateOrder);
+router.patch("/updateOrderNr", checkUser, orders.updateOrderNr);
+router.patch("/updateOrderFields", checkUser, orders.updateOrderFields);
+router.patch("/finishOrder", checkUser, orders.finishOrder);
 
 router.post("/newOrder", checkUser, orders.newOrder);
 
