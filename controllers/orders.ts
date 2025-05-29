@@ -179,7 +179,7 @@ export default {
         orderDate: orderDate.slice(0, 10),
         deliveryDate: date,
         deliveryMethod,
-        comments: newComment,
+        comments: message ? newComment : [],
         data,
       });
 
