@@ -16,7 +16,7 @@ export default {
       const data = await orderSchema.find();
 
       const responseData =
-        user.accountType === "Administratorius"
+        user.accountType === "Administratorius" || user.accountType === "Sandėlys"
           ? data
           : data.filter((item) => item.recipient === user.email && item.status);
 

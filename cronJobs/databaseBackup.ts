@@ -30,6 +30,7 @@ export const backupDatabase = () => {
       "defaultValues",
       "gates",
       "installation",
+      "orders",
       "potentialClients",
       "potentialClientsUnsuscribed",
       "production",
