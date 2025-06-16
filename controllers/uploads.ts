@@ -98,17 +98,17 @@ export default {
 
       const deletePromises = files.map((filePath: string) => {
         const sanitizedPath = path.join(__dirname, "..", filePath);
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
           fs.unlink(sanitizedPath, (err: any) => {
             if (err) {
               if (err.code === "ENOENT") {
+                // File does not exist, resolve silently
                 console.warn(`File not found, skipping: ${filePath}`);
                 return resolve(`File not found, skipped: ${filePath}`);
               }
               console.error(`Error deleting ${filePath}:`, err);
-              return reject(`Nepavyko ištrinti failo: ${filePath}`);
             }
-            resolve(`Failas ištrintas: ${filePath}`);
+            resolve(`Failas ištrintas arba jau neegzistuoja: ${filePath}`);
           });
         });
       });
@@ -133,7 +133,7 @@ export default {
       return response(res, true, responseData, "Failai sėkmingai ištrinti");
     } catch (error) {
       console.error("Error:", error);
-      return response(res, false, null, `Serverio klaida: ${error}`);
+      return response(res, false, null, `Serverio klaida`);
     }
   },
 };
