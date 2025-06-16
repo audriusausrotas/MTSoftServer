@@ -133,7 +133,7 @@ export default {
       return response(res, true, responseData, "Failai sėkmingai ištrinti");
     } catch (error) {
       console.error("Error:", error);
-      return response(res, false, null, "Serverio klaida");
+      return response(res, false, null, `Serverio klaida: ${error.message}`);
     }
   },
 };
