@@ -20,7 +20,10 @@ const storage = multer.diskStorage({
   },
   filename: (req, file, cb) => {
     const timestamp = Date.now();
-    const uniqueFilename = `${timestamp}-${file.originalname.replace(/\s+/g, "_")}`;
+    const uniqueFilename = `${timestamp}-${file.originalname.replace(
+      /\s+/g,
+      "_"
+    )}`;
     cb(null, uniqueFilename);
   },
 });
@@ -44,7 +47,8 @@ export default {
       const { category, _id } = req.body;
 
       let project;
-      if (category === "production") project = await productionSchema.findById(_id);
+      if (category === "production")
+        project = await productionSchema.findById(_id);
       else project = await projectSchema.findById(_id);
 
       if (!project) {
@@ -82,7 +86,8 @@ export default {
       const { files, category, _id } = req.body;
 
       let data;
-      if (category === "production") data = await productionSchema.findById(_id);
+      if (category === "production")
+        data = await productionSchema.findById(_id);
       else data = await projectSchema.findById(_id);
 
       if (!data) return response(res, false, null, "Serverio klaida");
@@ -96,6 +101,10 @@ export default {
         return new Promise((resolve, reject) => {
           fs.unlink(sanitizedPath, (err: any) => {
             if (err) {
+              if (err.code === "ENOENT") {
+                console.warn(`File not found, skipping: ${filePath}`);
+                return resolve(`File not found, skipped: ${filePath}`);
+              }
               console.error(`Error deleting ${filePath}:`, err);
               return reject(`Nepavyko ištrinti failo: ${filePath}`);
             }
@@ -105,7 +114,6 @@ export default {
       });
 
       await Promise.all(deletePromises);
-
       data.files = data.files.filter((file: string) => !files.includes(file));
       const newData = await data.save();
 
