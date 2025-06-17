@@ -12,7 +12,8 @@ const seeThroughSchema = new mongoose.Schema({
 
 const productSchema = new mongoose.Schema<Product>({
   name: { type: String, required: false },
-  price: { type: Number, required: false },
+  priceRetail: { type: Number, required: false, default: 0 },
+  priceWholesale: { type: Number, required: false, default: 0 },
   cost: { type: Number, required: false, default: 0 },
   category: { type: String, required: false, default: "Kita" },
   image: { type: String, required: false },

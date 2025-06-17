@@ -253,7 +253,8 @@ export interface ArchivesState {
 export interface Product {
   _id: Types.ObjectId;
   name: string;
-  price: number;
+  priceRetail: number;
+  priceWholesale: number;
   cost: number;
   category: string;
   image?: string;
@@ -276,7 +277,8 @@ export interface SeeThrough {
 
 export interface SeeThroughOptions {
   space: number;
-  price: number;
+  priceRetail: number;
+  priceWholesale: number;
   cost: number;
 }
 
