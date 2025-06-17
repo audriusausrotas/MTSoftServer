@@ -277,8 +277,7 @@ export interface SeeThrough {
 
 export interface SeeThroughOptions {
   space: number;
-  priceRetail: number;
-  priceWholesale: number;
+  price: number;
   cost: number;
 }
 
