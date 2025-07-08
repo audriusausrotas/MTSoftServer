@@ -33,14 +33,13 @@ export default {
 
       if (!order) return response(res, false, null, "Užsakymas nerastas");
 
-      order.confirmed = value;
       order.status = value ? "Tinkamas" : "Netinkamas";
 
       const data = await order.save();
 
       if (!data) return response(res, false, null, "Klaida saugant užsakymą");
 
-      const responseData = { _id, status: value };
+      const responseData = { _id, status: value ? "Tinkamas" : "Netinkamas" };
 
       emit.toAdmin("changeProjectStatus", responseData);
 
