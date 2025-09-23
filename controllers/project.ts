@@ -25,7 +25,8 @@ export default {
   getProjects: async (req: Request, res: Response) => {
     try {
       const projects = await projectSchema.find();
-      if (!projects.length) return response(res, false, null, "Projektai nerasti");
+      if (!projects.length)
+        return response(res, false, null, "Projektai nerasti");
 
       projects.reverse();
       return response(res, true, projects, "Prisijungimas sėkmingas");
@@ -67,7 +68,8 @@ export default {
 
       const deletedProject = new deletedSchema({ ...projectData });
       const deletedData = await deletedProject.save();
-      if (!deletedData) return response(res, false, null, "Klaida trinant projektą");
+      if (!deletedData)
+        return response(res, false, null, "Klaida trinant projektą");
 
       await projectSchema.findByIdAndDelete(_id);
       await installationSchema.findByIdAndDelete(_id);
@@ -186,7 +188,8 @@ export default {
     try {
       const { _id } = req.params;
 
-      const project: HydratedDocument<Project> | null = await projectSchema.findById(_id);
+      const project: HydratedDocument<Project> | null =
+        await projectSchema.findById(_id);
 
       if (!project) return response(res, false, null, "Projektas nerastas");
 
@@ -222,7 +225,8 @@ export default {
 
       const rollbackVersion = await versionsSchema.findById(_id);
 
-      if (!rollbackVersion) return response(res, false, null, "Projektas nerastas");
+      if (!rollbackVersion)
+        return response(res, false, null, "Projektas nerastas");
 
       rollbackVersion.versions = [...project.versions];
 
@@ -457,7 +461,8 @@ export default {
 
       const orderExist = await projectSchema.findById(_id);
 
-      if (!orderExist) return { success: false, data: null, message: "Projektas nerastas" };
+      if (!orderExist)
+        return { success: false, data: null, message: "Projektas nerastas" };
 
       const versionObject: Project = orderExist.toObject();
       delete versionObject._id;
@@ -465,7 +470,8 @@ export default {
       const newVersion = new versionsSchema(versionObject);
       const version = await newVersion.save();
 
-      if (!version) return response(res, false, null, "Klaida išsaugant versiją");
+      if (!version)
+        return response(res, false, null, "Klaida išsaugant versiją");
 
       orderExist.versions?.push({
         id: version._id,
@@ -533,7 +539,9 @@ export default {
 
       if (_id) projectExist = await projectSchema.findById(_id);
 
-      const creatorUsername = projectExist ? projectExist.creator.username : creator.username;
+      const creatorUsername = projectExist
+        ? projectExist.creator.username
+        : creator.username;
 
       const currentDate = new Date();
 
@@ -560,7 +568,8 @@ export default {
           (a, b) => extractOrderNumber(a) - extractOrderNumber(b)
         );
 
-        let lastOrder = sortedOrderNumbers[sortedOrderNumbers.length - 1]?.orderNumber;
+        let lastOrder =
+          sortedOrderNumbers[sortedOrderNumbers.length - 1]?.orderNumber;
 
         let orderNumbers = +lastOrder.split("-")[1];
         orderNumbers++;
@@ -575,8 +584,9 @@ export default {
 
         delete newProjectData._id;
         newProjectData.dates.dateCreated = dateCreated;
-        newProjectData.orderNumber = orderNumber;
+        newProjectData.dates.dateConfirmed = "";
         newProjectData.dates.dateExparation = dateExparation;
+        newProjectData.orderNumber = orderNumber;
         newProjectData.status = "Nepatvirtintas";
         newProjectData.advance = 0;
         newProjectData.versions = [];
