@@ -65,6 +65,7 @@ const fenceSchema = new mongoose.Schema<InstallationFence>({
   type: String,
   color: String,
   material: String,
+  manufacturer: String,
   services: String,
   seeThrough: String,
   direction: String,
@@ -114,4 +115,8 @@ const installationSchema = new mongoose.Schema<Installation>({
   },
 });
 
-export default mongoose.model("installation", installationSchema, "installation");
+export default mongoose.model(
+  "installation",
+  installationSchema,
+  "installation"
+);

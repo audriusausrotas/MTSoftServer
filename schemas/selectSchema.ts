@@ -3,6 +3,7 @@ import { SelectValues } from "../data/interfaces";
 
 const selectSchema = new mongoose.Schema<SelectValues>({
   fenceMaterials: { type: [String], required: false, default: [] },
+  fenceManufacturers: { type: [String], required: false, default: [] },
   gateOption: { type: [String], required: false, default: [] },
   gateLock: { type: [String], required: false, default: [] },
   gateTypes: { type: [String], required: false, default: [] },

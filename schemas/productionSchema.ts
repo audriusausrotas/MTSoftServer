@@ -1,5 +1,10 @@
 import mongoose from "mongoose";
-import { Prodution, ProdutionFence, ProdutionMeasure, GateInfo } from "../data/interfaces";
+import {
+  Prodution,
+  ProdutionFence,
+  ProdutionMeasure,
+  GateInfo,
+} from "../data/interfaces";
 
 const gatesSchema = new mongoose.Schema<GateInfo>({
   exist: { type: Boolean, default: false },
@@ -43,6 +48,7 @@ const fenceSchema = new mongoose.Schema<ProdutionFence>({
   type: String,
   color: String,
   material: String,
+  manufacturer: String,
   services: String,
   seeThrough: String,
   direction: String,
