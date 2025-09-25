@@ -1,21 +1,21 @@
 import mongoose from "mongoose";
-import { Order } from "../data/interfaces";
+import { Client, Comment, Creator, Order, OrderData } from "../data/interfaces";
 
-const creator = new mongoose.Schema({
+const creator = new mongoose.Schema<Creator>({
   username: String,
   lastName: String,
   email: String,
   phone: String,
 });
 
-const client = new mongoose.Schema({
+const client = new mongoose.Schema<Client>({
   username: String,
   address: String,
   email: String,
   phone: String,
 });
 
-const data = new mongoose.Schema({
+const data = new mongoose.Schema<OrderData>({
   name: String,
   color: String,
   quantity: Number,
@@ -37,7 +37,7 @@ const data = new mongoose.Schema({
   },
 });
 
-const comment = new mongoose.Schema({
+const comment = new mongoose.Schema<Comment>({
   date: String,
   creator: String,
   comment: String,

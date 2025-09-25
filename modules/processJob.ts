@@ -5,9 +5,11 @@ import { HydratedDocument, Types } from "mongoose";
 import { Response } from "express";
 
 export default async (_id: Types.ObjectId, worker: string, res: Response) => {
-  const project: HydratedDocument<Project> | null = await projectSchema.findById(_id);
+  const project: HydratedDocument<Project> | null =
+    await projectSchema.findById(_id);
 
-  if (!project) return { success: false, data: null, message: "Projektas nerastas" };
+  if (!project)
+    return { success: false, data: null, message: "Projektas nerastas" };
 
   const installation = await installationSchema.findById(project._id);
 
@@ -37,7 +39,7 @@ export default async (_id: Types.ObjectId, worker: string, res: Response) => {
   } else {
     const newResults = project.results.map((item) => {
       return {
-        type: item.type,
+        name: item.name,
         quantity: item.quantity,
         height: item.height,
         width: item.width,

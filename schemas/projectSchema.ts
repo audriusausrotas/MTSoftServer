@@ -1,9 +1,9 @@
 import mongoose from "mongoose";
-import { Project } from "../data/interfaces";
+import { Creator, Dates, Project, Result, Works } from "../data/interfaces";
 
-const resultSchema = new mongoose.Schema({
+const resultSchema = new mongoose.Schema<Result>({
   id: { type: String, required: true },
-  type: { type: String },
+  name: { type: String },
   price: { type: Number },
   cost: { type: Number },
   category: { type: String },
@@ -23,7 +23,7 @@ const resultSchema = new mongoose.Schema({
   ordered: { type: Boolean, default: false },
 });
 
-const workSchema = new mongoose.Schema({
+const workSchema = new mongoose.Schema<Works>({
   id: { type: String, required: true },
   name: { type: String },
   price: { type: Number },
@@ -36,7 +36,7 @@ const workSchema = new mongoose.Schema({
   done: { type: Boolean, default: false },
 });
 
-const datesSchema = new mongoose.Schema({
+const datesSchema = new mongoose.Schema<Dates>({
   dateCreated: { type: String, required: false },
   dateExparation: { type: String, required: false },
   dateConfirmed: { type: String, required: false },
@@ -44,7 +44,7 @@ const datesSchema = new mongoose.Schema({
   dateArchieved: { type: String, required: false },
 });
 
-const creatorSchema = new mongoose.Schema({
+const creatorSchema = new mongoose.Schema<Creator>({
   username: { type: String, required: false },
   lastName: { type: String, required: false },
   email: { type: String, required: false },

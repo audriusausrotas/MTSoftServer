@@ -8,7 +8,7 @@ import {
 
 const gatesSchema = new mongoose.Schema<GateInfo>({
   exist: { type: Boolean, default: false },
-  type: { type: String, default: "" },
+  name: { type: String, default: "" },
   automatics: { type: String, default: "" },
   comment: { type: String, default: "" },
   direction: { type: String, default: "" },
@@ -45,10 +45,11 @@ const measureSchema = new mongoose.Schema<ProdutionMeasure>({
 const fenceSchema = new mongoose.Schema<ProdutionFence>({
   id: String,
   side: String,
-  type: String,
+  name: String,
   color: String,
   material: String,
   manufacturer: String,
+  holes: String,
   services: String,
   seeThrough: String,
   direction: String,

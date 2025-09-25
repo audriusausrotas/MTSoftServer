@@ -62,13 +62,14 @@ export interface Client {
 export interface Fence {
   id: string;
   side: string;
-  type: string;
+  name: string;
   color: string;
   material: string;
   manufacturer: string;
   services: string;
   seeThrough: string;
   direction: string;
+  holes: string;
   parts: string;
   comment: string;
   twoSided: string;
@@ -101,7 +102,7 @@ export interface Measure {
 
 export interface Result {
   id: string;
-  type: string;
+  name: string;
   price: number;
   cost: number;
   category: string;
@@ -122,7 +123,7 @@ export interface Result {
 }
 
 export interface InstallationResult {
-  type: string;
+  name: string;
   category: string;
   quantity: number;
   height: number;
@@ -139,17 +140,17 @@ export interface OtherParts {
   color: string;
   quantity: number;
   height: number;
-  type?: string;
+  name?: string;
 }
 
 export interface RetailLegs {
   color: string;
   quantity: number;
   height: number;
-  type: string;
+  name: string;
 }
 export interface Fences {
-  type: string;
+  name: string;
   color: string;
   length: number;
   height: number;
@@ -164,7 +165,7 @@ export interface Fences {
 
 export interface Gate {
   _id: Types.ObjectId;
-  type: string;
+  name: string;
   auto: string;
   width: number;
   height: number;
@@ -199,7 +200,7 @@ export interface Creator {
 
 export interface GateInfo {
   exist: boolean;
-  type: string;
+  name: string;
   automatics: string;
   comment: string;
   direction: string;
@@ -397,13 +398,14 @@ export interface Prodution {
 export interface InstallationFence {
   id: string;
   side: string;
-  type: string;
+  name: string;
   color: string;
   material: string;
   manufacturer: string;
   services: string;
   seeThrough: string;
   direction: string;
+  holes: string;
   parts: string;
   comment: string;
   twoSided: string;
@@ -419,13 +421,14 @@ export interface InstallationFence {
 export interface ProdutionFence {
   id: string;
   side: string;
-  type: string;
+  name: string;
   color: string;
   material: string;
   manufacturer: string;
   services: string;
   seeThrough: string;
   direction: string;
+  holes: string;
   parts: string;
   comment: string;
   twoSided: string;
@@ -469,7 +472,7 @@ export interface Bindings {
   id: string;
   color: string | undefined;
   height: number | undefined;
-  type: string | undefined;
+  name: string | undefined;
   quantity: number | undefined;
   cut: number | undefined;
   done: number | undefined;

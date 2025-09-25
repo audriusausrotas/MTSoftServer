@@ -17,7 +17,7 @@ export default (project: Project) => {
     .map(
       (result) => ` 
               <tr>
-                <td>${result.type}</td>
+                <td>${result.name}</td>
                 <td>${result.color}</td>
                 <td>${result.quantity}</td>
                 <td>${result.cost} €</td>
@@ -173,7 +173,9 @@ export default (project: Project) => {
                 <tr>
                   <th>Galutinė kaina klientui</th>
                   <td class="highlight">${
-                    project.discount ? project.priceWithDiscount : project.priceVAT
+                    project.discount
+                      ? project.priceWithDiscount
+                      : project.priceVAT
                   } €</td>
                 </tr>
                 <tr>

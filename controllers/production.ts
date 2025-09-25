@@ -1,4 +1,9 @@
-import { Bindings, Prodution, ProdutionFence, Project } from "../data/interfaces";
+import {
+  Bindings,
+  Prodution,
+  ProdutionFence,
+  Project,
+} from "../data/interfaces";
 import productionSchema from "../schemas/productionSchema";
 import projectSchema from "../schemas/projectSchema";
 import { HydratedDocument } from "mongoose";
@@ -270,13 +275,14 @@ export default {
     try {
       const { _id } = req.params;
 
-      const order: HydratedDocument<Prodution> | null = await productionSchema.findById(_id);
+      const order: HydratedDocument<Prodution> | null =
+        await productionSchema.findById(_id);
 
       if (!order) return response(res, false, null, "užsakymas nerastas");
 
       const newBinding = {
         id: uuidv4(),
-        type: undefined,
+        name: undefined,
         height: undefined,
         quantity: undefined,
         color: undefined,
@@ -307,7 +313,8 @@ export default {
     try {
       const { _id, index } = req.body;
 
-      const project: HydratedDocument<Prodution> | null = await productionSchema.findById(_id);
+      const project: HydratedDocument<Prodution> | null =
+        await productionSchema.findById(_id);
 
       if (!project) return response(res, false, null, "Projektas nerastas");
 
@@ -318,7 +325,7 @@ export default {
         elements: 0,
         gates: {
           exist: false,
-          type: "",
+          name: "",
           automatics: "",
           comment: "",
           direction: "",
@@ -377,7 +384,8 @@ export default {
     try {
       const { _id } = req.params;
 
-      const project: HydratedDocument<Project> | null = await projectSchema.findById(_id);
+      const project: HydratedDocument<Project> | null =
+        await projectSchema.findById(_id);
 
       if (!project) return response(res, false, null, "Projektas nerastas");
 
@@ -387,16 +395,26 @@ export default {
         (item) => item._id.toString() === project._id!.toString()
       );
 
-      if (productionExist) return response(res, false, null, "Objektas jau gaminamas");
+      if (productionExist)
+        return response(res, false, null, "Objektas jau gaminamas");
       else {
         //main bindings array
         const bindings: Bindings[] = [];
 
         //adds bindings as new or update quantity of existing
-        const addBindings = (color: string, height: number, type: string, quantity: number) => {
+        const addBindings = (
+          color: string,
+          height: number,
+          name: string,
+          quantity: number
+        ) => {
           let found = false;
           for (const binding of bindings) {
-            if (binding.color === color && binding.height === height && binding.type === type) {
+            if (
+              binding.color === color &&
+              binding.height === height &&
+              binding.name === name
+            ) {
               binding.quantity = binding.quantity! + quantity;
               found = true;
               break;
@@ -408,7 +426,7 @@ export default {
               id: v4(),
               color,
               height,
-              type,
+              name,
               quantity,
               cut: undefined,
               done: undefined,
@@ -420,13 +438,14 @@ export default {
 
         //loops via fences
         project.fenceMeasures.forEach((item) => {
-          if (item.type === "Segmentas" || fenceBoards.includes(item.type)) return;
+          if (item.name === "Segmentas" || fenceBoards.includes(item.name))
+            return;
 
           const color = item.color;
           const isBindings = item.bindings === "Taip" ? true : false;
-          const legWidth = item.type.includes("Dilė")
+          const legWidth = item.name.includes("Dilė")
             ? "20 mm"
-            : item.type.includes("40/105")
+            : item.name.includes("40/105")
             ? "40 mm"
             : "55 mm";
           let lastHeight = 0;
@@ -439,16 +458,29 @@ export default {
 
           item.measures.forEach((measure, index) => {
             const notSpecial =
-              !measure.laiptas.exist && !measure.kampas.exist && !measure.gates.exist;
+              !measure.laiptas.exist &&
+              !measure.kampas.exist &&
+              !measure.gates.exist;
 
             if (!isBindings) {
-              if (notSpecial) addBindings(color, measure.height, "Koja Dviguba " + legWidth, 2);
+              if (notSpecial)
+                addBindings(
+                  color,
+                  measure.height,
+                  "Koja Dviguba " + legWidth,
+                  2
+                );
             } else {
               // if first element is fence, adds one leg
               if (index === 0) {
                 if (notSpecial) {
                   lastHeight = measure.height;
-                  addBindings(color, measure.height, "Koja vienguba " + legWidth, 1);
+                  addBindings(
+                    color,
+                    measure.height,
+                    "Koja vienguba " + legWidth,
+                    1
+                  );
                 } else {
                   if (measure.laiptas.exist) wasStep = true;
                   if (measure.kampas.exist) wasCorner = true;
@@ -458,7 +490,13 @@ export default {
               }
 
               if (index === item.measures.length - 1) {
-                if (notSpecial) addBindings(color, measure.height, "Koja vienguba " + legWidth, 1);
+                if (notSpecial)
+                  addBindings(
+                    color,
+                    measure.height,
+                    "Koja vienguba " + legWidth,
+                    1
+                  );
               }
 
               if (measure.gates.exist) {
@@ -491,9 +529,12 @@ export default {
                   const maxHeight =
                     stepDirection === "Aukštyn"
                       ? lastHeight + stepHeight - (lastHeight - measure.height)
-                      : measure.height + stepHeight - (measure.height - lastHeight);
+                      : measure.height +
+                        stepHeight -
+                        (measure.height - lastHeight);
 
-                  isBindings && addBindings(color, maxHeight, "Kampas " + cornerRadius, 1);
+                  isBindings &&
+                    addBindings(color, maxHeight, "Kampas " + cornerRadius, 1);
 
                   addBindings(color, maxHeight, "Koja vienguba " + legWidth, 1);
                   addBindings(
@@ -508,7 +549,8 @@ export default {
                   lastHeight = measure.height;
                 } else if (wasCorner) {
                   const maxHeight = Math.max(lastHeight, measure.height);
-                  isBindings && addBindings(color, maxHeight, "Kampas " + cornerRadius, 1);
+                  isBindings &&
+                    addBindings(color, maxHeight, "Kampas " + cornerRadius, 1);
 
                   addBindings(
                     color,
@@ -524,7 +566,9 @@ export default {
                   const maxHeight =
                     stepDirection === "Aukštyn"
                       ? lastHeight + stepHeight - (lastHeight - measure.height)
-                      : measure.height + stepHeight - (measure.height - lastHeight);
+                      : measure.height +
+                        stepHeight -
+                        (measure.height - lastHeight);
 
                   isBindings && addBindings(color, maxHeight, "Centrinis", 2);
 
@@ -553,7 +597,10 @@ export default {
         });
 
         const newFences: ProdutionFence[] = project.fenceMeasures
-          .filter((item) => item.type !== "Segmentas" && !fenceBoards.includes(item.type))
+          .filter(
+            (item) =>
+              item.name !== "Segmentas" && !fenceBoards.includes(item.name)
+          )
           .map((item) => {
             return {
               ...item,
