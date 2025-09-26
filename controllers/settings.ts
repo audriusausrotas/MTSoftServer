@@ -5,6 +5,7 @@ import selectSchema from "../schemas/selectSchema";
 import { Request, Response } from "express";
 import response from "../modules/response";
 import emit from "../sockets/emits";
+import fenceSchema from "../schemas/fenceSchema";
 
 export default {
   //////////////////// get requests ////////////////////////////////////
@@ -24,9 +25,24 @@ export default {
     try {
       const data = await selectSchema.find();
 
-      if (data.length === 0) return response(res, false, null, "Nustatymai nerasti");
+      if (data.length === 0)
+        return response(res, false, null, "Nustatymai nerasti");
 
       return response(res, true, data[0]);
+    } catch (error) {
+      console.error("Klaida:", error);
+      return response(res, false, null, "Serverio klaida");
+    }
+  },
+
+  getFences: async (req: Request, res: Response) => {
+    try {
+      const data = await fenceSchema.find();
+
+      if (data.length === 0)
+        return response(res, false, null, "Tvoros nerastos");
+
+      return response(res, true, data);
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");
@@ -37,7 +53,8 @@ export default {
     try {
       const data = await userRightsSchema.find();
 
-      if (data.length === 0) return response(res, false, null, "Nustatymai nerasti");
+      if (data.length === 0)
+        return response(res, false, null, "Nustatymai nerasti");
 
       return response(res, true, data);
     } catch (error) {
@@ -76,21 +93,117 @@ export default {
 
   updateFenceData: async (req: Request, res: Response) => {
     try {
-      const { _id, width, height, isFenceBoard, defaultDirection, seeThrough } = req.body;
+      const { _id, name, type, defaultDirection, steps, details, prices } =
+        req.body;
 
       const updatedData = {
-        width,
-        height,
-        isFenceBoard,
+        name,
+        type,
         defaultDirection,
-        seeThrough,
+        details: {
+          height: details.height,
+          width: details.width,
+          bends: details.bends,
+          holes: details.holes,
+        },
+        steps: {
+          aklina: steps.aklina,
+          nepramatoma: steps.nepramatoma,
+          vidutiniska: steps.vidutiniska,
+          pramatoma: steps.pramatoma,
+          pramatoma25: steps.pramatoma25,
+          pramatoma50: steps.pramatoma50,
+        },
+
+        prices: {
+          premium: {
+            meter: {
+              cost: prices.premium.meter.cost,
+              priceRetail: prices.premium.meter.priceRetail,
+              priceWholesale: prices.premium.meter.priceWholesale,
+            },
+            aklina: {
+              cost: prices.premium.aklina.cost,
+              priceRetail: prices.premium.aklina.priceRetail,
+              priceWholesale: prices.premium.aklina.priceWholesale,
+            },
+            nepramatoma: {
+              cost: prices.premium.nepramatoma.cost,
+              priceRetail: prices.premium.nepramatoma.priceRetail,
+              priceWholesale: prices.premium.nepramatoma.priceWholesale,
+            },
+            vidutiniska: {
+              cost: prices.premium.vidutiniska.cost,
+              priceRetail: prices.premium.vidutiniska.priceRetail,
+              priceWholesale: prices.premium.vidutiniska.priceWholesale,
+            },
+            pramatoma: {
+              cost: prices.premium.pramatoma.cost,
+              priceRetail: prices.premium.pramatoma.priceRetail,
+              priceWholesale: prices.premium.pramatoma.priceWholesale,
+            },
+            pramatoma25: {
+              cost: prices.premium.pramatoma25.cost,
+              priceRetail: prices.premium.pramatoma25.priceRetail,
+              priceWholesale: prices.premium.pramatoma25.priceWholesale,
+            },
+            pramatoma50: {
+              cost: prices.premium.pramatoma50.cost,
+              priceRetail: prices.premium.pramatoma50.priceRetail,
+              priceWholesale: prices.premium.pramatoma50.priceWholesale,
+            },
+          },
+
+          eco: {
+            meter: {
+              cost: prices.eco.meter.cost,
+              priceRetail: prices.eco.meter.priceRetail,
+              priceWholesale: prices.eco.meter.priceWholesale,
+            },
+            aklina: {
+              cost: prices.eco.aklina.cost,
+              priceRetail: prices.eco.aklina.priceRetail,
+              priceWholesale: prices.eco.aklina.priceWholesale,
+            },
+            nepramatoma: {
+              cost: prices.eco.nepramatoma.cost,
+              priceRetail: prices.eco.nepramatoma.priceRetail,
+              priceWholesale: prices.eco.nepramatoma.priceWholesale,
+            },
+            vidutiniska: {
+              cost: prices.eco.vidutiniska.cost,
+              priceRetail: prices.eco.vidutiniska.priceRetail,
+              priceWholesale: prices.eco.vidutiniska.priceWholesale,
+            },
+            pramatoma: {
+              cost: prices.eco.pramatoma.cost,
+              priceRetail: prices.eco.pramatoma.priceRetail,
+              priceWholesale: prices.eco.pramatoma.priceWholesale,
+            },
+            pramatoma25: {
+              cost: prices.eco.pramatoma25.cost,
+              priceRetail: prices.eco.pramatoma25.priceRetail,
+              priceWholesale: prices.eco.pramatoma25.priceWholesale,
+            },
+            pramatoma50: {
+              cost: prices.eco.pramatoma50.cost,
+              priceRetail: prices.eco.pramatoma50.priceRetail,
+              priceWholesale: prices.eco.pramatoma50.priceWholesale,
+            },
+          },
+        },
       };
 
-      const responseData = await productSchema.findByIdAndUpdate(_id, updatedData, {
-        new: true,
-      });
+      const responseData = await productSchema.findByIdAndUpdate(
+        _id,
+        updatedData,
+        {
+          new: true,
+        }
+      );
 
-      if (!responseData) return response(res, false, null, "Produktas neegzistuoja");
+      if (!responseData)
+        return response(res, false, null, "Produktas neegzistuoja");
 
       emit.toAdmin("updateFenceSettings", responseData);
 
@@ -193,6 +306,28 @@ export default {
       const responseData = await doesExist.save();
 
       emit.toEveryone("newUserRights", responseData);
+
+      return response(res, true, responseData, "Išsaugota");
+    } catch (error) {
+      console.error("Klaida:", error);
+      return response(res, false, null, "Serverio klaida");
+    }
+  },
+
+  newFence: async (req: Request, res: Response) => {
+    try {
+      const { name } = req.body;
+
+      const doesExist = await fenceSchema.findOne({ name });
+
+      if (doesExist)
+        return response(res, false, null, "Tokia tvora jau egzistuoja");
+
+      const newFence = new fenceSchema({ name });
+
+      const responseData = await newFence.save();
+
+      emit.toAdmin("newFence", responseData);
 
       return response(res, true, responseData, "Išsaugota");
     } catch (error) {
