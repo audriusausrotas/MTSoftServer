@@ -2,25 +2,25 @@ import mongoose from "mongoose";
 import { FenceSetup } from "../data/interfaces";
 
 const detailsSchema = new mongoose.Schema({
-  width: { type: Number, required: false, default: 0 },
-  height: { type: Number, required: false, default: 0 },
-  bends: { type: Number, required: false, default: 0 },
-  holes: { type: Number, required: false, default: 8 },
+  width: { type: Number, required: true, default: 0 },
+  height: { type: Number, required: true, default: 0 },
+  bends: { type: Number, required: true, default: 0 },
+  holes: { type: Number, required: true, default: 8 },
 });
 
 const seeThroughSchema = new mongoose.Schema({
-  aklina: { type: Number, required: false, default: 0 },
-  nepramatoma: { type: Number, required: false, default: 0 },
-  vidutiniska: { type: Number, required: false, default: 0 },
-  pramatoma: { type: Number, required: false, default: 0 },
-  pramatoma25: { type: Number, required: false, default: 0 },
-  pramatoma50: { type: Number, required: false, default: 0 },
+  aklina: { type: Number, required: true, default: 0 },
+  nepramatoma: { type: Number, required: true, default: 0 },
+  vidutiniska: { type: Number, required: true, default: 0 },
+  pramatoma: { type: Number, required: true, default: 0 },
+  pramatoma25: { type: Number, required: true, default: 0 },
+  pramatoma50: { type: Number, required: true, default: 0 },
 });
 
 const seeThroughPriceSchema = new mongoose.Schema({
-  cost: { type: Number, required: false, default: 0 },
-  priceRetail: { type: Number, required: false, default: 0 },
-  priceWholesale: { type: Number, required: false, default: 0 },
+  cost: { type: Number, required: true, default: 0 },
+  priceRetail: { type: Number, required: true, default: 0 },
+  priceWholesale: { type: Number, required: true, default: 0 },
 });
 
 const qualitySchema = new mongoose.Schema({
@@ -39,9 +39,9 @@ const priceSchema = new mongoose.Schema({
 });
 
 const fenceSchema = new mongoose.Schema<FenceSetup>({
-  name: { type: String, required: false, default: "" },
-  type: { type: String, required: false, default: "Tvora" },
-  defaultDirection: { type: String, required: false, default: "Horizontali" },
+  name: { type: String, required: true, default: "" },
+  type: { type: String, required: true, default: "Tvora" },
+  defaultDirection: { type: String, required: true, default: "Horizontali" },
   details: detailsSchema,
   steps: seeThroughSchema,
   prices: priceSchema,

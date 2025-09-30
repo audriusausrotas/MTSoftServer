@@ -194,7 +194,7 @@ export default {
         },
       };
 
-      const responseData = await productSchema.findByIdAndUpdate(
+      const responseData = await fenceSchema.findByIdAndUpdate(
         _id,
         updatedData,
         {
