@@ -89,6 +89,23 @@ export default {
     }
   },
 
+  deleteFenceSettings: async (req: Request, res: Response) => {
+    try {
+      const { _id } = req.params;
+
+      const deleteFence = await fenceSchema.findByIdAndDelete(_id);
+
+      if (!deleteFence) return response(res, false, null, "Tvora nerasta");
+
+      emit.toAdmin("deleteFenceSettings", { _id });
+
+      return response(res, true, { _id }, "Tvora ištrinta");
+    } catch (error) {
+      console.error("Klaida:", error);
+      return response(res, false, null, "Serverio klaida");
+    }
+  },
+
   //////////////////// update requests /////////////////////////////////
 
   updateFenceData: async (req: Request, res: Response) => {

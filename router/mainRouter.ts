@@ -238,6 +238,11 @@ router.get("/getSelects", checkUser, settings.getSelects);
 router.get("/getFences", checkUser, settings.getFences);
 
 router.delete("/deleteSelect", checkAdmin, settings.deleteSelect);
+router.delete(
+  "/deleteFenceSettings/:_id",
+  checkAdmin,
+  settings.deleteFenceSettings
+);
 
 router.patch("/updateFenceData", checkAdmin, settings.updateFenceData);
 
