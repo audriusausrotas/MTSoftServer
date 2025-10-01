@@ -4,8 +4,7 @@ export default async ({ to, subject, html, user, attachments }: any) => {
   let fromPass: string = process.env.NODEMAILER_PASS_AUDRIUS!;
   let email: string = "audrius@modernitvora.lt";
 
-  console.log(user);
-  console.log(process.env.NODEMAILER_PASS_DALIUS);
+  console.log(to, subject, user);
 
   if (user.email.includes("audrius")) {
     fromPass = process.env.NODEMAILER_PASS_AUDRIUS!;
@@ -42,6 +41,7 @@ export default async ({ to, subject, html, user, attachments }: any) => {
       message: "Email sent successfully",
     };
   } catch (error: any) {
+    console.log(error);
     return {
       success: false,
       message: "Error: " + error.message,
