@@ -36,7 +36,7 @@ export default async ({ to, subject, html, user, attachments }: any) => {
     });
     return {
       success: true,
-      message: "Email sent successfully",
+      message: "Elektroninis laiškas išsiųstas sėkmingai",
     };
   } catch (error: any) {
     return {
