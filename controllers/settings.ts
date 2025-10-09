@@ -133,6 +133,9 @@ export default {
         },
 
         prices: {
+          cost: prices.cost,
+          priceRetail: prices.priceRetail,
+          priceWholesale: prices.priceWholesale,
           premium: {
             meter: {
               cost: prices.premium.meter.cost,

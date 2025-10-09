@@ -34,6 +34,9 @@ const qualitySchema = new mongoose.Schema({
 });
 
 const priceSchema = new mongoose.Schema({
+  cost: { type: Number, required: false, default: 0 },
+  priceRetail: { type: Number, required: false, default: 0 },
+  priceWholesale: { type: Number, required: false, default: 0 },
   premium: qualitySchema,
   eco: qualitySchema,
 });
