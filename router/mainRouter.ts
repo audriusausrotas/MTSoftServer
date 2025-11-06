@@ -163,7 +163,6 @@ router.post(
   checkAdmin,
   potentialClient.newPotentialClient
 );
-
 /////////////////////// Products /////////////////////////
 
 router.get("/getProducts", checkAdmin, product.getProducts);
