@@ -21,6 +21,8 @@ const resultSchema = new mongoose.Schema<Result>({
   width: { type: Number, default: null },
   delivered: { type: Boolean, default: false },
   ordered: { type: Boolean, default: false },
+  retail: { type: Boolean, default: true },
+  units: { type: Boolean, default: true },
 });
 
 const workSchema = new mongoose.Schema<Works>({
@@ -34,6 +36,7 @@ const workSchema = new mongoose.Schema<Works>({
   profit: { type: Number },
   margin: { type: Number },
   done: { type: Boolean, default: false },
+  retail: { type: Boolean, default: true },
 });
 
 const datesSchema = new mongoose.Schema<Dates>({

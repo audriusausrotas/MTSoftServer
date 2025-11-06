@@ -43,7 +43,7 @@ const priceSchema = new mongoose.Schema({
 
 const fenceSchema = new mongoose.Schema<FenceSetup>({
   name: { type: String, required: false, default: "" },
-  type: { type: String, required: false, default: "Tvora" },
+  category: { type: String, required: false, default: "Tvora" },
   defaultDirection: { type: String, required: false, default: "Horizontali" },
   details: detailsSchema,
   steps: seeThroughSchema,

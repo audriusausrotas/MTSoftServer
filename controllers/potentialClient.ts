@@ -11,7 +11,8 @@ export default {
     try {
       const responseData = await potentialClientSchema.find();
 
-      if (responseData.length === 0) return response(res, false, null, "Vartotojai nerasti");
+      if (responseData.length === 0)
+        return response(res, false, null, "Vartotojai nerasti");
 
       const statusOrder = ["Nežinoma", "Domina", "Nelabai domina", "Nedomina"];
 
@@ -45,7 +46,12 @@ export default {
 
       emit.toAdmin("deletePotentialClient", { _id });
 
-      return response(res, true, { _id }, "Klientas perkeltas į atsisakiusiųjų sąrašą");
+      return response(
+        res,
+        true,
+        { _id },
+        "Klientas perkeltas į atsisakiusiųjų sąrašą"
+      );
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");
@@ -56,15 +62,16 @@ export default {
 
   updateClient: async (req: Request, res: Response) => {
     try {
-      const { _id, name, email, phone, address, status } = req.body;
+      const { _id, name, email, phone, address, comment, status } = req.body;
 
       const responseData = await potentialClientSchema.findByIdAndUpdate(
         _id,
-        { name, email, phone, address, status },
+        { name, email, phone, address, comment, status },
         { new: true }
       );
 
-      if (!responseData) return response(res, false, null, "Klaida atnaujinant duomenis");
+      if (!responseData)
+        return response(res, false, null, "Klaida atnaujinant duomenis");
 
       emit.toAdmin("updatePotentialClient", responseData);
 
@@ -80,16 +87,24 @@ export default {
       const { _id, send, all, value } = req.body;
 
       if (all) {
-        const data = await potentialClientSchema.updateMany({}, { send: value });
+        const data = await potentialClientSchema.updateMany(
+          {},
+          { send: value }
+        );
 
         if (data.modifiedCount < 1)
           return response(res, false, null, "Klaida atnaujinant duomenis");
 
         return response(res, true, { value }, "Atnaujinta");
       } else {
-        const user = await potentialClientSchema.findByIdAndUpdate(_id, { send }, { new: true });
+        const user = await potentialClientSchema.findByIdAndUpdate(
+          _id,
+          { send },
+          { new: true }
+        );
 
-        if (!user) return response(res, false, null, "Klaida atnaujinant duomenis");
+        if (!user)
+          return response(res, false, null, "Klaida atnaujinant duomenis");
 
         const responseData = { _id, send };
 
@@ -105,7 +120,7 @@ export default {
 
   newPotentialClient: async (req: Request, res: Response) => {
     try {
-      const { name, email, phone, address, status } = req.body;
+      const { name, email, phone, address, comment, status } = req.body;
 
       const user = await potentialClientSchema.findOne({ email });
 
@@ -115,13 +130,15 @@ export default {
 
       if (user) return response(res, false, null, "Klientas jau egzistuoja");
 
-      if (userUnsuscribed) return response(res, false, null, "Klientas atsisakė prenumeratos");
+      if (userUnsuscribed)
+        return response(res, false, null, "Klientas atsisakė prenumeratos");
 
       const newUser = new potentialClientSchema({
         name,
         email,
         phone,
         address,
+        comment,
         status,
       });
 

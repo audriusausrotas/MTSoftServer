@@ -6,6 +6,7 @@ import { Request, Response } from "express";
 import response from "../modules/response";
 import emit from "../sockets/emits";
 import fenceSchema from "../schemas/fenceSchema";
+import { FenceSetup } from "../data/interfaces";
 
 export default {
   //////////////////// get requests ////////////////////////////////////
@@ -110,12 +111,12 @@ export default {
 
   updateFenceData: async (req: Request, res: Response) => {
     try {
-      const { _id, name, type, defaultDirection, steps, details, prices } =
+      const { _id, name, category, defaultDirection, steps, details, prices } =
         req.body;
 
-      const updatedData = {
+      const updatedData: FenceSetup = {
         name,
-        type,
+        category,
         defaultDirection,
         details: {
           height: details.height,

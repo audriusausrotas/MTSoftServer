@@ -90,20 +90,29 @@ export default {
 
   updateProduct: async (req: Request, res: Response) => {
     try {
-      const { name, price, cost, _id, category } = req.body;
+      const { name, priceRetail, priceWholesale, cost, _id, category } =
+        req.body;
 
       const updatedData = {
         name,
-        price,
-        cost,
+        prices: {
+          priceRetail,
+          priceWholesale,
+          cost,
+        },
         category,
       };
 
-      const responseData = await productSchema.findByIdAndUpdate(_id, updatedData, {
-        new: true,
-      });
+      const responseData = await productSchema.findByIdAndUpdate(
+        _id,
+        updatedData,
+        {
+          new: true,
+        }
+      );
 
-      if (!responseData) return response(res, false, null, "Produktas neegzistuoja");
+      if (!responseData)
+        return response(res, false, null, "Produktas neegzistuoja");
 
       emit.toAdmin("updateProduct", responseData);
 
@@ -118,17 +127,20 @@ export default {
 
   newProduct: async (req: Request, res: Response) => {
     try {
-      const { name, price, cost, image, category } = req.body;
+      const { name, priceRetail, priceWholesale, cost, category } = req.body;
 
       const doesExist = await productSchema.findOne({ name });
 
-      if (doesExist) return response(res, false, null, "Produktas jau egzistuoja");
+      if (doesExist)
+        return response(res, false, null, "Produktas jau egzistuoja");
 
       const product = new productSchema({
         name,
-        price: price || 0,
-        cost: cost || 0,
-        image: image || "",
+        prices: {
+          cost: cost || 0,
+          priceRetail: priceRetail || 0,
+          priceWholesale: priceWholesale || 0,
+        },
         category: category || "Kita",
       });
 

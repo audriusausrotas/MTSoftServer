@@ -27,6 +27,11 @@ const potentialUnsuscribedSchema = new mongoose.Schema<PotentialClient>({
     required: false,
     default: "",
   },
+  comment: {
+    type: String,
+    required: false,
+    default: "",
+  },
   send: {
     type: Boolean,
     required: false,
