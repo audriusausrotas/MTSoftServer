@@ -43,11 +43,13 @@ server.use(
 
 server.use("/uploads", express.static(path.join(__dirname, "dist/uploads")));
 
-server.use(express.json());
+server.use(express.json({ limit: "10mb" }));
 server.use(cookieParser());
 server.use("/api", mainRouter);
 
-server.listen(port, () => console.log(`MTSoft server is running on port ${port}`));
+server.listen(port, () =>
+  console.log(`MTSoft server is running on port ${port}`)
+);
 
 const shutdownHandler = async (signal: string) => {
   console.log(`Received ${signal}. Closing MongoDB connection...`);
