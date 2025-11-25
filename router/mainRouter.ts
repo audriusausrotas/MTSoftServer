@@ -234,7 +234,7 @@ router.post("/addSchedule", checkAdmin, schedule.addSchedule);
 router.get("/getDefaultValues", checkUser, settings.getDefaultValues);
 router.get("/getUserRights", checkUser, settings.getUserRights);
 router.get("/getSelects", checkUser, settings.getSelects);
-router.get("/getFences", checkUser, settings.getFences);
+router.get("/getFences", settings.getFences);
 
 router.delete("/deleteSelect", checkAdmin, settings.deleteSelect);
 router.delete(
