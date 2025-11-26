@@ -41,6 +41,13 @@ const priceSchema = new mongoose.Schema({
   eco: qualitySchema,
 });
 
+const profitSchema = new mongoose.Schema({
+  premiumRetail: { type: Number, required: false, default: 0 },
+  premiumWholesale: { type: Number, required: false, default: 0 },
+  ecoRetail: { type: Number, required: false, default: 0 },
+  ecoWholesale: { type: Number, required: false, default: 0 },
+});
+
 const fenceSchema = new mongoose.Schema<FenceSetup>({
   name: { type: String, required: false, default: "" },
   category: { type: String, required: false, default: "Tvora" },
@@ -48,6 +55,7 @@ const fenceSchema = new mongoose.Schema<FenceSetup>({
   details: detailsSchema,
   steps: seeThroughSchema,
   prices: priceSchema,
+  profit: profitSchema,
 });
 
 export default mongoose.model("fences", fenceSchema, "fences");

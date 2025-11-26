@@ -650,12 +650,20 @@ export interface PriceTier {
   priceWholesale: number;
 }
 
+export interface profitPercents {
+  premiumRetail: number;
+  premiumWholesale: number;
+  ecoRetail: number;
+  ecoWholesale: number;
+}
+
 export interface FenceSetup {
-  _id?: Types.ObjectId;
+  _id: Types.ObjectId;
   name: string;
   category: string;
   defaultDirection: string;
   details: FenceDetails;
   steps: SeeThroughSteps;
   prices: PriceTier;
+  profit: profitPercents;
 }
