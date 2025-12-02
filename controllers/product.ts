@@ -90,15 +90,27 @@ export default {
 
   updateProduct: async (req: Request, res: Response) => {
     try {
-      const { name, priceRetail, priceWholesale, cost, _id, category } =
-        req.body;
+      const {
+        name,
+        priceRetail,
+        priceWholesale,
+        cost,
+        _id,
+        category,
+        profitRetail,
+        profitWholesale,
+      } = req.body;
 
-      const updatedData = {
+      const updatedData: Product = {
         name,
         prices: {
           priceRetail,
           priceWholesale,
           cost,
+        },
+        profit: {
+          retail: profitRetail,
+          wholesale: profitWholesale,
         },
         category,
       };
@@ -127,7 +139,15 @@ export default {
 
   newProduct: async (req: Request, res: Response) => {
     try {
-      const { name, priceRetail, priceWholesale, cost, category } = req.body;
+      const {
+        name,
+        priceRetail,
+        priceWholesale,
+        cost,
+        category,
+        profitRetail,
+        profitWholesale,
+      } = req.body;
 
       const doesExist = await productSchema.findOne({ name });
 
@@ -137,11 +157,15 @@ export default {
       const product = new productSchema({
         name,
         prices: {
-          cost: cost || 0,
-          priceRetail: priceRetail || 0,
-          priceWholesale: priceWholesale || 0,
+          cost: cost,
+          priceRetail: priceRetail,
+          priceWholesale: priceWholesale,
         },
-        category: category || "Kita",
+        profit: {
+          retail: profitRetail,
+          wholesale: profitWholesale,
+        },
+        category: category,
       });
 
       const responseData = await product.save();

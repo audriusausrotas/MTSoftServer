@@ -255,9 +255,10 @@ export interface ArchivesState {
 }
 
 export interface Product {
-  _id: Types.ObjectId;
+  _id?: Types.ObjectId;
   name: string;
   prices: SeeThroughPrice;
+  profit: ProductProfitPercents;
   category: string;
 }
 
@@ -666,4 +667,9 @@ export interface FenceSetup {
   steps: SeeThroughSteps;
   prices: PriceTier;
   profit: profitPercents;
+}
+
+export interface ProductProfitPercents {
+  retail: number;
+  wholesale: number;
 }
