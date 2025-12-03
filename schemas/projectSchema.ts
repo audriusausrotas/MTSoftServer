@@ -23,6 +23,8 @@ const resultSchema = new mongoose.Schema<Result>({
   ordered: { type: Boolean, default: false },
   retail: { type: Boolean, default: true },
   units: { type: Boolean, default: true },
+  material: { type: String },
+  manufacturer: { type: String },
 });
 
 const workSchema = new mongoose.Schema<Works>({
