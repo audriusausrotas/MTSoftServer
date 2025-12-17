@@ -8,79 +8,100 @@ import {
   InstallationWorks,
 } from "../data/interfaces";
 
-const gatesSchema = new mongoose.Schema<GateInfo>({
-  exist: { type: Boolean, default: false },
-  name: { type: String, default: "" },
-  automatics: { type: String, default: "" },
-  comment: { type: String, default: "" },
-  direction: { type: String, default: "" },
-  lock: { type: String, default: "" },
-  bankette: { type: String, default: "" },
-  option: { type: String, default: "" },
-});
+const gatesSchema = new mongoose.Schema<GateInfo>(
+  {
+    exist: { type: Boolean, default: false },
+    name: { type: String, default: "" },
+    automatics: { type: String, default: "" },
+    comment: { type: String, default: "" },
+    direction: { type: String, default: "" },
+    lock: { type: String, default: "" },
+    bankette: { type: String, default: "" },
+    option: { type: String, default: "" },
+  },
+  { _id: false }
+);
 
-const cornerSchema = new mongoose.Schema({
-  exist: { type: Boolean, default: false },
-  value: { type: Number, default: 0 },
-  comment: { type: String, default: "" },
-});
+const cornerSchema = new mongoose.Schema(
+  {
+    exist: { type: Boolean, default: false },
+    value: { type: Number, default: 0 },
+    comment: { type: String, default: "" },
+  },
+  { _id: false }
+);
 
-const stepSchema = new mongoose.Schema({
-  exist: { type: Boolean, default: false },
-  value: { type: Number, default: 0 },
-  direction: { type: String, default: "" },
-});
+const stepSchema = new mongoose.Schema(
+  {
+    exist: { type: Boolean, default: false },
+    value: { type: Number, default: 0 },
+    direction: { type: String, default: "" },
+  },
+  { _id: false }
+);
 
-const measureSchema = new mongoose.Schema<InstallationMeasure>({
-  length: { type: Number, default: 0 },
-  height: { type: Number, default: 0 },
-  MeasureSpace: { type: Number, default: 0 },
-  elements: { type: Number, default: 0 },
-  gates: { type: gatesSchema, default: () => ({}) },
-  done: { type: Boolean, default: false },
-  postone: { type: Boolean, default: false },
-  kampas: { type: cornerSchema, default: () => ({}) },
-  laiptas: { type: stepSchema, default: () => ({}) },
-});
+const measureSchema = new mongoose.Schema<InstallationMeasure>(
+  {
+    length: { type: Number, default: 0 },
+    height: { type: Number, default: 0 },
+    MeasureSpace: { type: Number, default: 0 },
+    elements: { type: Number, default: 0 },
+    gates: { type: gatesSchema, default: () => ({}) },
+    done: { type: Boolean, default: false },
+    postone: { type: Boolean, default: false },
+    kampas: { type: cornerSchema, default: () => ({}) },
+    laiptas: { type: stepSchema, default: () => ({}) },
+  },
+  { _id: false }
+);
 
-const resultSchema = new mongoose.Schema<InstallationResult>({
-  name: { type: String, default: "" },
-  quantity: { type: Number, default: 0 },
-  height: { type: Number, default: 0 },
-  color: { type: String, default: "" },
-  width: { type: Number, default: 0 },
-  category: { type: String, default: "" },
-  delivered: { type: Boolean, required: false, default: false },
-});
+const resultSchema = new mongoose.Schema<InstallationResult>(
+  {
+    name: { type: String, default: "" },
+    quantity: { type: Number, default: 0 },
+    height: { type: Number, default: 0 },
+    color: { type: String, default: "" },
+    width: { type: Number, default: 0 },
+    category: { type: String, default: "" },
+    delivered: { type: Boolean, required: false, default: false },
+  },
+  { _id: false }
+);
 
-const workSchema = new mongoose.Schema<InstallationWorks>({
-  name: { type: String, default: "" },
-  quantity: { type: Number, default: 0 },
-  delivered: { type: Boolean, required: false, default: false },
-});
+const workSchema = new mongoose.Schema<InstallationWorks>(
+  {
+    name: { type: String, default: "" },
+    quantity: { type: Number, default: 0 },
+    delivered: { type: Boolean, required: false, default: false },
+  },
+  { _id: false }
+);
 
-const fenceSchema = new mongoose.Schema<InstallationFence>({
-  id: String,
-  side: String,
-  name: String,
-  color: String,
-  material: String,
-  manufacturer: String,
-  holes: String,
-  services: String,
-  seeThrough: String,
-  direction: String,
-  parts: String,
-  comment: String,
-  twoSided: String,
-  bindings: String,
-  anchoredPoles: String,
-  space: Number,
-  elements: Number,
-  totalLength: Number,
-  totalQuantity: Number,
-  measures: { type: [measureSchema], default: [] },
-});
+const fenceSchema = new mongoose.Schema<InstallationFence>(
+  {
+    id: String,
+    side: String,
+    name: String,
+    color: String,
+    material: String,
+    manufacturer: String,
+    holes: String,
+    services: String,
+    seeThrough: String,
+    direction: String,
+    parts: String,
+    comment: String,
+    twoSided: String,
+    bindings: String,
+    anchoredPoles: String,
+    space: Number,
+    elements: Number,
+    totalLength: Number,
+    totalQuantity: Number,
+    measures: { type: [measureSchema], default: [] },
+  },
+  { _id: false }
+);
 
 const installationSchema = new mongoose.Schema<Installation>({
   client: Object,

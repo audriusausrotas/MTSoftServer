@@ -6,7 +6,8 @@ import { Request, Response } from "express";
 import response from "../modules/response";
 import emit from "../sockets/emits";
 import fenceSchema from "../schemas/fenceSchema";
-import { FenceSetup } from "../data/interfaces";
+import { FenceSetup, Gates } from "../data/interfaces";
+import gatePriceSchema from "../schemas/gatePriceSchema";
 
 export default {
   //////////////////// get requests ////////////////////////////////////
@@ -26,7 +27,8 @@ export default {
     try {
       const data = await selectSchema.find();
 
-      if (data.length === 0) return response(res, false, null, "Nustatymai nerasti");
+      if (data.length === 0)
+        return response(res, false, null, "Nustatymai nerasti");
 
       return response(res, true, data[0]);
     } catch (error) {
@@ -39,7 +41,22 @@ export default {
     try {
       const data = await fenceSchema.find();
 
-      if (data.length === 0) return response(res, false, null, "Tvoros nerastos");
+      if (data.length === 0)
+        return response(res, false, null, "Tvoros nerastos");
+
+      return response(res, true, data);
+    } catch (error) {
+      console.error("Klaida:", error);
+      return response(res, false, null, "Serverio klaida");
+    }
+  },
+
+  getGates: async (req: Request, res: Response) => {
+    try {
+      const data = await gatePriceSchema.find();
+
+      if (data.length === 0)
+        return response(res, false, null, "Vartai nerasti");
 
       return response(res, true, data);
     } catch (error) {
@@ -52,7 +69,8 @@ export default {
     try {
       const data = await userRightsSchema.find();
 
-      if (data.length === 0) return response(res, false, null, "Nustatymai nerasti");
+      if (data.length === 0)
+        return response(res, false, null, "Nustatymai nerasti");
 
       return response(res, true, data);
     } catch (error) {
@@ -108,7 +126,16 @@ export default {
 
   updateFenceData: async (req: Request, res: Response) => {
     try {
-      const { _id, name, category, defaultDirection, steps, details, prices, profit } = req.body;
+      const {
+        _id,
+        name,
+        category,
+        defaultDirection,
+        steps,
+        details,
+        prices,
+        profit,
+      } = req.body;
 
       const updatedData: FenceSetup = {
         _id,
@@ -218,13 +245,44 @@ export default {
         },
       };
 
-      const responseData = await fenceSchema.findByIdAndUpdate(_id, updatedData, {
-        new: true,
-      });
+      const responseData = await fenceSchema.findByIdAndUpdate(
+        _id,
+        updatedData,
+        {
+          new: true,
+        }
+      );
 
-      if (!responseData) return response(res, false, null, "Produktas neegzistuoja");
+      if (!responseData)
+        return response(res, false, null, "Produktas neegzistuoja");
 
       emit.toAdmin("updateFenceSettings", responseData);
+
+      return response(res, true, responseData, "Pakeitimai atlikti");
+    } catch (error) {
+      console.error("Klaida:", error);
+      return response(res, false, null, "Serverio klaida");
+    }
+  },
+
+  updateGateData: async (req: Request, res: Response) => {
+    try {
+      const { _id, data } = req.body;
+
+      const updatedData = {};
+
+      const responseData = await gatePriceSchema.findByIdAndUpdate(
+        _id,
+        updatedData,
+        {
+          new: true,
+        }
+      );
+
+      if (!responseData)
+        return response(res, false, null, "Produktas neegzistuoja");
+
+      emit.toAdmin("updateGateSettings", responseData);
 
       return response(res, true, responseData, "Pakeitimai atlikti");
     } catch (error) {
@@ -339,7 +397,8 @@ export default {
 
       const doesExist = await fenceSchema.findOne({ name });
 
-      if (doesExist) return response(res, false, null, "Tokia tvora jau egzistuoja");
+      if (doesExist)
+        return response(res, false, null, "Tokia tvora jau egzistuoja");
 
       const newFence = new fenceSchema({ name });
 

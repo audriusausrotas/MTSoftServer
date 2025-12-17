@@ -1,60 +1,72 @@
 import mongoose from "mongoose";
 import { Creator, Dates, Project, Result, Works } from "../data/interfaces";
 
-const resultSchema = new mongoose.Schema<Result>({
-  id: { type: String, required: true },
-  name: { type: String },
-  price: { type: Number },
-  cost: { type: Number },
-  category: { type: String },
-  quantity: { type: Number },
-  height: { type: Number },
-  twoSided: { type: String },
-  direction: { type: String },
-  seeThrough: { type: String },
-  space: { type: Number },
-  color: { type: String },
-  totalPrice: { type: Number },
-  totalCost: { type: Number },
-  profit: { type: Number },
-  margin: { type: Number },
-  width: { type: Number, default: null },
-  delivered: { type: Boolean, default: false },
-  ordered: { type: Boolean, default: false },
-  retail: { type: Boolean, default: true },
-  units: { type: Boolean, default: true },
-  material: { type: String },
-  manufacturer: { type: String },
-});
+const resultSchema = new mongoose.Schema<Result>(
+  {
+    id: { type: String, required: true },
+    name: { type: String },
+    price: { type: Number },
+    cost: { type: Number },
+    category: { type: String },
+    quantity: { type: Number },
+    height: { type: Number },
+    twoSided: { type: String },
+    direction: { type: String },
+    seeThrough: { type: String },
+    space: { type: Number },
+    color: { type: String },
+    totalPrice: { type: Number },
+    totalCost: { type: Number },
+    profit: { type: Number },
+    margin: { type: Number },
+    width: { type: Number, default: null },
+    delivered: { type: Boolean, default: false },
+    ordered: { type: Boolean, default: false },
+    retail: { type: Boolean, default: true },
+    units: { type: Boolean, default: true },
+    material: { type: String },
+    manufacturer: { type: String },
+  },
+  { _id: false }
+);
 
-const workSchema = new mongoose.Schema<Works>({
-  id: { type: String, required: true },
-  name: { type: String },
-  price: { type: Number },
-  cost: { type: Number },
-  quantity: { type: Number },
-  totalPrice: { type: Number },
-  totalCost: { type: Number },
-  profit: { type: Number },
-  margin: { type: Number },
-  done: { type: Boolean, default: false },
-  retail: { type: Boolean, default: true },
-});
+const workSchema = new mongoose.Schema<Works>(
+  {
+    id: { type: String, required: true },
+    name: { type: String },
+    price: { type: Number },
+    cost: { type: Number },
+    quantity: { type: Number },
+    totalPrice: { type: Number },
+    totalCost: { type: Number },
+    profit: { type: Number },
+    margin: { type: Number },
+    done: { type: Boolean, default: false },
+    retail: { type: Boolean, default: true },
+  },
+  { _id: false }
+);
 
-const datesSchema = new mongoose.Schema<Dates>({
-  dateCreated: { type: String, required: false },
-  dateExparation: { type: String, required: false },
-  dateConfirmed: { type: String, required: false },
-  dateCompletion: { type: String, required: false },
-  dateArchieved: { type: String, required: false },
-});
+const datesSchema = new mongoose.Schema<Dates>(
+  {
+    dateCreated: { type: String, required: false },
+    dateExparation: { type: String, required: false },
+    dateConfirmed: { type: String, required: false },
+    dateCompletion: { type: String, required: false },
+    dateArchieved: { type: String, required: false },
+  },
+  { _id: false }
+);
 
-const creatorSchema = new mongoose.Schema<Creator>({
-  username: { type: String, required: false },
-  lastName: { type: String, required: false },
-  email: { type: String, required: false },
-  phone: { type: String, required: false },
-});
+const creatorSchema = new mongoose.Schema<Creator>(
+  {
+    username: { type: String, required: false },
+    lastName: { type: String, required: false },
+    email: { type: String, required: false },
+    phone: { type: String, required: false },
+  },
+  { _id: false }
+);
 
 const projectSchema = new mongoose.Schema<Project>({
   client: {

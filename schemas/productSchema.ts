@@ -1,15 +1,22 @@
 import mongoose from "mongoose";
 import { Product } from "../data/interfaces";
 
-const pricesSchema = new mongoose.Schema({
-  cost: { type: Number, required: false, default: 0 },
-  priceRetail: { type: Number, required: false, default: 0 },
-  priceWholesale: { type: Number, required: false, default: 0 },
-});
-const ProductProfitPercents = new mongoose.Schema({
-  retail: { type: Number, required: false, default: 0 },
-  wholesale: { type: Number, required: false, default: 0 },
-});
+const pricesSchema = new mongoose.Schema(
+  {
+    cost: { type: Number, required: false, default: 0 },
+    priceRetail: { type: Number, required: false, default: 0 },
+    priceWholesale: { type: Number, required: false, default: 0 },
+  },
+  { _id: false }
+);
+
+const ProductProfitPercents = new mongoose.Schema(
+  {
+    retail: { type: Number, required: false, default: 0 },
+    wholesale: { type: Number, required: false, default: 0 },
+  },
+  { _id: false }
+);
 
 const productSchema = new mongoose.Schema<Product>({
   name: { type: String, required: false },

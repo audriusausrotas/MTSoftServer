@@ -72,8 +72,16 @@ router.post("/newSupplier", checkAdmin, suppliers.newSupplier);
 
 /////////////////////// Comments /////////////////////////
 
-router.delete("/deleteProductionComment", checkUser, comments.deleteProductionComment);
-router.delete("/deleteProjectComment", checkUser, comments.deleteProjectComment);
+router.delete(
+  "/deleteProductionComment",
+  checkUser,
+  comments.deleteProductionComment
+);
+router.delete(
+  "/deleteProjectComment",
+  checkUser,
+  comments.deleteProjectComment
+);
 router.delete("/deleteOrderComment", checkUser, comments.deleteOrderComment);
 
 router.post("/addProductionComment", checkUser, comments.addProductionComment);
@@ -101,11 +109,19 @@ router.post("/newGateOrder", checkAdmin, gates.newOrder);
 
 router.get("/getWorks", checkUser, installation.getWorks);
 
-router.delete("/deleteInstallation/:_id", checkAdmin, installation.deleteInstallation);
+router.delete(
+  "/deleteInstallation/:_id",
+  checkAdmin,
+  installation.deleteInstallation
+);
 router.delete("/deleteWorker", checkAdmin, installation.deleteWorker);
 
 router.patch("/updateInstallation", checkUser, installation.updateInstallation);
-router.patch("/updateInstallationPostone", checkUser, installation.updatePostone);
+router.patch(
+  "/updateInstallationPostone",
+  checkUser,
+  installation.updatePostone
+);
 router.patch("/updateInstallationStatus", checkUser, installation.updateStatus);
 
 router.post("/addInstallation", checkAdmin, installation.addInstallation);
@@ -133,12 +149,20 @@ router.post("/newOrder", checkUser, orders.newOrder);
 
 router.get("/getpotentialClients", checkAdmin, potentialClient.getUsers);
 
-router.delete("/deletePotentialClient/:_id", checkAdmin, potentialClient.deletePotentialClient);
+router.delete(
+  "/deletePotentialClient/:_id",
+  checkAdmin,
+  potentialClient.deletePotentialClient
+);
 
 router.patch("/selectClients", checkAdmin, potentialClient.selectClients);
 router.patch("/updateClient", checkAdmin, potentialClient.updateClient);
 
-router.post("/newPotentialClient", checkAdmin, potentialClient.newPotentialClient);
+router.post(
+  "/newPotentialClient",
+  checkAdmin,
+  potentialClient.newPotentialClient
+);
 /////////////////////// Products /////////////////////////
 
 router.get("/getProducts", checkAdmin, product.getProducts);
@@ -154,7 +178,11 @@ router.post("/newProduct", checkAdmin, product.newProduct);
 router.get("/getProductions", checkUser, production.getProductions);
 router.get("/getProduction/:_id", checkUser, production.getProduction);
 
-router.delete("/deleteProduction/:_id", checkAdmin, production.deleteProduction);
+router.delete(
+  "/deleteProduction/:_id",
+  checkAdmin,
+  production.deleteProduction
+);
 router.delete("/deleteBindings", checkAdmin, production.deleteBindings);
 router.delete("/deleteMeasure", checkAdmin, production.deleteMeasure);
 router.delete("/deleteFence", checkAdmin, production.deleteFence);
@@ -177,7 +205,11 @@ router.delete("/removeUnconfirmed", checkAdmin, project.removeUnconfirmed);
 router.delete("/deleteProject/:_id", checkAdmin, project.deleteProject);
 router.delete("/deleteVersion", checkAdmin, project.deleteVersion);
 
-router.patch("/extendExparationDate/:_id", checkAdmin, project.extendExparationDate);
+router.patch(
+  "/extendExparationDate/:_id",
+  checkAdmin,
+  project.extendExparationDate
+);
 router.patch("/changeCompletionDate", checkUser, project.changeCompletionDate);
 router.patch("/projectFinished/:_id", checkAdmin, project.projectFinished);
 router.patch("/partsDelivered", checkUser, project.partsDelivered);
@@ -203,11 +235,17 @@ router.get("/getDefaultValues", checkUser, settings.getDefaultValues);
 router.get("/getUserRights", checkUser, settings.getUserRights);
 router.get("/getSelects", checkUser, settings.getSelects);
 router.get("/getFences", settings.getFences);
+router.get("/getGates", settings.getGates);
 
 router.delete("/deleteSelect", checkAdmin, settings.deleteSelect);
-router.delete("/deleteFenceSettings/:_id", checkAdmin, settings.deleteFenceSettings);
+router.delete(
+  "/deleteFenceSettings/:_id",
+  checkAdmin,
+  settings.deleteFenceSettings
+);
 
 router.patch("/updateFenceData", checkAdmin, settings.updateFenceData);
+router.patch("/updateGateData", checkAdmin, settings.updateGateData);
 
 router.post("/newDefaultValue", checkAdmin, settings.newDefaultValue);
 router.post("/newUserRights", checkAdmin, settings.newUserRights);
