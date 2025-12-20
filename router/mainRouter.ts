@@ -204,7 +204,7 @@ router.get("/getDefaultValues", checkUser, settings.getDefaultValues);
 router.get("/getUserRights", checkUser, settings.getUserRights);
 router.get("/getSelects", checkUser, settings.getSelects);
 router.get("/getFences", settings.getFences);
-router.get("/getGates", settings.getGates);
+router.get("/getGateData", settings.getGateData);
 
 router.delete("/deleteSelect", checkAdmin, settings.deleteSelect);
 router.delete("/deleteFenceSettings/:_id", checkAdmin, settings.deleteFenceSettings);

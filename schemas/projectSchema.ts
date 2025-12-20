@@ -26,6 +26,9 @@ const resultSchema = new mongoose.Schema<Result>(
     units: { type: Boolean, default: true },
     material: { type: String },
     manufacturer: { type: String },
+    auto: { type: String, required: false, default: "Taip" },
+    lock: { type: String, required: false, default: "Inox" },
+    installation: { type: String, required: false, default: "Taip" },
   },
   { _id: false }
 );

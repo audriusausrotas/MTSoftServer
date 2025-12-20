@@ -354,6 +354,7 @@ export default {
           lock: "",
           bankette: "",
           option: "",
+          installation: "",
         },
         cut: 0,
         done: 0,

@@ -124,6 +124,9 @@ export interface Result {
   units: boolean;
   material: string;
   manufacturer: string;
+  auto: string;
+  lock: string;
+  installation: string;
 }
 
 export interface InstallationResult {
@@ -169,7 +172,7 @@ export interface Fences {
 }
 
 export interface Gate {
-  _id: Types.ObjectId;
+  _id: string;
   name: string;
   auto: string;
   width: number;
@@ -182,6 +185,7 @@ export interface Gate {
   lock: string;
   comment: string;
   option: string;
+  installation: string;
 }
 
 export interface GateSchema {
@@ -212,6 +216,7 @@ export interface GateInfo {
   lock: string;
   bankette: string;
   option: string;
+  installation: string;
 }
 
 export interface User {
