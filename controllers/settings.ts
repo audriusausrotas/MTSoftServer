@@ -255,7 +255,7 @@ export default {
         new: true,
       });
 
-      if (!responseData) return response(res, false, null, "Produktas neegzistuoja");
+      if (!responseData) return response(res, false, null, "Vartai nerasti");
 
       emit.toAdmin("updateGateData", responseData);
 
