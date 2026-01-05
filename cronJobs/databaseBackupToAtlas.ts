@@ -15,6 +15,7 @@ export const databaseBackupToAtlas = () => {
       "clients",
       "defaultValues",
       "gates",
+      "gatePrices",
       "installation",
       "orders",
       "fences",
@@ -43,9 +44,7 @@ export const databaseBackupToAtlas = () => {
       }.json`;
 
       if (!fs.existsSync(backupFile)) {
-        console.error(
-          `Backup file for collection ${collection} missing! Skipping Atlas restore.`
-        );
+        console.error(`Backup file for collection ${collection} missing! Skipping Atlas restore.`);
         return;
       }
 
