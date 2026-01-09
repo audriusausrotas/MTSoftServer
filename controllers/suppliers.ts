@@ -44,7 +44,7 @@ export default {
 
   newSupplier: async (req: Request, res: Response) => {
     try {
-      const { username, email, phone, address } = req.body;
+      const { username, email, phone, address, company } = req.body;
 
       const supplierExist = await supplierSchema.findOne({ email });
 
@@ -55,6 +55,7 @@ export default {
         email,
         phone,
         address,
+        company,
       });
 
       const responseData = await supplier.save();

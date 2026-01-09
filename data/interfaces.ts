@@ -305,6 +305,7 @@ export interface Supplier {
   username: string;
   phone: string;
   email: string;
+  company: string;
 }
 
 export interface InstallationWorks {
@@ -588,12 +589,12 @@ export interface Order {
   projectID: string;
   creator: Creator;
   client: Client;
-  data: [OrderData];
+  data: OrderData[];
   orderDate: string;
   deliveryDate: string;
   deliveryMethod: string;
   comments: Comment[];
-  recipient: string;
+  recipient: Supplier[];
   status: boolean;
   orderNr: string;
 }

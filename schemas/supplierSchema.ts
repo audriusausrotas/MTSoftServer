@@ -14,10 +14,15 @@ const supplierSchema = new mongoose.Schema<Supplier>({
   },
   phone: {
     type: String,
-    required: true,
+    required: false,
     default: "",
   },
   address: {
+    type: String,
+    required: false,
+    default: "",
+  },
+  company: {
     type: String,
     required: false,
     default: "",

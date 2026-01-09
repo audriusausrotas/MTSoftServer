@@ -5,6 +5,7 @@ import orderSchema from "../schemas/orderSchema";
 import projectSchema from "../schemas/projectSchema";
 import sendEmail from "../modules/sendEmail";
 import { truncate } from "fs/promises";
+import { Order, Supplier } from "../data/interfaces";
 
 export default {
   //////////////////// get requests ////////////////////////////////////
@@ -18,7 +19,11 @@ export default {
       const responseData =
         user.accountType === "Administratorius" || user.accountType === "Sandėlys"
           ? data
-          : data.filter((item) => item.recipient === user.email && item.status);
+          : data.filter(
+              (item) =>
+                item.recipient.some((recipient: Supplier) => recipient.email === user.email) &&
+                item.status
+            );
 
       if (!responseData) return response(res, false, null, "Užsakymai nerasti");
 
@@ -165,11 +170,28 @@ export default {
 
       const orderDate = new Date().toISOString();
 
-      const newComment = {
-        date: orderDate.slice(0, 16).replace("T", " "),
-        creator: user.username,
-        comment: message,
-      };
+      const comments = [];
+
+      if (to.length > 1) {
+        const recipients = to.map(
+          (item: Supplier, index: number) =>
+            `${item.username} (${item.email}) ${index + 1 === to.length ? "" : "ir "}`
+        );
+
+        comments.push({
+          date: orderDate.slice(0, 16).replace("T", " "),
+          creator: user.username,
+          comment: `Šis užsakymas priskirtas ${recipients.join(" ")}`,
+        });
+      }
+
+      if (message) {
+        comments.push({
+          date: orderDate.slice(0, 16).replace("T", " "),
+          creator: user.username,
+          comment: message,
+        });
+      }
 
       const newOrder = new orderSchema({
         projectID: _id,
@@ -179,7 +201,7 @@ export default {
         orderDate: orderDate.slice(0, 10),
         deliveryDate: date,
         deliveryMethod,
-        comments: message ? newComment : [],
+        comments: comments,
         data,
       });
 
@@ -192,7 +214,6 @@ export default {
       emit.toWarehouse("newOrder", orderData);
 
       const materialsList = data
-
         .map(
           (result: any) => ` 
                 <tr>
@@ -200,6 +221,14 @@ export default {
                   <td>${result.color}</td>
                   <td>${result.quantity}</td>
                 </tr>`
+        )
+        .join("");
+
+      const commentsList = comments
+        .map((c: any, index: number) =>
+          index === 0
+            ? `<p style="font-weight: bold; color: #333; background-color: #f0f0f0; padding: 10px; border-left: 4px solid #333;">${c.comment}</p>`
+            : `<p>${c.comment}</p>`
         )
         .join("");
 
@@ -245,7 +274,8 @@ export default {
 
         <h2>Naujas užsakymas</h2>
 
-        <p>${message}</p>
+        ${commentsList}
+        <br>
 
         <table class="info-table">
           <tr>
@@ -292,12 +322,16 @@ export default {
       </html>
     `;
 
-      const emailResult = await sendEmail({
-        to,
-        subject: `Naujas užsakymas - ${client.address}`,
-        html,
-        user,
-      });
+      const emailPromises = to.map((recipient: Supplier) =>
+        sendEmail({
+          to: recipient.email,
+          subject: `Naujas užsakymas - ${client.address}`,
+          html,
+          user,
+        })
+      );
+
+      const emailResults = await Promise.all(emailPromises);
 
       const project = await projectSchema.findById(_id);
 
@@ -320,9 +354,11 @@ export default {
 
       return response(
         res,
-        emailResult.success,
+        emailResults.every((result) => result.success),
         { _id, data, orderData },
-        emailResult.success ? "Medžiagos užsakytos" : emailResult.message
+        emailResults.every((result) => result.success)
+          ? "Medžiagos užsakytos"
+          : "Ne visi vartotojai gavo užsakymą"
       );
     } catch (error) {
       console.error("Klaida:", error);

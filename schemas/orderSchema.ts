@@ -1,5 +1,15 @@
 import mongoose from "mongoose";
-import { Client, Comment, Creator, Order, OrderData } from "../data/interfaces";
+import { Types } from "mongoose";
+import { Client, Comment, Creator, Order, OrderData, Supplier } from "../data/interfaces";
+
+const supplier = new mongoose.Schema<Supplier>({
+  _id: Types.ObjectId,
+  username: String,
+  email: String,
+  phone: String,
+  address: String,
+  company: String,
+});
 
 const creator = new mongoose.Schema<Creator>(
   {
@@ -59,7 +69,7 @@ const orderSchema = new mongoose.Schema<Order>({
   projectID: String,
   creator,
   client,
-  recipient: String,
+  recipient: [supplier],
   orderDate: String,
   deliveryDate: String,
   deliveryMethod: String,

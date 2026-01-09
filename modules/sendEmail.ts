@@ -33,6 +33,9 @@ export default async ({ to, subject, html, user, attachments }: any) => {
       subject: subject,
       html,
       attachments,
+      headers: {
+        "Content-Type": "text/html; charset=UTF-8",
+      },
     });
     return {
       success: true,

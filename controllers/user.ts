@@ -64,8 +64,11 @@ export default {
 
   updateProfile: async (req: Request, res: Response) => {
     try {
-      const { _id, field, value } = req.body;
-      const user = await userSchema.findById(_id);
+      const { field, value } = req.body;
+
+      const cookieUser = res.locals.user;
+
+      const user = await userSchema.findById(cookieUser.id);
 
       if (!user) return response(res, false, null, "Vartotojas nerastas");
 
@@ -80,7 +83,6 @@ export default {
       const responseData = await user.save();
 
       responseData.password = "";
-
       emit.toAdmin("updateUser", responseData);
 
       return response(res, true, responseData, "Pakeitimai išsaugoti");
@@ -112,7 +114,6 @@ export default {
       emit.toAdmin("updateUser", responseData);
 
       return response(res, true, responseData, "Pakeitimai atlikti");
-      // } else return response(res, false, null, "Neteisinga užklausa");
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");
