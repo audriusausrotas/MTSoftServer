@@ -703,7 +703,8 @@ export interface Gates {
   _id?: Types.ObjectId;
   name: string;
   length: number;
-  category: "varstomi" | "stumdomi" | "varteliai";
+  height: number;
+  category: "varstomi" | "stumdomi" | "varteliai" | "segmentiniai";
   profit: Profit;
   prices: Prices;
 }

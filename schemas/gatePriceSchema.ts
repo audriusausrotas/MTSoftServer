@@ -31,15 +31,17 @@ const pricesSchema = new mongoose.Schema(
 );
 
 const gateSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  length: { type: Number, required: true },
+  name: { type: String, required: false, default: "" },
+  length: { type: Number, required: false, default: 0 },
+  height: { type: Number, required: false, default: 0 },
   category: {
     type: String,
-    enum: ["varstomi", "stumdomi", "varteliai"],
-    required: true,
+    enum: ["varstomi", "stumdomi", "varteliai", "segmentiniai"],
+    required: false,
+    default: "",
   },
-  profit: { type: profitSchema, required: true },
-  prices: { type: pricesSchema, required: true },
+  profit: { type: profitSchema, required: false, default: 0 },
+  prices: { type: pricesSchema, required: false, default: 0 },
 });
 
 export default mongoose.model("gatePrices", gateSchema, "gatePrices");
