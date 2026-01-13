@@ -164,7 +164,7 @@ export default {
 
   newOrder: async (req: Request, res: Response) => {
     try {
-      const { _id, data, client, date, deliveryMethod, message, to } = req.body;
+      const { _id, data, client, date, deliveryMethod, message, to, projectOrderNr } = req.body;
 
       const user = res.locals.user;
 
@@ -195,6 +195,7 @@ export default {
 
       const newOrder = new orderSchema({
         projectID: _id,
+        projectOrderNr,
         creator: user,
         client,
         recipient: to,

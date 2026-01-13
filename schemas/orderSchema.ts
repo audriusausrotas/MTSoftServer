@@ -67,6 +67,7 @@ const comment = new mongoose.Schema<Comment>(
 
 const orderSchema = new mongoose.Schema<Order>({
   projectID: String,
+  projectOrderNr: String,
   creator,
   client,
   recipient: [supplier],

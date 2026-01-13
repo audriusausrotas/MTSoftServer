@@ -587,6 +587,7 @@ export interface UserRights {
 export interface Order {
   _id?: string;
   projectID: string;
+  projectOrderNr: string;
   creator: Creator;
   client: Client;
   data: OrderData[];
