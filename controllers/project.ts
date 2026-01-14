@@ -357,6 +357,29 @@ export default {
     }
   },
 
+  addGateManufacturer: async (req: Request, res: Response) => {
+    try {
+      const { _id, manufacturer } = req.body;
+
+      const project = await projectSchema.findByIdAndUpdate(_id, {
+        gateManufacturer: manufacturer,
+      });
+
+      if (!project) return response(res, false, null, "Projektas nerastas");
+
+      const responseData = { _id, manufacturer };
+
+      emit.toAdmin("addGateManufacturer", responseData);
+      emit.toInstallation("addGateManufacturer", responseData);
+      emit.toWarehouse("addGateManufacturer", responseData);
+
+      return response(res, true, responseData, "Tiekėjas pridėtas");
+    } catch (error) {
+      console.error("Klaida:", error);
+      return response(res, false, null, "Serverio klaida");
+    }
+  },
+
   changeCompletionDate: async (req: Request, res: Response) => {
     try {
       const { _id, date } = req.body;
@@ -406,22 +429,22 @@ export default {
 
       if (!data) response(res, false, null, "Klaida išsaugant projektą");
 
-      const bonus = new bonusSchema({
-        address: project.client.address,
-        dateFinished: currentDate,
-        price: project.totalPrice,
-        cost: project.totalCost,
-        profit: project.totalProfit,
-        margin: project.totalMargin,
-        user: project.creator.username,
-      });
+      // const bonus = new bonusSchema({
+      //   address: project.client.address,
+      //   dateFinished: currentDate,
+      //   price: project.totalPrice,
+      //   cost: project.totalCost,
+      //   profit: project.totalProfit,
+      //   margin: project.totalMargin,
+      //   user: project.creator.username,
+      // });
 
       await projectSchema.findByIdAndDelete(_id);
       await backupSchema.findByIdAndDelete(_id);
       await installationSchema.findByIdAndDelete(_id);
       await productionSchema.findByIdAndDelete(_id);
       await gateSchema.findByIdAndDelete(_id);
-      await bonus.save();
+      // await bonus.save();
 
       const responseData = { _id, data };
 

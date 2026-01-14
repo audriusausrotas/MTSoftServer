@@ -27,6 +27,11 @@ const finishedSchema = new mongoose.Schema<Project>({
     required: false,
     default: [],
   },
+  gateManufacturer: {
+    type: String,
+    required: false,
+    default: "",
+  },
   advance: {
     type: Number,
     required: false,
@@ -44,6 +49,11 @@ const finishedSchema = new mongoose.Schema<Project>({
   },
   workers: {
     type: [String],
+    required: false,
+    default: [],
+  },
+  comments: {
+    type: [Object],
     required: false,
     default: [],
   },
@@ -69,8 +79,4 @@ const finishedSchema = new mongoose.Schema<Project>({
   discount: Boolean,
 });
 
-export default mongoose.model(
-  "projectsFinished",
-  finishedSchema,
-  "projectsFinished"
-);
+export default mongoose.model("projectsFinished", finishedSchema, "projectsFinished");

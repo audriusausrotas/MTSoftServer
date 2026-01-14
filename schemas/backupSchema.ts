@@ -27,6 +27,16 @@ const backupSchema = new mongoose.Schema<Project>({
     required: false,
     default: [],
   },
+  gateManufacturer: {
+    type: String,
+    required: false,
+    default: "",
+  },
+  comments: {
+    type: [Object],
+    required: false,
+    default: [],
+  },
   advance: {
     type: Number,
     required: false,

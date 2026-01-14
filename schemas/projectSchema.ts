@@ -98,7 +98,11 @@ const projectSchema = new mongoose.Schema<Project>({
     required: false,
     default: [],
   },
-
+  gateManufacturer: {
+    type: String,
+    required: false,
+    default: "",
+  },
   advance: {
     type: Number,
     required: false,

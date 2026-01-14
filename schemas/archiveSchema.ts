@@ -47,6 +47,16 @@ const archiveSchema = new mongoose.Schema<Project>({
     required: false,
     default: [],
   },
+  comments: {
+    type: [Object],
+    required: false,
+    default: [],
+  },
+  gateManufacturer: {
+    type: String,
+    required: false,
+    default: "",
+  },
   dates: {
     type: Object,
     required: false,

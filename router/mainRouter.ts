@@ -189,6 +189,7 @@ router.patch("/updateProjectStatus", checkUser, project.updateStatus);
 router.patch("/changeAdvance", checkAdmin, project.changeAdvance);
 router.patch("/changeManager", checkAdmin, project.changeManager);
 router.patch("/updateProject", checkAdmin, project.updateProject);
+router.patch("/addGateManufacturer", checkAdmin, project.addGateManufacturer);
 
 router.post("/newProject", checkAdmin, project.newProject);
 

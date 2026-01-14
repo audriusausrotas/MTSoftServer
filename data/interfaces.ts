@@ -1,17 +1,5 @@
 import { Types } from "mongoose";
 
-export interface Response {
-  success: boolean;
-  data: Project[];
-  message: string;
-}
-
-export interface Calculations {
-  client: Client;
-  fences: Fence[];
-  retail: boolean;
-}
-
 export interface Project {
   _id?: Types.ObjectId;
   creator: Creator;
@@ -21,6 +9,7 @@ export interface Project {
   results: Result[];
   works: Works[];
   gates: Gate[];
+  gateManufacturer: string;
   totalPrice: number;
   totalCost: number;
   totalProfit: number;
