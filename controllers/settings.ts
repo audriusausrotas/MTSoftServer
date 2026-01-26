@@ -331,7 +331,7 @@ export default {
         warehouse,
         orders,
       } = req.body;
-      console.log(req.body);
+
       let doesExist = await userRightsSchema.findOne({ accountType });
 
       if (doesExist) {
@@ -357,7 +357,7 @@ export default {
         });
 
       const responseData = await doesExist.save();
-      console.log(response);
+
       emit.toEveryone("newUserRights", responseData);
 
       return response(res, true, responseData, "Išsaugota");
