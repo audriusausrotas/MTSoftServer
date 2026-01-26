@@ -101,7 +101,7 @@ export default {
       if (!project) return response(res, false, null, "Projektas nerastas");
 
       project.versions = project.versions.filter(
-        (version) => version.id.toString() !== _id.toString()
+        (version) => version.id.toString() !== _id.toString(),
       );
 
       const data = await project.save();
@@ -405,55 +405,55 @@ export default {
   },
 
   projectFinished: async (req: Request, res: Response) => {
+    const session = await projectSchema.startSession();
+    session.startTransaction();
+
     try {
       const { _id } = req.params;
 
-      const project = await projectSchema.findById(_id);
+      const project = await projectSchema.findById(_id).lean();
 
-      if (!project) return response(res, false, null, "Projektas nerastas");
+      if (!project) {
+        await session.abortTransaction();
+        return response(res, false, null, "Projektas nerastas");
+      }
 
-      const currentDate = new Date().toISOString();
+      let dateArchieved = new Date().toISOString();
+
+      if (project.status === "Baigtas" && project.dates.dateArchieved)
+        dateArchieved = project.dates.dateArchieved;
+
+      const archivedProject = {
+        ...project,
+        status: "Baigtas",
+        versions: [],
+        files: [],
+        dates: {
+          ...project.dates,
+          dateArchieved: dateArchieved,
+        },
+      };
+
+      await finishedSchema.create([archivedProject], { session });
 
       await deleteVersions(project.versions);
+      await projectSchema.deleteOne({ _id });
+      await backupSchema.deleteOne({ _id });
+      await installationSchema.deleteOne({ _id });
+      await productionSchema.deleteOne({ _id });
+      await gateSchema.deleteOne({ _id });
 
-      project.versions = [];
-      project.status = "Baigtas";
+      await session.commitTransaction();
 
-      const newProject = project.toObject();
+      emit.toAdmin("finishProject", { _id });
 
-      newProject.dates.dateArchieved = currentDate;
-
-      const finishedProject = new finishedSchema(newProject);
-
-      const data = await finishedProject.save();
-
-      if (!data) response(res, false, null, "Klaida išsaugant projektą");
-
-      // const bonus = new bonusSchema({
-      //   address: project.client.address,
-      //   dateFinished: currentDate,
-      //   price: project.totalPrice,
-      //   cost: project.totalCost,
-      //   profit: project.totalProfit,
-      //   margin: project.totalMargin,
-      //   user: project.creator.username,
-      // });
-
-      await projectSchema.findByIdAndDelete(_id);
-      await backupSchema.findByIdAndDelete(_id);
-      await installationSchema.findByIdAndDelete(_id);
-      await productionSchema.findByIdAndDelete(_id);
-      await gateSchema.findByIdAndDelete(_id);
-      // await bonus.save();
-
-      const responseData = { _id, data };
-
-      emit.toAdmin("finishProject", responseData);
-
-      return response(res, true, responseData, "Būsena atnaujinta");
+      return response(res, true, { _id }, "Būsena atnaujinta");
     } catch (error) {
+      await session.abortTransaction();
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");
+    } finally {
+      session.endSession();
     }
   },
 
@@ -580,7 +580,7 @@ export default {
         }
 
         const sortedOrderNumbers = userProjects.sort(
-          (a, b) => extractOrderNumber(a) - extractOrderNumber(b)
+          (a, b) => extractOrderNumber(a) - extractOrderNumber(b),
         );
 
         let lastOrder = sortedOrderNumbers[sortedOrderNumbers.length - 1]?.orderNumber;

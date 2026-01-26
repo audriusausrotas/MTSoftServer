@@ -46,23 +46,29 @@ export default {
   getArchives: async (req: Request, res: Response) => {
     try {
       const data = await archiveSchema.aggregate([
-        { $sort: { dateExparation: -1 } },
         {
           $project: {
             _id: 1,
             orderNumber: 1,
             client: 1,
+            status: 1,
+            creator: 1,
+            dates: 1,
+            totalPrice: 1,
+            totalCost: 1,
+            totalProfit: 1,
+            totalMargin: 1,
             priceVAT: 1,
             priceWithDiscount: 1,
-            status: 1,
             discount: 1,
+            advance: 1,
           },
         },
       ]);
 
       if (!data) return response(res, false, null, "Projektai nerasti");
 
-      return response(res, true, data);
+      return response(res, true, data.reverse);
     } catch (error) {
       console.error("Klaida gaunant projektus:", error);
       return response(res, false, null, "Serverio klaida");
@@ -72,16 +78,23 @@ export default {
   getFinished: async (req: Request, res: Response) => {
     try {
       const data = await finishedSchema.aggregate([
-        { $sort: { dateExparation: -1 } },
+        { $sort: { "dates.dateArchieved": -1 } },
         {
           $project: {
             _id: 1,
             orderNumber: 1,
             client: 1,
+            status: 1,
+            creator: 1,
+            dates: 1,
+            totalPrice: 1,
+            totalCost: 1,
+            totalProfit: 1,
+            totalMargin: 1,
             priceVAT: 1,
             priceWithDiscount: 1,
-            status: 1,
             discount: 1,
+            advance: 1,
           },
         },
       ]);
@@ -138,7 +151,7 @@ export default {
   getUnconfirmed: async (req: Request, res: Response) => {
     try {
       const data = await unconfirmedSchema.aggregate([
-        { $sort: { dateExparation: -1 } },
+        { $sort: { "dates.dateArchieved": -1 } },
         {
           $project: {
             _id: 1,
@@ -164,7 +177,7 @@ export default {
   getDeleted: async (req: Request, res: Response) => {
     try {
       const data = await deletedSchema.aggregate([
-        { $sort: { dateExparation: -1 } },
+        { $sort: { "dates.dateArchieved": -1 } },
         {
           $project: {
             _id: 1,
@@ -194,7 +207,7 @@ export default {
 
       if (!search || search.length < 3) return { results: [] };
 
-      const results = await archiveSchema
+      const results = await finishedSchema
         .find(
           {
             $and: [
@@ -213,7 +226,7 @@ export default {
           {
             "client.address": 1,
             dateExparation: 1,
-          }
+          },
         )
         .limit(10)
         .lean();

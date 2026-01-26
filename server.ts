@@ -1,5 +1,6 @@
 import mainRouter from "./router/mainRouter";
 import cookieParser from "cookie-parser";
+import dns from "node:dns/promises";
 import mongoose from "mongoose";
 import express from "express";
 import path from "path";
@@ -12,6 +13,7 @@ import "./cronJobs/main";
 
 const port = process.env.PORT || 3001;
 const server = express();
+dns.setServers(["8.8.8.8"]);
 
 const dbURI =
   process.env.NODE_ENV === "development"
@@ -24,8 +26,8 @@ mongoose
     console.log(
       `Connected to MongoDB at ${
         process.env.NODE_ENV === "development" ? "Atlas Server" : "Local Server"
-      }`
-    )
+      }`,
+    ),
   )
   .catch((error) => {
     console.error("MongoDB connection failed:", error.message);
@@ -38,7 +40,7 @@ server.use(
         ? ["http://localhost:3000", "https://mtsoft.lt"]
         : ["https://mtsoft.lt"],
     credentials: true,
-  })
+  }),
 );
 
 server.use("/uploads", express.static(path.join(__dirname, "dist/uploads")));
@@ -47,9 +49,7 @@ server.use(express.json({ limit: "10mb" }));
 server.use(cookieParser());
 server.use("/api", mainRouter);
 
-server.listen(port, () =>
-  console.log(`MTSoft server is running on port ${port}`)
-);
+server.listen(port, () => console.log(`MTSoft server is running on port ${port}`));
 
 const shutdownHandler = async (signal: string) => {
   console.log(`Received ${signal}. Closing MongoDB connection...`);
