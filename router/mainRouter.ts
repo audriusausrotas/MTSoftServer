@@ -12,7 +12,6 @@ import project from "../controllers/project";
 import uploads from "../controllers/uploads";
 import clients from "../controllers/clients";
 import archive from "../controllers/archive";
-import bonus from "../controllers/bonus";
 import email from "../controllers/email";
 import gates from "../controllers/gates";
 import offer from "../controllers/offer";
@@ -21,6 +20,7 @@ import user from "../controllers/user";
 import express from "express";
 import suppliers from "../controllers/suppliers";
 import orders from "../controllers/orders";
+import checkSuperAdmin from "../middleware/checkSuperAdmin";
 
 const router = express.Router();
 
@@ -50,15 +50,11 @@ router.patch("/restoreArchive", checkAdmin, archive.restoreArchive);
 router.post("/addUnconfirmed/:_id", checkAdmin, archive.addUnconfirmed);
 router.post("/addArchive/:_id", checkAdmin, archive.addArchive);
 
-/////////////////////// Bonus ////////////////////////////
-
-router.get("/getBonus", checkAdmin, bonus.getBonus);
-
 /////////////////////// Clients //////////////////////////
 
 router.get("/getClients", checkAdmin, clients.getClients);
 
-router.delete("/deleteClient/:_id", checkAdmin, clients.deleteClient);
+router.delete("/deleteClient/:_id", checkSuperAdmin, clients.deleteClient);
 
 router.post("/newClient", checkAdmin, clients.newClient);
 
@@ -66,7 +62,7 @@ router.post("/newClient", checkAdmin, clients.newClient);
 
 router.get("/getSuppliers", checkAdmin, suppliers.getSuppliers);
 
-router.delete("/deleteSupplier/:_id", checkAdmin, suppliers.deleteSupplier);
+router.delete("/deleteSupplier/:_id", checkSuperAdmin, suppliers.deleteSupplier);
 
 router.post("/newSupplier", checkAdmin, suppliers.newSupplier);
 
@@ -207,24 +203,24 @@ router.get("/getSelects", checkUser, settings.getSelects);
 router.get("/getFences", settings.getFences);
 router.get("/getGateData", settings.getGateData);
 
-router.delete("/deleteSelect", checkAdmin, settings.deleteSelect);
-router.delete("/deleteFenceSettings/:_id", checkAdmin, settings.deleteFenceSettings);
+router.delete("/deleteSelect", checkSuperAdmin, settings.deleteSelect);
+router.delete("/deleteFenceSettings/:_id", checkSuperAdmin, settings.deleteFenceSettings);
 
-router.patch("/updateFenceData", checkAdmin, settings.updateFenceData);
-router.patch("/updateGateData", checkAdmin, settings.updateGateData);
+router.patch("/updateFenceData", checkSuperAdmin, settings.updateFenceData);
+router.patch("/updateGateData", checkSuperAdmin, settings.updateGateData);
 
-router.post("/newDefaultValue", checkAdmin, settings.newDefaultValue);
-router.post("/newUserRights", checkAdmin, settings.newUserRights);
-router.post("/newSelect", checkAdmin, settings.newSelect);
-router.post("/newFence", checkAdmin, settings.newFence);
+router.post("/newDefaultValue", checkSuperAdmin, settings.newDefaultValue);
+router.post("/newUserRights", checkSuperAdmin, settings.newUserRights);
+router.post("/newSelect", checkSuperAdmin, settings.newSelect);
+router.post("/newFence", checkSuperAdmin, settings.newFence);
 
 /////////////////////// User /////////////////////////////
 
 router.get("/getUsers", checkUser, user.getUsers);
 
-router.patch("/updateUser", checkUser, user.updateUser);
+router.patch("/updateUser", checkSuperAdmin, user.updateUser);
 
-router.delete("/deleteUser", checkAdmin, user.deleteUser);
+router.delete("/deleteUser", checkSuperAdmin, user.deleteUser);
 
 router.patch("/updateProfile", checkUser, user.updateProfile);
 router.patch("/updateUser", checkUser, user.updateUser);

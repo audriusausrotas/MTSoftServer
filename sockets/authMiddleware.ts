@@ -5,6 +5,7 @@ import DB from "./socketDB";
 
 const roomMapping: Record<string, string> = {
   Administratorius: "admin-room",
+  Vadybininkas: "admin-room",
   Gamyba: "production-room",
   Montavimas: "installation-room",
   Sandėlys: "warehouse-room",

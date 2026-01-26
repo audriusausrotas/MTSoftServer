@@ -26,7 +26,7 @@ const userRightsSchema = new mongoose.Schema<UserRights>({
     required: false,
     default: false,
   },
-  gate: {
+  other: {
     type: Boolean,
     required: false,
     default: false,
@@ -41,6 +41,7 @@ const userRightsSchema = new mongoose.Schema<UserRights>({
     required: false,
     default: false,
   },
+
   warehouse: {
     type: Boolean,
     required: false,

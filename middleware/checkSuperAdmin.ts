@@ -13,7 +13,7 @@ export default (req: Request, res: Response, next: NextFunction) => {
   try {
     const user = jwt.verify(token, process.env.TOKEN_SECRET as string) as User;
 
-    if (user.accountType !== "Administratorius" && user.accountType !== "Vadybininkas") {
+    if (user.accountType !== "Administratorius") {
       return response(res, false, null, "Vartotojas neturi teisių");
     }
 

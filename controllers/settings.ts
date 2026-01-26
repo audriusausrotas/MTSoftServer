@@ -279,7 +279,7 @@ export default {
       const data = await defaultValuesSchema.findOneAndUpdate(
         {},
         { [field]: value },
-        { new: true, upsert: true }
+        { new: true, upsert: true },
       );
 
       if (!data) return response(res, false, null, "Klaida saugant reikšmę");
@@ -302,7 +302,7 @@ export default {
       const data = await selectSchema.findOneAndUpdate(
         {},
         { $push: { [field]: value } },
-        { new: true, upsert: true }
+        { new: true, upsert: true },
       );
 
       if (!data) return response(res, false, null, "Serverio klaida");
@@ -326,20 +326,21 @@ export default {
         schedule,
         production,
         installation,
-        gate,
+        other,
         admin,
         warehouse,
         orders,
       } = req.body;
 
       let doesExist = await userRightsSchema.findOne({ accountType });
+
       if (doesExist) {
         doesExist.project = project;
         doesExist.schedule = schedule;
         doesExist.production = production;
         doesExist.installation = installation;
         doesExist.orders = orders;
-        doesExist.gate = gate;
+        doesExist.other = other;
         doesExist.admin = admin;
         doesExist.warehouse = warehouse;
       } else
@@ -349,7 +350,7 @@ export default {
           schedule,
           production,
           installation,
-          gate,
+          other,
           orders,
           admin,
           warehouse,

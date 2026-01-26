@@ -21,7 +21,8 @@ export default {
       if (
         user.accountType === "Administratorius" ||
         user.accountType === "Gamyba" ||
-        user.accountType === "Sandėlys"
+        user.accountType === "Sandėlys" ||
+        user.accountType === "Vadybininkas"
       ) {
         schedule = await scheduleSchema.find();
       } else if (user.accountType === "Montavimas") {
@@ -30,8 +31,7 @@ export default {
         });
       }
 
-      if (schedule.length === 0)
-        return response(res, false, null, "Grafikas nerastas");
+      if (schedule.length === 0) return response(res, false, null, "Grafikas nerastas");
 
       return response(res, true, schedule);
     } catch (error) {
@@ -56,8 +56,7 @@ export default {
           date,
           worker,
         });
-        if (!existingSchedule)
-          return response(res, false, null, "Klaida saugant");
+        if (!existingSchedule) return response(res, false, null, "Klaida saugant");
 
         const responseData = { date, worker };
 
@@ -70,8 +69,7 @@ export default {
       }
 
       const workerFound = await userSchema.findById(worker._id);
-      if (!workerFound)
-        return response(res, false, null, "Darbuotojas nerastas");
+      if (!workerFound) return response(res, false, null, "Darbuotojas nerastas");
 
       if (workerFound.accountType !== "Gamyba") {
         selectedJobs.forEach(async (job: Job) => {

@@ -17,12 +17,14 @@ export default {
       const data = await orderSchema.find();
 
       const responseData =
-        user.accountType === "Administratorius" || user.accountType === "Sandėlys"
+        user.accountType === "Administratorius" ||
+        user.accountType === "Vadybininkas" ||
+        user.accountType === "Sandėlys"
           ? data
           : data.filter(
               (item) =>
                 item.recipient.some((recipient: Supplier) => recipient.email === user.email) &&
-                item.status
+                item.status,
             );
 
       if (!responseData) return response(res, false, null, "Užsakymai nerasti");
@@ -65,7 +67,7 @@ export default {
       const updated = await orderSchema.findByIdAndUpdate(
         _id,
         { $set: { [updatePath]: data } },
-        { new: true }
+        { new: true },
       );
 
       if (!updated) return response(res, false, null, "Užsakymas nerastas");
@@ -142,7 +144,7 @@ export default {
       const data = await orderSchema.findOneAndUpdate(
         { _id },
         { $set: { [updatePath]: value } },
-        { new: true }
+        { new: true },
       );
 
       if (!data) return response(res, false, null, "Užsakymas nerastas");
@@ -175,7 +177,7 @@ export default {
       if (to.length > 1) {
         const recipients = to.map(
           (item: Supplier, index: number) =>
-            `${item.username} (${item.email}) ${index + 1 === to.length ? "" : "ir "}`
+            `${item.username} (${item.email}) ${index + 1 === to.length ? "" : "ir "}`,
         );
 
         comments.push({
@@ -221,7 +223,7 @@ export default {
                   <td>${result.name}</td>
                   <td>${result.color}</td>
                   <td>${result.quantity}</td>
-                </tr>`
+                </tr>`,
         )
         .join("");
 
@@ -229,7 +231,7 @@ export default {
         .map((c: any, index: number) =>
           index === 0
             ? `<p style="font-weight: bold; color: #333; background-color: #f0f0f0; padding: 10px; border-left: 4px solid #333;">${c.comment}</p>`
-            : `<p>${c.comment}</p>`
+            : `<p>${c.comment}</p>`,
         )
         .join("");
 
@@ -329,7 +331,7 @@ export default {
           subject: `Naujas užsakymas - ${client.address}`,
           html,
           user,
-        })
+        }),
       );
 
       const emailResults = await Promise.all(emailPromises);
@@ -359,7 +361,7 @@ export default {
         { _id, data, orderData },
         emailResults.every((result) => result.success)
           ? "Medžiagos užsakytos"
-          : "Ne visi vartotojai gavo užsakymą"
+          : "Ne visi vartotojai gavo užsakymą",
       );
     } catch (error) {
       console.error("Klaida:", error);
