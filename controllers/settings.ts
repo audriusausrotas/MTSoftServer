@@ -331,7 +331,7 @@ export default {
         warehouse,
         orders,
       } = req.body;
-      console.log(other);
+      console.log(req.body);
       let doesExist = await userRightsSchema.findOne({ accountType });
 
       if (doesExist) {
