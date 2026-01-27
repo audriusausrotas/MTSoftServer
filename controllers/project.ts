@@ -405,16 +405,12 @@ export default {
   },
 
   projectFinished: async (req: Request, res: Response) => {
-    const session = await projectSchema.startSession();
-    session.startTransaction();
-
     try {
       const { _id } = req.params;
 
       const project = await projectSchema.findById(_id).lean();
 
       if (!project) {
-        await session.abortTransaction();
         return response(res, false, null, "Projektas nerastas");
       }
 
@@ -434,7 +430,7 @@ export default {
         },
       };
 
-      await finishedSchema.create([archivedProject], { session });
+      await finishedSchema.create(archivedProject);
 
       await deleteVersions(project.versions);
       await projectSchema.deleteOne({ _id });
@@ -443,17 +439,13 @@ export default {
       await productionSchema.deleteOne({ _id });
       await gateSchema.deleteOne({ _id });
 
-      await session.commitTransaction();
-
       emit.toAdmin("finishProject", { _id });
 
       return response(res, true, { _id }, "Būsena atnaujinta");
     } catch (error) {
-      await session.abortTransaction();
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");
     } finally {
-      session.endSession();
     }
   },
 
