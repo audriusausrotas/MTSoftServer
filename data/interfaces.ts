@@ -677,7 +677,13 @@ export interface AditionalFenceInformation {
   seoTitleEn: string;
   seoDescription: string;
   seoDescriptionEn: string;
-  images: string[];
+  images: Image[];
+}
+
+export interface Image {
+  url: string;
+  alt: string;
+  altEN?: string;
 }
 
 export interface ProfitPercents {

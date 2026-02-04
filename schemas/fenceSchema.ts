@@ -65,6 +65,16 @@ const profitSchema = new mongoose.Schema(
   },
   { _id: false },
 );
+
+const imageSchema = new mongoose.Schema(
+  {
+    url: { type: String, required: false, default: "" },
+    alt: { type: String, required: false, default: "" },
+    altEN: { type: String, required: false, default: "" },
+  },
+  { _id: false },
+);
+
 const aditionalSchema = new mongoose.Schema(
   {
     show: { type: Boolean, required: false, default: false },
@@ -74,7 +84,7 @@ const aditionalSchema = new mongoose.Schema(
     seoTitleEn: { type: String, required: false, default: "" },
     seoDescription: { type: String, required: false, default: "" },
     seoDescriptionEn: { type: String, required: false, default: "" },
-    images: { type: [String], required: false, default: [] },
+    images: { type: [imageSchema], required: false, default: [] },
   },
   { _id: false },
 );
