@@ -215,11 +215,12 @@ export default {
               },
               { gates: { $exists: true, $ne: [] } },
               { status: "Baigtas" },
+              { gateManufacturer: { $in: ["Vartonas", null] } },
             ],
           },
           {
             "client.address": 1,
-            dateExparation: 1,
+            "dates.dateArchieved": 1,
           },
         )
         .limit(10)
