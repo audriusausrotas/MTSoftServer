@@ -665,7 +665,26 @@ export interface FenceSetup {
   details: FenceDetails;
   steps: SeeThroughSteps;
   prices: PriceTier;
-  profit: profitPercents;
+  profit: ProfitPercents;
+  aditional: AditionalFenceInformation;
+}
+
+export interface AditionalFenceInformation {
+  show: boolean;
+  description: string;
+  descriptionEn: string;
+  seoTitle: string;
+  seoTitleEn: string;
+  seoDescription: string;
+  seoDescriptionEn: string;
+  images: string[];
+}
+
+export interface ProfitPercents {
+  premiumRetail: number;
+  premiumWholesale: number;
+  ecoRetail: number;
+  ecoWholesale: number;
 }
 
 export interface Profit {

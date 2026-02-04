@@ -122,7 +122,8 @@ export default {
 
   updateFenceData: async (req: Request, res: Response) => {
     try {
-      const { _id, name, category, defaultDirection, steps, details, prices, profit } = req.body;
+      const { _id, name, category, defaultDirection, steps, details, prices, profit, aditional } =
+        req.body;
 
       const updatedData: FenceSetup = {
         _id,
@@ -140,6 +141,16 @@ export default {
           width: details.width,
           bends: details.bends,
           holes: details.holes,
+        },
+        aditional: {
+          show: aditional.show,
+          description: aditional.description,
+          descriptionEn: aditional.descriptionEn,
+          seoTitle: aditional.seoTitle,
+          seoTitleEn: aditional.seoTitleEn,
+          seoDescription: aditional.seoDescription,
+          seoDescriptionEn: aditional.seoDescriptionEn,
+          images: aditional.images,
         },
         steps: {
           aklina: steps.aklina,
