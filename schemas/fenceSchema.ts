@@ -68,6 +68,7 @@ const profitSchema = new mongoose.Schema(
 
 const imageSchema = new mongoose.Schema(
   {
+    name: { type: String, required: false, default: "" },
     url: { type: String, required: false, default: "" },
     alt: { type: String, required: false, default: "" },
     altEN: { type: String, required: false, default: "" },
