@@ -1,5 +1,6 @@
 import inputVerification from "../middleware/inputVerification";
 import potentialClient from "../controllers/potentialClient";
+import websiteSettings from "../controllers/websiteSettings";
 import installation from "../controllers/installation";
 import production from "../controllers/production";
 import checkAdmin from "../middleware/checkAdmin";
@@ -213,6 +214,16 @@ router.post("/newDefaultValue", checkSuperAdmin, settings.newDefaultValue);
 router.post("/newUserRights", checkSuperAdmin, settings.newUserRights);
 router.post("/newSelect", checkSuperAdmin, settings.newSelect);
 router.post("/newFence", checkSuperAdmin, settings.newFence);
+
+/////////////////////// Website settings /////////////////
+
+router.get("/getWebsiteSettings", checkUser, websiteSettings.getWebsiteSettings);
+
+router.delete("/deleteGalleryImage", checkSuperAdmin, websiteSettings.deleteGalleryImage);
+
+router.patch("/updateGalleryImage", checkSuperAdmin, websiteSettings.updateGalleryImage);
+
+router.post("/newGalleryImage", checkSuperAdmin, websiteSettings.newGalleryImage);
 
 /////////////////////// User /////////////////////////////
 

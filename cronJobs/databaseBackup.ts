@@ -19,7 +19,7 @@ export const backupDatabase = () => {
         } else {
           console.log("Backup completed successfully:", gzBackupFile);
         }
-      }
+      },
     );
 
     // Run mongoexport to create .json backup for collections
@@ -39,6 +39,7 @@ export const backupDatabase = () => {
       "products",
       "projects",
       "projectsArchived",
+      "websiteSettings",
       "projectsDeleted",
       "projectsFinished",
       "projectsUnconfirmed",
@@ -63,7 +64,7 @@ export const backupDatabase = () => {
         } else {
           console.log(
             `Backup completed successfully for collection ${collection}:`,
-            jsonBackupFile
+            jsonBackupFile,
           );
         }
       });
@@ -78,7 +79,7 @@ export const backupDatabase = () => {
         } else {
           console.log("json old backups deleted.");
         }
-      }
+      },
     );
 
     // Clean up old backups older than 7 days .gz
@@ -90,7 +91,7 @@ export const backupDatabase = () => {
         } else {
           console.log(".gz old backups deleted.");
         }
-      }
+      },
     );
   });
 };

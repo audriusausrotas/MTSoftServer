@@ -25,6 +25,7 @@ export const databaseBackupToAtlas = () => {
       "products",
       "projects",
       "projectsArchived",
+      "websiteSettings",
       "projectsDeleted",
       "projectsFinished",
       "projectsUnconfirmed",
