@@ -20,6 +20,18 @@ export default {
     }
   },
 
+  getGallery: async (req: Request, res: Response) => {
+    try {
+      const resnposeData = await websiteSettingsSchema.findOne({});
+      if (!resnposeData) return response(res, false, null, "Nustatymai nerasti");
+
+      return response(res, true, resnposeData.gallery);
+    } catch (error) {
+      console.error("Klaida:", error);
+      return response(res, false, null, "Serverio klaida");
+    }
+  },
+
   //////////////////// delete requests /////////////////////////////////
 
   deleteGalleryImage: async (req: Request, res: Response) => {

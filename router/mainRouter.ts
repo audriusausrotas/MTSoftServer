@@ -218,6 +218,7 @@ router.post("/newFence", checkSuperAdmin, settings.newFence);
 /////////////////////// Website settings /////////////////
 
 router.get("/getWebsiteSettings", checkUser, websiteSettings.getWebsiteSettings);
+router.get("/getGallery", websiteSettings.getGallery);
 
 router.delete("/deleteGalleryImage", checkSuperAdmin, websiteSettings.deleteGalleryImage);
 
