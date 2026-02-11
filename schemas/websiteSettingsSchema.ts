@@ -13,6 +13,7 @@ const ImageSchema = new mongoose.Schema<Image>(
 
 const websiteSettingsSchema = new mongoose.Schema<WebsiteSettings>({
   gallery: { type: [ImageSchema], required: false, default: [] },
+  funded: { type: [ImageSchema], required: false, default: [] },
 });
 
 websiteSettingsSchema.index({ "gallery.url": 1 }, { unique: true });

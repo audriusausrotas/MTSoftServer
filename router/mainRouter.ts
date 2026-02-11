@@ -219,12 +219,16 @@ router.post("/newFence", checkSuperAdmin, settings.newFence);
 
 router.get("/getWebsiteSettings", checkUser, websiteSettings.getWebsiteSettings);
 router.get("/getGallery", websiteSettings.getGallery);
+router.get("/getFunded", websiteSettings.getFunded);
 
 router.delete("/deleteGalleryImage", checkSuperAdmin, websiteSettings.deleteGalleryImage);
+router.delete("/deleteFundedImage", checkSuperAdmin, websiteSettings.deleteFundedImage);
 
 router.patch("/updateGalleryImage", checkSuperAdmin, websiteSettings.updateGalleryImage);
+router.patch("/updateFundedImage", checkSuperAdmin, websiteSettings.updateFundedImage);
 
 router.post("/newGalleryImage", checkSuperAdmin, websiteSettings.newGalleryImage);
+router.post("/newFundedImage", checkSuperAdmin, websiteSettings.newFundedImage);
 
 /////////////////////// User /////////////////////////////
 

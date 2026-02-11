@@ -727,4 +727,5 @@ export interface Gates {
 
 export interface WebsiteSettings {
   gallery: Image[];
+  funded: Image[];
 }
