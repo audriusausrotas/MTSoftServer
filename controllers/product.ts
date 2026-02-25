@@ -90,41 +90,16 @@ export default {
 
   updateProduct: async (req: Request, res: Response) => {
     try {
-      const {
-        name,
-        priceRetail,
-        priceWholesale,
-        cost,
-        _id,
-        category,
-        profitRetail,
-        profitWholesale,
-      } = req.body;
+      const { name, prices, _id, category, profit, aditional } = req.body;
+      console.log("asdf");
+      console.log(aditional);
+      const updatedData: Product = { name, prices, profit, category, aditional };
 
-      const updatedData: Product = {
-        name,
-        prices: {
-          priceRetail,
-          priceWholesale,
-          cost,
-        },
-        profit: {
-          retail: profitRetail,
-          wholesale: profitWholesale,
-        },
-        category,
-      };
+      const responseData = await productSchema.findByIdAndUpdate(_id, updatedData, {
+        new: true,
+      });
 
-      const responseData = await productSchema.findByIdAndUpdate(
-        _id,
-        updatedData,
-        {
-          new: true,
-        }
-      );
-
-      if (!responseData)
-        return response(res, false, null, "Produktas neegzistuoja");
+      if (!responseData) return response(res, false, null, "Produktas neegzistuoja");
 
       emit.toAdmin("updateProduct", responseData);
 
@@ -139,34 +114,13 @@ export default {
 
   newProduct: async (req: Request, res: Response) => {
     try {
-      const {
-        name,
-        priceRetail,
-        priceWholesale,
-        cost,
-        category,
-        profitRetail,
-        profitWholesale,
-      } = req.body;
+      const { name, prices, category, profit } = req.body;
 
       const doesExist = await productSchema.findOne({ name });
 
-      if (doesExist)
-        return response(res, false, null, "Produktas jau egzistuoja");
+      if (doesExist) return response(res, false, null, "Produktas jau egzistuoja");
 
-      const product = new productSchema({
-        name,
-        prices: {
-          cost: cost,
-          priceRetail: priceRetail,
-          priceWholesale: priceWholesale,
-        },
-        profit: {
-          retail: profitRetail,
-          wholesale: profitWholesale,
-        },
-        category: category,
-      });
+      const product = new productSchema({ name, prices, profit, category });
 
       const responseData = await product.save();
 
