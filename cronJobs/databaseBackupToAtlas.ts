@@ -14,7 +14,7 @@ export const databaseBackupToAtlas = () => {
       "bonus",
       "clients",
       "defaultValues",
-      "gates",
+      // "gates",
       "gatePrices",
       "installation",
       "orders",

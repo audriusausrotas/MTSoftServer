@@ -15,7 +15,6 @@ export default {
       const user = res.locals.user;
 
       const data = await orderSchema.find();
-
       const responseData =
         user.accountType === "Administratorius" ||
         user.accountType === "Vadybininkas" ||

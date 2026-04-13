@@ -91,8 +91,7 @@ export default {
   updateProduct: async (req: Request, res: Response) => {
     try {
       const { name, prices, _id, category, profit, aditional } = req.body;
-      console.log("asdf");
-      console.log(aditional);
+
       const updatedData: Product = { name, prices, profit, category, aditional };
 
       const responseData = await productSchema.findByIdAndUpdate(_id, updatedData, {

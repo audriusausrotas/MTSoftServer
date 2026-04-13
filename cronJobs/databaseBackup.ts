@@ -28,7 +28,7 @@ export const backupDatabase = () => {
       "bonus",
       "clients",
       "defaultValues",
-      "gates",
+      // "gates",
       "gatePrices",
       "installation",
       "orders",
