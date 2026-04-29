@@ -1,10 +1,5 @@
 import mongoose from "mongoose";
-import {
-  Prodution,
-  ProdutionFence,
-  ProdutionMeasure,
-  GateInfo,
-} from "../data/interfaces";
+import { Prodution, ProdutionFence, ProductionMeasure, GateInfo } from "../data/interfaces";
 
 const gatesSchema = new mongoose.Schema<GateInfo>(
   {
@@ -17,7 +12,7 @@ const gatesSchema = new mongoose.Schema<GateInfo>(
     bankette: { type: String, default: "" },
     option: { type: String, default: "" },
   },
-  { _id: false }
+  { _id: false },
 );
 
 const cornerSchema = new mongoose.Schema(
@@ -26,7 +21,7 @@ const cornerSchema = new mongoose.Schema(
     value: { type: Number, default: 0 },
     comment: { type: String, default: "" },
   },
-  { _id: false }
+  { _id: false },
 );
 
 const stepSchema = new mongoose.Schema(
@@ -35,10 +30,10 @@ const stepSchema = new mongoose.Schema(
     value: { type: Number, default: 0 },
     direction: { type: String, default: "" },
   },
-  { _id: false }
+  { _id: false },
 );
 
-const measureSchema = new mongoose.Schema<ProdutionMeasure>(
+const measureSchema = new mongoose.Schema<ProductionMeasure>(
   {
     length: { type: Number, default: 0 },
     height: { type: Number, default: 0 },
@@ -51,7 +46,7 @@ const measureSchema = new mongoose.Schema<ProdutionMeasure>(
     kampas: { type: cornerSchema, default: () => ({}) },
     laiptas: { type: stepSchema, default: () => ({}) },
   },
-  { _id: false }
+  { _id: false },
 );
 
 const fenceSchema = new mongoose.Schema<ProdutionFence>(
@@ -63,6 +58,7 @@ const fenceSchema = new mongoose.Schema<ProdutionFence>(
     material: String,
     manufacturer: String,
     holes: String,
+    step: Number,
     services: String,
     seeThrough: String,
     direction: String,
@@ -77,7 +73,7 @@ const fenceSchema = new mongoose.Schema<ProdutionFence>(
     totalQuantity: Number,
     measures: { type: [measureSchema], default: [] },
   },
-  { _id: false }
+  { _id: false },
 );
 
 const productionSchema = new mongoose.Schema<Prodution>({

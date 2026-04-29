@@ -160,6 +160,7 @@ router.patch("/updateProductionPostone", checkAdmin, production.updatePostone);
 router.patch("/updateMeasure", checkUser, production.updateMeasure);
 router.patch("/updateProductionStatus", checkUser, production.updateStatus);
 router.patch("/updateProductionGate", checkAdmin, production.updateGate);
+router.patch("/updateFence", checkAdmin, production.updateFence);
 
 router.post("/newProduction/:_id", checkUser, production.newProduction);
 router.post("/addNewProduction", checkUser, production.addNewProduction);

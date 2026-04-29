@@ -1,4 +1,4 @@
-import { Bindings, Prodution, ProdutionFence, Project } from "../data/interfaces";
+import { Bindings, Prodution, ProdutionFence, Project, SeeThroughSteps } from "../data/interfaces";
 import productionSchema from "../schemas/productionSchema";
 import projectSchema from "../schemas/projectSchema";
 import { HydratedDocument } from "mongoose";
@@ -124,7 +124,7 @@ export default {
       if (!project) return response(res, false, null, "Projektas nerastas");
 
       project.fences[index].measures = project.fences[index].measures.filter(
-        (item, index) => index !== measureIndex
+        (item, index) => index !== measureIndex,
       );
 
       const data = await project.save();
@@ -156,7 +156,7 @@ export default {
       const project = await productionSchema.findByIdAndUpdate(
         _id,
         { $set: { [updatePath]: value } },
-        { new: true }
+        { new: true },
       );
 
       if (!project) return response(res, false, null, "Projektas nerastas");
@@ -182,7 +182,7 @@ export default {
       const data: Prodution | null = await productionSchema.findByIdAndUpdate(
         _id,
         { $set: { status: status } },
-        { new: true }
+        { new: true },
       );
 
       if (!data) return response(res, false, null, "Serverio klaida");
@@ -212,7 +212,7 @@ export default {
       const project = await productionSchema.findByIdAndUpdate(
         _id,
         { $set: { [updatePath]: value } },
-        { new: true }
+        { new: true },
       );
 
       if (!project) return response(res, false, null, "Projektas nerastas");
@@ -231,6 +231,42 @@ export default {
     }
   },
 
+  updateFence: async (req: Request, res: Response) => {
+    try {
+      const { _id, index, side, color, name, manufacturer, material, holes, step } = req.body;
+
+      const project = await productionSchema.findByIdAndUpdate(
+        _id,
+        {
+          $set: {
+            [`fences.${index}.side`]: side,
+            [`fences.${index}.color`]: color,
+            [`fences.${index}.name`]: name,
+            [`fences.${index}.manufacturer`]: manufacturer,
+            [`fences.${index}.material`]: material,
+            [`fences.${index}.holes`]: holes,
+            [`fences.${index}.step`]: step,
+          },
+        },
+        { new: true },
+      );
+
+      if (!project) return response(res, false, null, "Projektas nerastas");
+
+      const responseData = { _id, index, side, color, name, manufacturer, material, holes, step };
+
+      emit.toAdmin("updateProductionFence", responseData);
+      emit.toProduction("updateProductionFence", responseData);
+      emit.toWarehouse("updateProductionFence", responseData);
+      emit.toInstallation("updateProductionFence", responseData);
+
+      return response(res, true, responseData, "išsaugota");
+    } catch (error) {
+      console.error("Klaida:", error);
+      return response(res, false, null, "Serverio klaida");
+    }
+  },
+
   updateGate: async (req: Request, res: Response) => {
     try {
       const { _id, index, measureIndex, value } = req.body;
@@ -240,7 +276,7 @@ export default {
       const project = await productionSchema.findByIdAndUpdate(
         _id,
         { $set: { [updatePath]: value } },
-        { new: true }
+        { new: true },
       );
 
       if (!project) return response(res, false, null, "Projektas nerastas");
@@ -402,7 +438,7 @@ export default {
       const production: Prodution[] = await productionSchema.find();
 
       const productionExist = production.some(
-        (item) => item._id.toString() === project._id!.toString()
+        (item) => item._id.toString() === project._id!.toString(),
       );
 
       if (productionExist) return response(res, false, null, "Objektas jau gaminamas");
@@ -443,10 +479,13 @@ export default {
           const currentFence = fences.find((fence) => fence.name === item.name);
 
           if (!currentFence || currentFence.category === "Segmentas") return;
-
           const color = item.color;
           const isBindings = item.bindings === "Taip" ? true : false;
-          const legWidth = item.name.includes("40/105") ? "40 mm" : "55 mm";
+          const legWidth = item.name.includes("40/105")
+            ? "40 mm"
+            : item.name.includes("Plank")
+              ? "40 mm"
+              : "55 mm";
           let lastHeight = 0;
           let stepHeight = 0;
           let stepDirection = "";
@@ -553,7 +592,7 @@ export default {
                     color,
                     stepDirection === "Aukštyn" ? measure.height : lastHeight,
                     "Koja vienguba " + legWidth,
-                    1
+                    1,
                   );
 
                   wasCorner = false;
@@ -568,7 +607,7 @@ export default {
                     maxHeight,
                     "Koja vienguba " + legWidth,
 
-                    2
+                    2,
                   );
 
                   wasCorner = false;
@@ -587,7 +626,7 @@ export default {
                     color,
                     stepDirection === "Aukštyn" ? measure.height : lastHeight,
                     "Koja vienguba " + legWidth,
-                    1
+                    1,
                   );
                   wasStep = false;
                   lastHeight = measure.height;
@@ -617,8 +656,17 @@ export default {
             return currentFence && currentFence.category === "Tvora";
           })
           .map((item) => {
+            const currentFence = fences.find((fence) => fence.name === item.name);
+            const fenceRename = item.seeThrough
+              .replace("š", "s")
+              .replace("25% Pramatomumas", "pramatoma25")
+              .replace("50% Pramatomumas", "pramatoma50")
+              .toLowerCase() as keyof SeeThroughSteps;
+            const step = currentFence?.steps[fenceRename] || 0;
+
             return {
               ...item,
+              step,
               measures: item.measures.map((measure) => ({
                 ...measure,
                 cut: undefined,

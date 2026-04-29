@@ -424,6 +424,7 @@ export interface ProdutionFence {
   seeThrough: string;
   direction: string;
   holes: string;
+  step: number;
   parts: string;
   comment: string;
   twoSided: string;
@@ -433,10 +434,10 @@ export interface ProdutionFence {
   elements: number;
   totalLength: number;
   totalQuantity: number;
-  measures: ProdutionMeasure[];
+  measures: ProductionMeasure[];
 }
 
-export interface ProdutionMeasure {
+export interface ProductionMeasure {
   length: number;
   height: number;
   MeasureSpace: number;
