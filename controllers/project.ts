@@ -1,12 +1,10 @@
 import deleteProjectVersions from "../modules/deleteProjectVersions";
 import deleteVersions from "../modules/deleteProjectVersions";
-import unconfirmedSchema from "../schemas/unconfirmedSchema";
 import installationSchema from "../schemas/installationSchema";
 import versionsSchema from "../schemas/versionsSchema";
 import deletedSchema from "../schemas/deletedSchema";
 import projectSchema from "../schemas/projectSchema";
 import backupSchema from "../schemas/backupSchema";
-import bonusSchema from "../schemas/bonusSchema";
 import generateHTML from "../modules/generateHTML";
 import sendEmail from "../modules/sendEmail";
 import userSchema from "../schemas/userSchema";
@@ -25,10 +23,45 @@ export default {
   getProjects: async (req: Request, res: Response) => {
     try {
       const projects = await projectSchema.find();
+
       if (!projects.length) return response(res, false, null, "Projektai nerasti");
 
       projects.reverse();
-      return response(res, true, projects, "Prisijungimas sėkmingas");
+      return response(res, true, projects, "Projektai sėkmingai gauti");
+    } catch (error) {
+      console.error("Klaida gaunant projektus:", error);
+      return response(res, false, null, "Serverio klaida");
+    }
+  },
+
+  getProjectsLight: async (req: Request, res: Response) => {
+    try {
+      const projects = await projectSchema
+        .find(
+          {},
+          {
+            _id: 1,
+            orderNumber: 1,
+            status: 1,
+            priceVAT: 1,
+            priceWithDiscount: 1,
+            discount: 1,
+            totalPrice: 1,
+            "creator.username": 1,
+            "client.email": 1,
+            "client.address": 1,
+            "client.phone": 1,
+            "dates.dateCreated": 1,
+            "dates.dateExparation": 1,
+            "dates.dateConfirmed": 1,
+          },
+        )
+        .sort({ _id: -1 });
+
+      if (!projects.length) return response(res, false, null, "Projektai nerasti");
+
+      // projects.reverse();
+      return response(res, true, projects, "Projektai sėkmingai gauti");
     } catch (error) {
       console.error("Klaida gaunant projektus:", error);
       return response(res, false, null, "Serverio klaida");
@@ -40,11 +73,11 @@ export default {
       const { _id } = req.params;
 
       const project = await projectSchema.findById(_id);
-      if (!project) return response(res, false, null, "Projektai nerasti");
+      if (!project) return response(res, false, null, "Projektas nerastas");
 
-      return response(res, true, project, "Prisijungimas sėkmingas");
+      return response(res, true, project, "Projektas sėkmingai gautas");
     } catch (error) {
-      console.error("Klaida gaunant projektus:", error);
+      console.error("Klaida gaunant projektą:", error);
       return response(res, false, null, "Serverio klaida");
     }
   },

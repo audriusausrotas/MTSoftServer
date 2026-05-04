@@ -170,6 +170,7 @@ router.post("/addMeasure", checkAdmin, production.addMeasure);
 /////////////////////// Project //////////////////////////
 
 router.get("/getProjects", checkUser, project.getProjects);
+router.get("/getProjectsLight", checkUser, project.getProjectsLight);
 router.get("/getProject/:_id", checkUser, project.getProject);
 
 router.delete("/removeUnconfirmed", checkAdmin, project.removeUnconfirmed);
