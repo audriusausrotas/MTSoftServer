@@ -13,6 +13,9 @@ export default async ({ to, subject, html, user, attachments }: any) => {
   } else if (user.email.includes("dalius")) {
     fromPass = process.env.NODEMAILER_PASS_DALIUS!;
     email = user.email;
+  } else if (user.email.includes("vaida")) {
+    fromPass = process.env.NODEMAILER_PASS_VAIDA!;
+    email = user.email;
   } else if (user.email.includes("sandelys")) {
     fromPass = process.env.NODEMAILER_PASS_SANDELYS!;
     email = user.email;
