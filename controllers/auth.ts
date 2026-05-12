@@ -25,6 +25,27 @@ export default {
     }
   },
 
+  getManagers: async (req: Request, res: Response) => {
+    try {
+      const data = await userSchema.find(
+        {
+          verified: true,
+          accountType: { $in: ["Administratorius", "Vadybininkas"] },
+        },
+        { username: 1, _id: 0 },
+      );
+
+      if (!data) return response(res, false, null, "Vartotoji nerasti");
+
+      const usernames = data.map((item) => item.username);
+
+      return response(res, true, usernames);
+    } catch (error) {
+      console.error("Klaida:", error);
+      return response(res, false, null, "Serverio klaida");
+    }
+  },
+
   //////////////////// delete requests /////////////////////////////////
 
   //////////////////// update requests /////////////////////////////////
@@ -70,7 +91,7 @@ export default {
           accountType: data.accountType,
         },
         process.env.TOKEN_SECRET as string,
-        { expiresIn: "90d" }
+        { expiresIn: "90d" },
       );
 
       data.password = "";
