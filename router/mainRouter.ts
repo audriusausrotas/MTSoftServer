@@ -1,6 +1,7 @@
 import inputVerification from "../middleware/inputVerification";
 import potentialClient from "../controllers/potentialClient";
 import websiteSettings from "../controllers/websiteSettings";
+import checkPartners from "../middleware/checkPartners";
 import installation from "../controllers/installation";
 import production from "../controllers/production";
 import checkAdmin from "../middleware/checkAdmin";
@@ -30,7 +31,7 @@ const router = express.Router();
 router.get("/getUser", checkUser, auth.getUser);
 router.get("/logout", checkUser, auth.logout);
 
-router.get("/getManagers", auth.getManagers);
+router.get("/getManagers", checkPartners, auth.getManagers);
 
 router.post("/register", inputVerification, auth.register);
 router.post("/login", inputVerification, auth.login);
