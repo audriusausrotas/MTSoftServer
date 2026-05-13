@@ -13,7 +13,7 @@ export default {
           verified: true,
           accountType: { $in: ["Administratorius", "Vadybininkas"] },
         },
-        { username: 1, email: 1, _id: 0 },
+        { username: 1, email: 1, _id: 1 },
       );
 
       if (!data) return response(res, false, null, "Vartotoji nerasti");
