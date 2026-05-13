@@ -16,6 +16,7 @@ import emit from "../sockets/emits";
 import productionSchema from "../schemas/productionSchema";
 import gateSchema from "../schemas/gateSchema";
 import finishedSchema from "../schemas/finishedSchema";
+import { createProjectService } from "../services/projectService";
 
 export default {
   //////////////////// get requests ////////////////////////////////////
@@ -60,7 +61,6 @@ export default {
 
       if (!projects.length) return response(res, false, null, "Projektai nerasti");
 
-      // projects.reverse();
       return response(res, true, projects, "Projektai sėkmingai gauti");
     } catch (error) {
       console.error("Klaida gaunant projektus:", error);
@@ -110,15 +110,6 @@ export default {
       return response(res, true, { _id }, "Projektas ištrintas");
     } catch (error) {
       console.error("Klaida trinant projektą:", error);
-      return response(res, false, null, "Serverio klaida");
-    }
-  },
-
-  removeUnconfirmed: async (req: Request, res: Response) => {
-    try {
-      return response(res, true, null, "Nepatvirtinti projektai ištrinti");
-    } catch (error) {
-      console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");
     }
   },
@@ -545,138 +536,17 @@ export default {
   },
 
   //////////////////// post requests ///////////////////////////////////
+
   newProject: async (req: Request, res: Response) => {
     try {
-      const {
-        _id,
-        client,
-        fenceMeasures,
-        results,
-        works,
-        gates,
-        totalPrice,
-        totalCost,
-        totalProfit,
-        totalMargin,
-        priceVAT,
-        priceWithDiscount,
-        discount,
-        confirmed,
-        payed,
-        status,
-        advance,
-        retail,
-      } = await req.body;
-
       const user = res.locals.user;
 
-      const creator = {
-        username: user.username,
-        lastName: user.lastName,
-        email: user.email,
-        phone: user.phone,
-      };
+      const result = await createProjectService(req.body, user);
 
-      let projectExist = null;
-
-      if (_id) projectExist = await projectSchema.findById(_id);
-
-      const creatorUsername = projectExist ? projectExist.creator.username : creator.username;
-
-      const currentDate = new Date();
-
-      const dateCreated = currentDate.toISOString();
-
-      let expirationDate = new Date(currentDate);
-      expirationDate.setDate(currentDate.getDate() + 30);
-
-      const dateExparation = expirationDate.toISOString();
-
-      const firstThreeLetters = creatorUsername.substring(0, 3).toUpperCase();
-      let newOrderNumbers = "0001";
-
-      const userProjects = await projectSchema.find({
-        orderNumber: { $regex: `^${firstThreeLetters}`, $options: "i" },
-      });
-
-      if (userProjects.length > 0) {
-        function extractOrderNumber(item: any) {
-          return parseInt(item.orderNumber.split("-")[1], 10);
-        }
-
-        const sortedOrderNumbers = userProjects.sort(
-          (a, b) => extractOrderNumber(a) - extractOrderNumber(b),
-        );
-
-        let lastOrder = sortedOrderNumbers[sortedOrderNumbers.length - 1]?.orderNumber;
-
-        let orderNumbers = +lastOrder.split("-")[1];
-        orderNumbers++;
-
-        newOrderNumbers = orderNumbers.toString().padStart(4, "0");
-      }
-
-      const orderNumber = `${firstThreeLetters}-${newOrderNumbers}`;
-
-      if (projectExist) {
-        const newProjectData = projectExist.toObject() as Project;
-
-        delete newProjectData._id;
-        newProjectData.dates.dateCreated = dateCreated;
-        newProjectData.dates.dateConfirmed = "";
-        newProjectData.dates.dateExparation = dateExparation;
-        newProjectData.orderNumber = orderNumber;
-        newProjectData.status = "Nepatvirtintas";
-        newProjectData.advance = 0;
-        newProjectData.versions = [];
-
-        const newProject = new projectSchema(newProjectData);
-        const responseData = await newProject.save();
-
-        emit.toAdmin("newProject", responseData);
-
-        return response(res, true, responseData, "Projektas nukopijuotas");
-      } else {
-        const dates = {
-          dateCreated,
-          dateExparation,
-          dateConfirmed: "",
-          dateCompletion: "",
-          dateArchieved: "",
-        };
-
-        const project = new projectSchema({
-          creator,
-          client,
-          fenceMeasures,
-          results,
-          orderNumber,
-          works,
-          gates,
-          totalPrice,
-          totalCost,
-          totalProfit,
-          totalMargin,
-          priceVAT,
-          priceWithDiscount,
-          discount,
-          confirmed,
-          payed,
-          status,
-          advance,
-          dates,
-          retail,
-        });
-
-        const responseData = await project.save();
-
-        emit.toAdmin("newProject", responseData);
-
-        return response(res, true, responseData, "Projektas išsaugotas");
-      }
-    } catch (error) {
-      console.error("Klaida gaunant projektą:", error);
-      return response(res, false, null, "Serverio klaida");
+      return response(res, true, result, "Projektas išsaugotas");
+    } catch (err: any) {
+      console.error("newProject error:", err);
+      return response(res, false, null, err.message || "Serverio klaida");
     }
   },
 };

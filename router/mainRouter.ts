@@ -181,7 +181,6 @@ router.get("/getProjects", checkUser, project.getProjects);
 router.get("/getProjectsLight", checkUser, project.getProjectsLight);
 router.get("/getProject/:_id", checkUser, project.getProject);
 
-router.delete("/removeUnconfirmed", checkAdmin, project.removeUnconfirmed);
 router.delete("/deleteProject/:_id", checkAdmin, project.deleteProject);
 router.delete("/deleteVersion", checkAdmin, project.deleteVersion);
 

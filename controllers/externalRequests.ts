@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import response from "../modules/response";
 import userSchema from "../schemas/userSchema";
-import emit from "../sockets/emits";
+import { orderFence } from "../services/externalServices";
 
 export default {
   //////////////////// get requests ////////////////////////////////////
@@ -13,7 +13,7 @@ export default {
           verified: true,
           accountType: { $in: ["Administratorius", "Vadybininkas"] },
         },
-        { username: 1, email: 1, _id: 1 },
+        { username: 1, email: 1, phone: 1, _id: 1 },
       );
 
       if (!data) return response(res, false, null, "Vartotoji nerasti");
@@ -27,7 +27,8 @@ export default {
 
   orderFence: async (req: Request, res: Response) => {
     try {
-      return response(res, true, "this shit works");
+      const result = await orderFence(req.body);
+      return response(res, true, result);
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");
