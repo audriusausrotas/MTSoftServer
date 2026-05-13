@@ -1,4 +1,5 @@
 import inputVerification from "../middleware/inputVerification";
+import externalRequests from "../controllers/externalRequests";
 import potentialClient from "../controllers/potentialClient";
 import websiteSettings from "../controllers/websiteSettings";
 import checkPartners from "../middleware/checkPartners";
@@ -26,12 +27,16 @@ import checkSuperAdmin from "../middleware/checkSuperAdmin";
 
 const router = express.Router();
 
+/////////////////////// external requests ////////////////
+
+router.get("/getManagers", checkPartners, externalRequests.getManagers);
+
+router.post("/orderFence", checkPartners, externalRequests.orderFence);
+
 /////////////////////// Auth /////////////////////////////
 
 router.get("/getUser", checkUser, auth.getUser);
 router.get("/logout", checkUser, auth.logout);
-
-router.get("/getManagers", checkPartners, auth.getManagers);
 
 router.post("/register", inputVerification, auth.register);
 router.post("/login", inputVerification, auth.login);
