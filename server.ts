@@ -43,8 +43,6 @@ server.use(
   }),
 );
 
-server.use("/uploads", express.static(path.join(__dirname, "dist/uploads")));
-
 server.use(express.json({ limit: "10mb" }));
 server.use(cookieParser());
 server.use("/api", mainRouter);
