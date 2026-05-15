@@ -220,6 +220,13 @@ export interface User {
   photo: string;
 }
 
+export interface Calculations {
+  client: Client;
+  fences: Fence[];
+  retail: boolean;
+  units: boolean;
+}
+
 export interface ResponseUser {
   success: boolean;
   data: User;

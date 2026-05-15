@@ -6,8 +6,9 @@ import { Request, Response } from "express";
 import response from "../modules/response";
 import emit from "../sockets/emits";
 import fenceSchema from "../schemas/fenceSchema";
-import { FenceSetup, Gates } from "../data/interfaces";
+import { FenceSetup } from "../data/interfaces";
 import gatePriceSchema from "../schemas/gatePriceSchema";
+import { getFencePrices } from "../services/priceServices";
 
 export default {
   //////////////////// get requests ////////////////////////////////////
@@ -38,9 +39,7 @@ export default {
 
   getFences: async (req: Request, res: Response) => {
     try {
-      const data = await fenceSchema.find();
-
-      if (data.length === 0) return response(res, false, null, "Tvoros nerastos");
+      const data = await getFencePrices();
 
       return response(res, true, data);
     } catch (error) {

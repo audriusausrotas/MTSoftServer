@@ -59,6 +59,8 @@ router.patch("/restoreArchive", checkAdmin, archive.restoreArchive);
 router.post("/addUnconfirmed/:_id", checkAdmin, archive.addUnconfirmed);
 router.post("/addArchive/:_id", checkAdmin, archive.addArchive);
 
+/////////////////////// Calculations //////////////////////
+
 /////////////////////// Clients //////////////////////////
 
 router.get("/getClients", checkAdmin, clients.getClients);
