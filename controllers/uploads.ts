@@ -146,7 +146,7 @@ import path from "path";
 import fs from "fs";
 import multer from "multer";
 
-const uploadRoot = "/var/www/svsoft/uploads";
+const uploadRoot = "/var/www/mtsoft/uploads";
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
