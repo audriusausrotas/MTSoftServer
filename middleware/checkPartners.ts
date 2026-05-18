@@ -4,7 +4,9 @@ require("dotenv").config();
 
 export default function apiKeyMiddleware(req: Request, res: Response, next: NextFunction) {
   console.log("is middleware");
-  console.log(req.body);
+  const { orderData, fenceData } = req.body;
+  console.log(orderData);
+  console.log(fenceData);
   try {
     const key = req.headers["x-api-key"];
 
@@ -15,8 +17,7 @@ export default function apiKeyMiddleware(req: Request, res: Response, next: Next
     if (key !== process.env.SV_API_KEY) {
       return response(res, false, null, "API raktas neteisingas");
     }
-    console.log("is middleware 2");
-    console.log(req.body);
+
     next();
   } catch (error) {
     return response(res, false, null, "Server error");
