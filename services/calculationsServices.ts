@@ -20,8 +20,8 @@ import { v4 as uuidv4 } from "uuid";
 ///                    Main Funcion                  ///
 ////////////////////////////////////////////////////////
 
-export async function calculateEstimate(data: any, user: any) {
-  const { calculations } = data;
+export async function calculateEstimate(body: any, user: any) {
+  const { calculations } = body;
   console.log("after");
   console.log(calculations);
   const backup = calculations.backup;

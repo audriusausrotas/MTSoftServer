@@ -8,10 +8,12 @@ export async function orderFence(body: any) {
   const user = await getUserById(orderData.to._id);
 
   const estimateData = {
-    fences: fenceData.fences,
-    retail: false,
-    units: false,
-    backup: { results: [], works: [], backupExist: false },
+    calculations: {
+      fences: fenceData.fences,
+      retail: false,
+      units: false,
+      backup: { results: [], works: [], backupExist: false },
+    },
   };
   const calculateEstimateResult = await calculateEstimate(estimateData, user);
   console.log("calculateEstimateResult");
