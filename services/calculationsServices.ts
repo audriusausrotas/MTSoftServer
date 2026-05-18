@@ -25,6 +25,8 @@ export async function calculateEstimate(body: any, user: any) {
 
   const backup = calculations.backup;
 
+  console.log(backup);
+
   const [productPrices, fencePrices, gatePrices, defaultValues] = await Promise.all([
     getProductPrices(),
     getFencePrices(),
