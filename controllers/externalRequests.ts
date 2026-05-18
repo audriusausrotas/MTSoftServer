@@ -27,8 +27,8 @@ export default {
 
   orderFence: async (req: Request, res: Response) => {
     try {
-      const result = await orderFence(req.body);
       console.log("controleris viekia ");
+      const result = await orderFence(req.body);
       return response(res, true, result);
     } catch (error) {
       console.error("Klaida:", error);
