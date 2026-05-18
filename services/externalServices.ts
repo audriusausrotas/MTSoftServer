@@ -13,8 +13,12 @@ export async function orderFence(body: any) {
     units: false,
     backup: { results: [], works: [], backupExist: false },
   };
+  console.log("estimateData");
+  console.log(estimateData);
 
   const calculateEstimateResult = await calculateEstimate(estimateData, user);
+  console.log("calculateEstimateResult");
+  console.log(calculateEstimateResult);
 
   const fixedFenceData = {
     client: fenceData.creator,
@@ -34,8 +38,12 @@ export async function orderFence(body: any) {
     retail: false,
   };
 
+  console.log("fixedFenceData");
+  console.log(fixedFenceData);
+
   const result = await createProjectService(fixedFenceData, user);
 
+  console.log("result");
   console.log(result);
 
   return { success: true, message: "Fence order received" };
