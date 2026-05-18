@@ -22,7 +22,7 @@ import { v4 as uuidv4 } from "uuid";
 
 export async function calculateEstimate(body: any, user: any) {
   const { calculations } = body;
-  console.log("calculate estimate veikia");
+
   const backup = calculations.backup;
 
   const [productPrices, fencePrices, gatePrices, defaultValues] = await Promise.all([

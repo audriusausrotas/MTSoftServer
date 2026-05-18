@@ -4,15 +4,14 @@ import { getUserById } from "./userServices";
 
 export async function orderFence(body: any) {
   const { orderData, fenceData } = body;
-  console.log("orderFence veikia");
-  console.log(body);
+
   const user = await getUserById(orderData.to._id);
 
   const estimateData = {
     fences: fenceData.fences,
     retail: false,
     units: false,
-    backup: null,
+    backup: { results: [], works: [], backupExist: false },
   };
 
   const calculateEstimateResult = await calculateEstimate(estimateData, user);
