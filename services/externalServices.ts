@@ -4,6 +4,7 @@ import { getUserById } from "./userServices";
 
 export async function orderFence(body: any) {
   const { orderData, fenceData } = body;
+  console.log("orderFence veikia");
 
   const user = await getUserById(orderData.to._id);
 
