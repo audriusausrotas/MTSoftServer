@@ -12,10 +12,8 @@ export async function orderFence(body: any) {
     fences: fenceData.fences,
     retail: false,
     units: false,
-    backup: { results: [], works: [], backupExist: false },
+    backup: null,
   };
-  console.log("estimateData");
-  console.log(estimateData);
 
   const calculateEstimateResult = await calculateEstimate(estimateData, user);
   console.log("calculateEstimateResult");

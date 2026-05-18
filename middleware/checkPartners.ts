@@ -3,10 +3,6 @@ import response from "../modules/response";
 require("dotenv").config();
 
 export default function apiKeyMiddleware(req: Request, res: Response, next: NextFunction) {
-  console.log("is middleware");
-  const { orderData, fenceData } = req.body;
-  console.log(orderData);
-  console.log(fenceData);
   try {
     const key = req.headers["x-api-key"];
 
