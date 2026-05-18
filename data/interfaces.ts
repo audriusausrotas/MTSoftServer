@@ -725,7 +725,7 @@ export interface Prices {
 }
 
 export interface Gates {
-  _id?: Types.ObjectId;
+  _id: string;
   name: string;
   length: number;
   height: number;

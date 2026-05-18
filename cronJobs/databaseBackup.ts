@@ -19,6 +19,9 @@ export const backupDatabase = () => {
     const gzBackupFile = `${backupDir}/mongo_backup_${date}.gz`;
 
     try {
+      // await run(
+      //   `/usr/bin/mongodump --gzip --archive=${gzBackupFile} --db=moderniTvora --host=127.0.0.1`,
+      // );
       await run(`mongodump --gzip --archive=${gzBackupFile} --db=moderniTvora`);
       await run(`find ${backupDir} -name "*.gz" -mtime +7 -delete`);
 

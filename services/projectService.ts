@@ -2,6 +2,7 @@ import { HydratedDocument } from "mongoose";
 import { Dates, Project } from "../data/interfaces";
 import projectSchema from "../schemas/projectSchema";
 import emit from "../sockets/emits";
+import backupSchema from "../schemas/backupSchema";
 
 export async function createProjectService(body: any, user: any) {
   const {

@@ -24,6 +24,7 @@ import express from "express";
 import suppliers from "../controllers/suppliers";
 import orders from "../controllers/orders";
 import checkSuperAdmin from "../middleware/checkSuperAdmin";
+import calculations from "../controllers/calculations";
 
 const router = express.Router();
 
@@ -60,6 +61,8 @@ router.post("/addUnconfirmed/:_id", checkAdmin, archive.addUnconfirmed);
 router.post("/addArchive/:_id", checkAdmin, archive.addArchive);
 
 /////////////////////// Calculations //////////////////////
+
+router.post("/calculateEstimate", checkUser, calculations.calculateEstimate);
 
 /////////////////////// Clients //////////////////////////
 
