@@ -28,7 +28,7 @@ export interface Project {
 }
 export interface Version {
   _id?: Types.ObjectId;
-  id: Types.ObjectId;
+  id: string;
   date: string;
 }
 
