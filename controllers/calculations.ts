@@ -9,7 +9,7 @@ export default {
     try {
       const user = res.locals.user;
 
-      const result = await calculateEstimate(req.body, user);
+      const result = await calculateEstimate(req.body);
 
       return response(res, true, result);
     } catch (error) {
