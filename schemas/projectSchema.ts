@@ -104,7 +104,7 @@ const commentSchema = new mongoose.Schema<Comment>(
 
 const versionSchema = new mongoose.Schema<Version>(
   {
-    id: { type: String, required: false, default: "" },
+    id: { type: mongoose.Schema.Types.ObjectId, required: false, default: null },
     date: { type: String, required: false, default: "" },
   },
   { _id: false },
