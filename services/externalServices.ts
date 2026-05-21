@@ -32,6 +32,8 @@ export async function orderFence(body: any) {
 
   const result = await createProjectService(fixedData, user);
 
+  console.log("data");
+  console.log(result._id, date);
   await changeCompletionDate(result._id, date);
 
   await addProjectComment(

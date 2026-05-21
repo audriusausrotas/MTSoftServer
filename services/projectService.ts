@@ -169,6 +169,9 @@ export async function addProjectComment(_id: Types.ObjectId, comment: string, us
   project.comments.unshift(newComment);
 
   const savedProject = await project.save();
+
+  console.log("saved project");
+  console.log(savedProject);
   if (!savedProject) throw new Error("Klaida saugant komentarą");
 
   return newComment;
