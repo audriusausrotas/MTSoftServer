@@ -21,7 +21,7 @@ export interface Project {
   advance: number;
   orderNumber: string;
   files: string[];
-  comments: Comment[];
+  comments: ProjectComment[];
   versions: Version[];
   dates: Dates;
   workers: string[];
@@ -182,7 +182,7 @@ export interface GateSchema {
   measure: string;
   client: Client;
   orderNr: string;
-  comments: Comment[];
+  comments: ProjectComment[];
   creator: Creator;
   manager: string;
   gates: Gate[];
@@ -354,7 +354,7 @@ export interface Installation {
   fences: ProdutionFence[];
   results: InstallationResult[];
   works: InstallationWorks[];
-  comments: Comment[];
+  comments: ProjectComment[];
   files: string[];
 }
 
@@ -386,7 +386,7 @@ export interface Prodution {
   status: string;
   fences: ProdutionFence[];
   bindings: Bindings[] | null;
-  comments: Comment[];
+  comments: ProjectComment[];
   files: string[];
 }
 
@@ -458,7 +458,7 @@ export interface ProductionMeasure {
   };
 }
 
-export interface Comment {
+export interface ProjectComment {
   date: string;
   creator: string;
   comment: string;
@@ -586,7 +586,7 @@ export interface Order {
   orderDate: string;
   deliveryDate: string;
   deliveryMethod: string;
-  comments: Comment[];
+  comments: ProjectComment[];
   recipient: Supplier[];
   status: boolean;
   orderNr: string;

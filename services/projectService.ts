@@ -1,5 +1,5 @@
-import { HydratedDocument } from "mongoose";
-import { Dates, Project } from "../data/interfaces";
+import { HydratedDocument, Types } from "mongoose";
+import { Dates, Project, ProjectComment, User } from "../data/interfaces";
 import projectSchema from "../schemas/projectSchema";
 import emit from "../sockets/emits";
 
@@ -138,9 +138,38 @@ export async function updateProjectStatus(project: HydratedDocument<Project>, st
   return savedProject;
 }
 
-export async function findProjectById(id: string) {
+export async function findProjectById(id: Types.ObjectId) {
   if (!id) throw new Error("Projekto ID yra privalomas");
   const foundProject = await projectSchema.findById(id);
   if (!foundProject) throw new Error("Projektas nerastas");
   return foundProject;
+}
+
+export async function changeCompletionDate(_id: Types.ObjectId, date: string) {
+  const project = await projectSchema.findByIdAndUpdate(
+    _id,
+    { "dates.dateCompletion": date },
+    { new: true },
+  );
+
+  if (!project) throw new Error("Projektas nerastas");
+
+  return project;
+}
+
+export async function addProjectComment(_id: Types.ObjectId, comment: string, user: User) {
+  const project = await findProjectById(_id);
+
+  const newComment: ProjectComment = {
+    comment,
+    date: new Date().toISOString(),
+    creator: user.username,
+  };
+
+  project.comments.unshift(newComment);
+
+  const savedProject = await project.save();
+  if (!savedProject) throw new Error("Klaida saugant komentarą");
+
+  return newComment;
 }

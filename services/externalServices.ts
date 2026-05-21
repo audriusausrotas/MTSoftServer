@@ -1,5 +1,5 @@
 import { calculateEstimate } from "./calculationsServices";
-import { createProjectService } from "./projectService";
+import { addProjectComment, changeCompletionDate, createProjectService } from "./projectService";
 import { getUserById } from "./userServices";
 
 export async function orderFence(body: any) {
@@ -25,13 +25,26 @@ export async function orderFence(body: any) {
     priceVAT: calculateEstimateResult.totals.priceVAT,
     priceWithDiscount: calculateEstimateResult.totals.priceWithDiscount,
     discount: discount,
-    status: "Matavimas",
+    status: "Naujas užsakymas",
     advance: 0,
     retail: false,
   };
 
   const result = await createProjectService(fixedData, user);
-  if (!result) throw new Error("Failed to create project");
+
+  await changeCompletionDate(result._id, date);
+
+  await addProjectComment(
+    result._id,
+    `Kliento nr: ${data.client.phone || "11111"}, Pristatymo metodas: ${deliveryMethod}`,
+    client,
+  );
+
+  if (message) {
+    await addProjectComment(result._id, message, client);
+  }
+
+  // idet gamyba
 
   return result;
 }

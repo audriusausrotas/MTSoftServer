@@ -16,7 +16,7 @@ import emit from "../sockets/emits";
 import productionSchema from "../schemas/productionSchema";
 import gateSchema from "../schemas/gateSchema";
 import finishedSchema from "../schemas/finishedSchema";
-import { createProjectService } from "../services/projectService";
+import { changeCompletionDate, createProjectService } from "../services/projectService";
 
 export default {
   //////////////////// get requests ////////////////////////////////////
@@ -408,13 +408,8 @@ export default {
     try {
       const { _id, date } = req.body;
 
-      const project = await projectSchema.findById(_id);
+      const data = await changeCompletionDate(_id, date);
 
-      if (!project) return response(res, false, null, "Projektas nerastas");
-
-      project.dates.dateCompletion = date;
-
-      const data = await project.save();
       const responseData = { _id, date };
 
       emit.toAdmin("changeCompletionDate", responseData);

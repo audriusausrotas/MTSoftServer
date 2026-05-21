@@ -1,4 +1,4 @@
-import { Comment, Prodution, Installation, Project } from "../data/interfaces";
+import { ProjectComment, Prodution, Installation, Project } from "../data/interfaces";
 import installationSchema from "../schemas/installationSchema";
 import productionSchema from "../schemas/productionSchema";
 import projectSchema from "../schemas/projectSchema";
@@ -7,6 +7,7 @@ import { HydratedDocument } from "mongoose";
 import response from "../modules/response";
 import emit from "../sockets/emits";
 import orderSchema from "../schemas/orderSchema";
+import { addProjectComment } from "../services/projectService";
 
 export default {
   //////////////////// get requests ////////////////////////////////////
@@ -22,7 +23,7 @@ export default {
       if (!project) return response(res, false, null, "Projektas nerastas");
 
       project.comments = project.comments.filter(
-        (item) => item.date !== comment.date && item.comment !== comment.comment
+        (item) => item.date !== comment.date && item.comment !== comment.comment,
       );
 
       const data = await project.save();
@@ -50,7 +51,7 @@ export default {
       if (!project) return response(res, false, null, "užsakymas nerastas");
 
       project.comments = project.comments.filter(
-        (item) => item.date !== comment.date && item.comment !== comment.comment
+        (item) => item.date !== comment.date && item.comment !== comment.comment,
       );
 
       const data = await project.save();
@@ -78,7 +79,7 @@ export default {
       if (!project) return { success: false, project: null, message: "užsakymas nerastas" };
 
       project.comments = project.comments.filter(
-        (item) => item.date !== comment.date && item.comment !== comment.comment
+        (item) => item.date !== comment.date && item.comment !== comment.comment,
       );
 
       const data = await project.save();
@@ -106,7 +107,7 @@ export default {
       if (!project) return { success: false, project: null, message: "užsakymas nerastas" };
 
       project.comments = project.comments.filter(
-        (item) => item.date !== comment.date && item.comment !== comment.comment
+        (item) => item.date !== comment.date && item.comment !== comment.comment,
       );
 
       const data = await project.save();
@@ -138,7 +139,7 @@ export default {
 
       if (!project) return response(res, false, null, "Projektas nerastas");
 
-      const newComment: Comment = {
+      const newComment: ProjectComment = {
         comment,
         date: new Date().toISOString(),
         creator: user.username,
@@ -172,7 +173,7 @@ export default {
 
       if (!project) return response(res, false, null, "Montavimas nerastas");
 
-      const newComment: Comment = {
+      const newComment: ProjectComment = {
         comment,
         date: new Date().toISOString(),
         creator: user.username,
@@ -201,25 +202,11 @@ export default {
   addProjectComment: async (req: Request, res: Response) => {
     try {
       const { _id, comment } = req.body;
-
       const user = res.locals.user;
 
-      const project: HydratedDocument<Project> | null = await projectSchema.findById(_id);
+      const data = await addProjectComment(_id, comment, user);
 
-      if (!project) return response(res, false, null, "Projektas nerastas");
-
-      const newComment: Comment = {
-        comment,
-        date: new Date().toISOString(),
-        creator: user.username,
-      };
-
-      project.comments.unshift(newComment);
-
-      const data = await project.save();
-      if (!data) return response(res, false, null, "Klaida saugant komentarą");
-
-      const responseData = { _id, comment: newComment };
+      const responseData = { _id, comment: data };
 
       emit.toAdmin("newProjectComment", responseData);
       emit.toInstallation("newProjectComment", responseData);
@@ -242,7 +229,7 @@ export default {
 
       if (!project) return response(res, false, null, "Projektas nerastas");
 
-      const newComment: Comment = {
+      const newComment: ProjectComment = {
         comment,
         date: new Date().toISOString(),
         creator: user.username,
