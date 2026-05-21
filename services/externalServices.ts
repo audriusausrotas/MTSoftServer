@@ -25,7 +25,7 @@ export async function orderFence(body: any) {
     priceVAT: calculateEstimateResult.priceVAT,
     priceWithDiscount: calculateEstimateResult.priceWithDiscount,
     discount: discount,
-    status: "Naujas Užsakymas",
+    status: "Matavimas",
     advance: 0,
     retail: false,
   };
