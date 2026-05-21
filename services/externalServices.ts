@@ -13,7 +13,7 @@ export async function orderFence(body: any) {
   const calculateEstimateResult = await calculateEstimate(estimateData);
 
   const fixedData = {
-    client: data.creator,
+    client,
     fenceMeasures: data.fences,
     results: calculateEstimateResult.results,
     works: calculateEstimateResult.works,
@@ -31,8 +31,6 @@ export async function orderFence(body: any) {
   };
 
   const result = await createProjectService(fixedData, user);
-
-  console.log(result);
 
   return { success: true, result, message: "Fence order received" };
 }
