@@ -220,13 +220,6 @@ export interface User {
   photo: string;
 }
 
-export interface Calculations {
-  client: Client;
-  fences: Fence[];
-  retail: boolean;
-  units: boolean;
-}
-
 export interface ResponseUser {
   success: boolean;
   data: User;
@@ -480,6 +473,7 @@ export interface Bindings {
   cut: number | undefined;
   done: number | undefined;
   postone: boolean;
+  category?: string;
 }
 
 export interface BindingItem {

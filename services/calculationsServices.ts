@@ -3,12 +3,12 @@ import type {
   Measure,
   Fences,
   Works,
-  Calculations,
   Result,
   Product,
   FenceSetup,
   OtherParts,
   DefaultValues,
+  Bindings,
 } from "../data/interfaces";
 import { getProductPrices, getFencePrices } from "./priceServices";
 import { getDefaultValues } from "./settingsServices";
@@ -18,8 +18,8 @@ import { v4 as uuidv4 } from "uuid";
 ///                    Main Funcion                  ///
 ////////////////////////////////////////////////////////
 
-export async function calculateEstimate(body: any) {
-  const { calculations } = body;
+export async function calculateEstimate(data: any) {
+  const { fences, bindings } = data;
 
   const [productPrices, fencePrices, defaultValues] = await Promise.all([
     getProductPrices(),
@@ -27,7 +27,7 @@ export async function calculateEstimate(body: any) {
     getDefaultValues(),
   ]);
 
-  const results = calculateResults(fencePrices, calculations, defaultValues[0]);
+  const results = calculateResults(fencePrices, fences, bindings);
 
   const calculatedData = generateResults(results, defaultValues[0], productPrices, fencePrices);
 
@@ -44,66 +44,109 @@ export async function calculateEstimate(body: any) {
 ///                 calculate results                ///
 ////////////////////////////////////////////////////////
 
-const calculateResults = (
-  fencePrices: FenceSetup[],
-  calculations: Calculations,
-  defaultValues: DefaultValues,
-) => {
+const calculateResults = (fencePrices: FenceSetup[], fences: Fence[], bindings: Bindings[]) => {
   const data: any = {
     fences: [] as Fences[],
-    totalFences: 0 as number,
-    totalFencesWithBindings: 0 as number,
-    totalFenceboards: 0 as number,
-    totalElements: 0 as number,
-    totalHoles: 0 as number,
-    retailLegs: [] as OtherParts[],
+    totalFences: 0,
+    totalElements: 0,
+    totalHoles: 0,
     rivets: [] as OtherParts[],
-    bindingsLength: [] as OtherParts[],
+    bindings: [] as OtherParts[],
   };
 
-  for (const item of calculations.fences) {
-    const fenceSettings = fencePrices.find((fence) => fence.name === item.name);
+  const pushFence = (item: any) => {
+    const existing = data.fences.find(
+      (f: any) =>
+        f.name === item.name &&
+        f.color === item.color &&
+        f.material === item.material &&
+        f.manufacturer === item.manufacturer,
+    );
 
+    if (existing) {
+      existing.quantity += item.quantity;
+      existing.elements += item.elements;
+      existing.length += item.length;
+    } else {
+      data.fences.push({
+        ...item,
+        quantity: item.quantity,
+        elements: item.elements,
+        length: item.length,
+      });
+    }
+    data.totalFences += item.quantity;
+  };
+
+  const addRivets = (color: string, quantity: number) => {
+    const existing = data.rivets.find((r: OtherParts) => r.color === color);
+
+    if (existing) {
+      existing.quantity += quantity;
+    } else {
+      data.rivets.push({ color, quantity });
+    }
+  };
+
+  const pushBindings = (item: any) => {
+    const existing = data.bindings.find(
+      (b: any) => b.name === item.name && b.color === item.color && b.category === item.category,
+    );
+
+    if (existing) {
+      existing.length += item.length;
+    } else {
+      data.bindings.push({
+        ...item,
+        length: item.length,
+      });
+    }
+  };
+
+  for (const item of fences) {
+    const fenceSettings = fencePrices.find((fence) => fence.name === item.name);
     if (!fenceSettings) throw new Error("Fence settings not found");
 
-    // calculate horizontal fence by suare meters
-    if (fenceSettings?.category === "Tvora") {
-      const temp = calculateHorizontalFence(data.fences, item);
-      data.fences = [...temp];
-    }
+    if (fenceSettings.category === "Tvora") {
+      let totalQuantity = 0;
+      let totalElements = 0;
+      let rivets = 0;
 
-    for (const measure of item.measures) {
-      //calculate holes
-      if (item.holes === "Taip" && fenceSettings.category === "Tvora") {
-        data.totalHoles += measure.elements * fenceSettings.details.holes;
+      for (const measure of item.measures) {
+        totalQuantity += (measure.length / 100) * measure.elements;
+        totalElements += measure.elements;
       }
 
-      // calculate total elements
-
-      data.totalElements += measure.elements;
-      data.rivets = addPart(data.rivets, item.color, Math.ceil(measure.elements) * 4, 0);
-
-      // calculate bindings
-
-      if (item.direction === "Horizontali" && item.bindings === "Taip") {
-        if (data.bindingsLength.length === 0 && calculations.retail) {
-          data.bindingsLength = addPart(data.bindingsLength, item.color, measure.height * 2, 0);
-        }
-        data.bindingsLength = addPart(data.bindingsLength, item.color, measure.height * 2, 0);
+      if (item.holes === "Taip") {
+        data.totalHoles += totalElements * fenceSettings.details.holes;
+        rivets += Math.ceil(totalElements) * 4;
       }
 
-      // calculate wholesale legs
-      if (!calculations.retail) {
-        if (fenceSettings.category === "Tvora" && !measure.gates.exist) {
-          const name =
-            item.bindings === "Taip"
-              ? defaultValues.retailSingleLeg
-              : defaultValues.retailDoubleLeg;
-          data.retailLegs = addPart(data.retailLegs, item.color, measure.height * 2, 0, name);
-        }
-      }
+      if (rivets) addRivets(item.color, rivets);
+
+      const initialFenceData = {
+        ...item,
+        length: item.totalLength,
+        height: 0,
+        quantity: totalQuantity,
+        elements: totalElements,
+      };
+
+      pushFence(initialFenceData);
     }
   }
+
+  for (const b of bindings) {
+    const totalLength = (b.height || 0) * (b.quantity || 0);
+
+    pushBindings({
+      name: b.name,
+      color: b.color,
+      category: b.category,
+      length: totalLength / 100,
+    });
+  }
+
   return data;
 };
 
@@ -119,31 +162,38 @@ const generateResults = (
 ) => {
   const data: any = { results: [], works: [] };
 
+  let manufacturer = "";
+
   if (results.fences.length > 0) {
     let cork = 0;
 
+    // 1. Generate fence products
     for (const item of results.fences) {
+      if (!manufacturer) {
+        manufacturer = item.manufacturer;
+      }
       const temp = createResultElement(item, productPrices, fencePrices);
       data.results.push(temp);
-
-      //generate holes
-      if (results.totalHoles > 0) {
-        const temp = createWorkElement(
-          {
-            name: defaultValues.holesWork,
-            quantity: results.totalHoles,
-          },
-          productPrices,
-        );
-
-        data.works.push(temp);
-      }
 
       if (item.name.includes("Dilė")) {
         cork += item.quantity;
       }
     }
 
+    // 2. Generate holes ONCE
+    if (results.totalHoles > 0) {
+      const temp = createWorkElement(
+        {
+          name: defaultValues.holesWork,
+          quantity: results.totalHoles,
+        },
+        productPrices,
+      );
+
+      data.works.push(temp);
+    }
+
+    // 3. Generate cork
     if (cork > 0) {
       const temp = createResultElement(
         {
@@ -158,9 +208,10 @@ const generateResults = (
     }
   }
 
+  // 4. Rivets
   if (results.rivets.length > 0) {
     for (const item of results.rivets) {
-      const boxQuantity = Math.ceil((item.quantity + item.quantity * 0.1) / 1000);
+      const boxQuantity = Math.ceil((item.quantity + item.quantity * 0.05) / 1000);
       const temp = createResultElement(
         {
           ...item,
@@ -175,12 +226,60 @@ const generateResults = (
     }
   }
 
-  if (results.retailLegs.length > 0) {
-    for (const item of results.retailLegs) {
+  // 5. Bindings
+  if (results.bindings.length > 0) {
+    for (const item of results.bindings) {
+      let defaultValue = "";
+
+      if (manufacturer === "Ukranina") {
+        switch (item.category) {
+          case "koja":
+            defaultValue = defaultValues.retailSingleLegEco;
+            break;
+          case "dviguba":
+            defaultValue = defaultValues.retailDoubleLegEco;
+            break;
+          case "centrinis":
+            defaultValue = defaultValues.retailBindingsEco;
+            break;
+          case "elka":
+            defaultValue = defaultValues.retailBindingsEco;
+            break;
+          case "kampas":
+            defaultValue = defaultValues.retailBindingsEco;
+            break;
+          default:
+            defaultValue = "Nestandartinis lankstinys";
+            break;
+        }
+      } else {
+        switch (item.category) {
+          case "koja":
+            defaultValue = defaultValues.retailSingleLeg;
+            break;
+          case "dviguba":
+            defaultValue = defaultValues.retailDoubleLeg;
+            break;
+          case "centrinis":
+            defaultValue = defaultValues.retailBindings;
+            break;
+          case "elka":
+            defaultValue = defaultValues.retailBindings;
+            break;
+          case "kampas":
+            defaultValue = defaultValues.retailBindings;
+            break;
+          default:
+            defaultValue = "Nestandartinis lankstinys";
+            break;
+        }
+      }
+
       const temp = createResultElement(
         {
           ...item,
-          quantity: item.quantity / 100,
+          name: defaultValue,
+          quantity: item.length,
         },
         productPrices,
         fencePrices,
@@ -189,23 +288,7 @@ const generateResults = (
     }
   }
 
-  if (results.bindingsLength.length > 0) {
-    for (const item of results.bindingsLength) {
-      const temp = createResultElement(
-        {
-          ...item,
-          name: defaultValues.retailBindings,
-          quantity: item.quantity / 100,
-        },
-        productPrices,
-        fencePrices,
-      );
-      data.results.push(temp);
-    }
-  }
-
-  // calculate works
-
+  // 6. Transport work
   const work = createWorkElement(
     {
       name: defaultValues.transport,
@@ -292,7 +375,7 @@ const createResultElement = (item: any, productPrices: Product[], fencePrices: F
   const totalPrice = +(price * item.quantity).toFixed(2);
   const totalCost = +(cost * item.quantity).toFixed(2);
   const profit = +(totalPrice - totalCost).toFixed(2);
-  const margin = +(Math.round((profit / totalPrice) * 10000) / 100).toFixed(2);
+  const margin = totalPrice > 0 ? +(Math.round((profit / totalPrice) * 10000) / 100).toFixed(2) : 0;
 
   const resultData: Result = {
     id: uuidv4(),
@@ -327,31 +410,6 @@ const createResultElement = (item: any, productPrices: Product[], fencePrices: F
 };
 
 ////////////////////////////////////////////////////////
-///               Add Part Function                  ///
-////////////////////////////////////////////////////////
-
-const addPart = (
-  array: OtherParts[],
-  color: string,
-  quantity: number,
-  height: number,
-  name?: string,
-) => {
-  let tempArr = [...array];
-  let itemExist = false;
-  for (const item of tempArr) {
-    if (item.color === color && height === item.height && item.name === name) {
-      item.quantity += quantity;
-      itemExist = true;
-    }
-  }
-  if (!itemExist) {
-    tempArr.push({ color, quantity, height, name });
-  }
-  return tempArr;
-};
-
-////////////////////////////////////////////////////////
 ///               Get Product Price                  ///
 ////////////////////////////////////////////////////////
 
@@ -370,23 +428,6 @@ const getFencePrice = (name: string, fences: FenceSetup[]): FenceSetup | null =>
   return (
     fences.find((fence) => fence.name.toLowerCase().trim() === name.toLowerCase().trim()) || null
   );
-};
-
-////////////////////////////////////////////////////////
-///               Calculate Product Price            ///
-////////////////////////////////////////////////////////
-
-const calculateProductPrice = (cost: number, profit: number) => {
-  if (cost === 0 || profit === 0) return 0;
-  return +(cost / ((100 - profit) / 100)).toFixed(2);
-};
-
-////////////////////////////////////////////////////////
-///               Calculate Fence Price              ///
-////////////////////////////////////////////////////////
-
-const calculateFencePrice = (step: number, price: number, legPrice: number) => {
-  return (((100 / step) * 2.5 * price + legPrice * 2) / 2.5).toFixed(2);
 };
 
 ////////////////////////////////////////////////////////
@@ -464,57 +505,6 @@ const calculateFenceboardFence = (
   }
 
   return { arr: tempFence, quantity: elements };
-};
-
-////////////////////////////////////////////////////////
-///               Calculate Horizontal Fence         ///
-////////////////////////////////////////////////////////
-
-const calculateHorizontalFence = (fenceTemp: Fences[], item: Fence): Fences[] => {
-  const tempFence: Fences[] = [...fenceTemp];
-  let fenceExist: boolean = false;
-
-  const initialFenceData = {
-    ...item,
-    length: item.totalLength,
-    height: 0,
-    quantity: calculateWholesale(item),
-    elements: 0,
-  };
-
-  tempFence.forEach((fenceItem) => {
-    if (
-      fenceItem.name === item.name &&
-      fenceItem.color === item.color &&
-      fenceItem.material === item.material &&
-      fenceItem.manufacturer === item.manufacturer &&
-      fenceItem.space === item.space &&
-      fenceItem.seeThrough === item.seeThrough &&
-      fenceItem.direction === item.direction
-    ) {
-      fenceItem.quantity += calculateWholesale(item);
-
-      fenceExist = true;
-    }
-  });
-
-  if (!fenceExist) {
-    tempFence.push(initialFenceData);
-  }
-
-  return tempFence;
-};
-
-////////////////////////////////////////////////////////
-///               Calculate Wholesale                ///
-////////////////////////////////////////////////////////
-
-const calculateWholesale = (item: Fence) => {
-  let tempTotalElements = 0;
-  item.measures.forEach((element) => {
-    tempTotalElements += (element.length / 100) * element.elements;
-  });
-  return tempTotalElements;
 };
 
 const calculateTotals = (data: any) => {
