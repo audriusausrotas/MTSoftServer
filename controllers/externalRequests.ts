@@ -28,7 +28,7 @@ export default {
   orderFence: async (req: Request, res: Response) => {
     try {
       const result = await orderFence(req.body);
-      return response(res, true, result);
+      return response(res, true, result, "testinu atsakyma");
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");

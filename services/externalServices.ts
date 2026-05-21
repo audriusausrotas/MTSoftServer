@@ -5,7 +5,7 @@ import { getUserById } from "./userServices";
 export async function orderFence(body: any) {
   const { data, client, date, deliveryMethod, message, to, discount } = body;
   const user = await getUserById(to._id);
-
+  console.log(client);
   const estimateData = {
     fences: data.fences,
     bindings: data.bindings,
