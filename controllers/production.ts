@@ -1,6 +1,6 @@
 import { Prodution } from "../data/interfaces";
 import productionSchema from "../schemas/productionSchema";
-import { HydratedDocument } from "mongoose";
+import { HydratedDocument, Types } from "mongoose";
 import { Response, Request } from "express";
 import response from "../modules/response";
 import { v4 as uuidv4 } from "uuid";
@@ -429,7 +429,7 @@ export default {
 
   newProduction: async (req: Request, res: Response) => {
     try {
-      const result = await newProductionService(req.params._id as string);
+      const result = await newProductionService(req.params._id as any);
       return response(res, true, result, "Perduota gamybai");
     } catch (err: any) {
       return response(res, false, null, err.message);
