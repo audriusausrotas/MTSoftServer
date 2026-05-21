@@ -22,11 +22,10 @@ export async function newProductionService(projectId: Types.ObjectId) {
 // --------------------------------------------------
 export async function validateProductionStart(projectId: Types.ObjectId) {
   const project = await findProjectById(projectId);
+  if (!project) throw new Error("Projektas nerastas");
 
-  const production = await productionSchema.find();
-  const exists = production.some((p) => p._id.toString() === project._id!.toString());
-
-  if (exists) throw new Error("Objektas jau gaminamas");
+  const production = await productionSchema.findById(projectId);
+  if (production) throw new Error("Objektas jau gaminamas");
 
   return project;
 }

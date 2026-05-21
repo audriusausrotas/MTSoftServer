@@ -47,9 +47,9 @@ export async function orderFence(body: any) {
   }
 
   const production = await createProductionRecord(result, data.bindings, data.fences);
-  emit.toAdmin("newProduction", production);
-  emit.toProduction("newProduction", production);
-  emit.toWarehouse("newProduction", production);
+  emit.toAdmin("newExternalProduction", production);
+  emit.toProduction("newExternalProduction", production);
+  emit.toWarehouse("newExternalProduction", production);
 
   return result;
 }
