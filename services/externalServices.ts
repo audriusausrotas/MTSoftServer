@@ -12,20 +12,18 @@ export async function orderFence(body: any) {
   };
   const calculateEstimateResult = await calculateEstimate(estimateData);
 
-  console.log(calculateEstimateResult);
-
   const fixedData = {
     client,
     fenceMeasures: data.fences,
     results: calculateEstimateResult.results,
     works: calculateEstimateResult.works,
     gates: {},
-    totalPrice: calculateEstimateResult.totalPrice,
-    totalCost: calculateEstimateResult.totalCost,
-    totalProfit: calculateEstimateResult.totalProfit,
-    totalMargin: calculateEstimateResult.totalMargin,
-    priceVAT: calculateEstimateResult.priceVAT,
-    priceWithDiscount: calculateEstimateResult.priceWithDiscount,
+    totalPrice: calculateEstimateResult.totals.totalPrice,
+    totalCost: calculateEstimateResult.totals.totalCost,
+    totalProfit: calculateEstimateResult.totals.totalProfit,
+    totalMargin: calculateEstimateResult.totals.totalMargin,
+    priceVAT: calculateEstimateResult.totals.priceVAT,
+    priceWithDiscount: calculateEstimateResult.totals.priceWithDiscount,
     discount: discount,
     status: "Matavimas",
     advance: 0,
