@@ -31,6 +31,7 @@ export async function orderFence(body: any) {
   };
 
   const result = await createProjectService(fixedData, user);
+  if (!result) throw new Error("Failed to create project");
 
-  return { success: true, result, message: "Fence order received" };
+  return result;
 }
