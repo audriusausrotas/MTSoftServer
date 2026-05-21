@@ -6,7 +6,7 @@ import {
   Project,
   Result,
   Works,
-  Comment,
+  ProjectComment,
   Version,
   Gate,
   Fence,
@@ -93,7 +93,7 @@ const clientSchema = new mongoose.Schema<Client>(
   { _id: false },
 );
 
-const commentSchema = new mongoose.Schema<Comment>(
+const commentSchema = new mongoose.Schema<ProjectComment>(
   {
     date: { type: String, required: false, default: "" },
     creator: { type: String, required: false, default: "" },

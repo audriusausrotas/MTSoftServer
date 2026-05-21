@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import { Types } from "mongoose";
-import { Client, Comment, Creator, Order, OrderData, Supplier } from "../data/interfaces";
+import { Client, ProjectComment, Creator, Order, OrderData, Supplier } from "../data/interfaces";
 
 const supplier = new mongoose.Schema<Supplier>({
   _id: Types.ObjectId,
@@ -18,7 +18,7 @@ const creator = new mongoose.Schema<Creator>(
     email: String,
     phone: String,
   },
-  { _id: false }
+  { _id: false },
 );
 
 const client = new mongoose.Schema<Client>(
@@ -28,7 +28,7 @@ const client = new mongoose.Schema<Client>(
     email: String,
     phone: String,
   },
-  { _id: false }
+  { _id: false },
 );
 
 const data = new mongoose.Schema<OrderData>(
@@ -53,16 +53,16 @@ const data = new mongoose.Schema<OrderData>(
       default: false,
     },
   },
-  { _id: false }
+  { _id: false },
 );
 
-const comment = new mongoose.Schema<Comment>(
+const comment = new mongoose.Schema<ProjectComment>(
   {
     date: String,
     creator: String,
     comment: String,
   },
-  { _id: false }
+  { _id: false },
 );
 
 const orderSchema = new mongoose.Schema<Order>({

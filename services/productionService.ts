@@ -2,11 +2,11 @@ import { Prodution, Project, Bindings, FenceSetup, SeeThroughSteps } from "../da
 import productionSchema from "../schemas/productionSchema";
 import { findProjectById, updateProjectStatus } from "./projectService";
 import fenceSchema from "../schemas/fenceSchema";
-import { HydratedDocument } from "mongoose";
+import { HydratedDocument, Types } from "mongoose";
 import emit from "../sockets/emits";
 import { v4 } from "uuid";
 
-export async function newProductionService(projectId: string) {
+export async function newProductionService(projectId: Types.ObjectId) {
   const project = await validateProductionStart(projectId);
   const fences = await fenceSchema.find();
   const bindings = await calculateBindings(project, fences);
@@ -20,7 +20,7 @@ export async function newProductionService(projectId: string) {
 // --------------------------------------------------
 // 1. Patikrinimas ar projektas egzistuoja ir nėra gamyboje
 // --------------------------------------------------
-export async function validateProductionStart(projectId: string) {
+export async function validateProductionStart(projectId: Types.ObjectId) {
   const project = await findProjectById(projectId);
 
   const production = await productionSchema.find();

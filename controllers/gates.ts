@@ -1,5 +1,5 @@
 import projectSchema from "../schemas/projectSchema";
-import type { Comment } from "../data/interfaces";
+import type { ProjectComment } from "../data/interfaces";
 import gateSchema from "../schemas/gateSchema";
 import { Request, Response } from "express";
 import response from "../modules/response";
@@ -89,7 +89,7 @@ export default {
           data.manager = value;
           break;
         case "comment":
-          const newComment: Comment = {
+          const newComment: ProjectComment = {
             comment: value as string,
             date: new Date().toISOString(),
             creator: user.username,
@@ -98,7 +98,7 @@ export default {
           break;
         case "deleteComment":
           data.comments = data.comments.filter(
-            (item) => item.date !== value.date && item.comment !== value.comment
+            (item) => item.date !== value.date && item.comment !== value.comment,
           );
           break;
         default:
