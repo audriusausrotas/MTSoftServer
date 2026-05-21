@@ -1,7 +1,8 @@
 import { calculateEstimate } from "./calculationsServices";
-import { createProductionRecord, emitProductionEvents } from "./productionService";
+import { createProductionRecord } from "./productionService";
 import { addProjectComment, changeCompletionDate, createProjectService } from "./projectService";
 import { getUserById } from "./userServices";
+import emit from "../sockets/emits";
 
 export async function orderFence(body: any) {
   const { data, client, date, deliveryMethod, message, to, discount } = body;
@@ -46,7 +47,9 @@ export async function orderFence(body: any) {
   }
 
   const production = await createProductionRecord(result, data.bindings, data.fences);
-  emitProductionEvents(production, result);
+  emit.toAdmin("newProduction", production);
+  emit.toProduction("newProduction", production);
+  emit.toWarehouse("newProduction", production);
 
   return result;
 }
