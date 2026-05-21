@@ -206,13 +206,7 @@ export default {
 
       const data = await addProjectComment(_id, comment, user);
 
-      const responseData = { _id, comment: data };
-
-      emit.toAdmin("newProjectComment", responseData);
-      emit.toInstallation("newProjectComment", responseData);
-      emit.toWarehouse("newProjectComment", responseData);
-
-      return response(res, true, responseData, "Komentaras išsaugotas");
+      return response(res, true, data, "Komentaras išsaugotas");
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");

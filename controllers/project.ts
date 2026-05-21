@@ -410,13 +410,7 @@ export default {
 
       const data = await changeCompletionDate(_id, date);
 
-      const responseData = { _id, date };
-
-      emit.toAdmin("changeCompletionDate", responseData);
-      emit.toInstallation("changeCompletionDate", responseData);
-      emit.toWarehouse("changeCompletionDate", responseData);
-
-      return response(res, true, responseData, "Pristatymas patvirtintas");
+      return response(res, true, data, "Pristatymas patvirtintas");
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");

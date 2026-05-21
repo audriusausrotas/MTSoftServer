@@ -151,10 +151,15 @@ export async function changeCompletionDate(_id: Types.ObjectId, date: string) {
     { "dates.dateCompletion": date },
     { new: true },
   );
-
   if (!project) throw new Error("Projektas nerastas");
 
-  return project;
+  const responseData = { _id, date };
+
+  emit.toAdmin("changeCompletionDate", responseData);
+  emit.toInstallation("changeCompletionDate", responseData);
+  emit.toWarehouse("changeCompletionDate", responseData);
+
+  return responseData;
 }
 
 export async function addProjectComment(_id: Types.ObjectId, comment: string, user: User) {
@@ -169,10 +174,13 @@ export async function addProjectComment(_id: Types.ObjectId, comment: string, us
   project.comments.unshift(newComment);
 
   const savedProject = await project.save();
-
-  console.log("saved project");
-  console.log(savedProject);
   if (!savedProject) throw new Error("Klaida saugant komentarą");
 
-  return newComment;
+  const responseData = { _id, comment: newComment };
+
+  emit.toAdmin("newProjectComment", responseData);
+  emit.toInstallation("newProjectComment", responseData);
+  emit.toWarehouse("newProjectComment", responseData);
+
+  return responseData;
 }
