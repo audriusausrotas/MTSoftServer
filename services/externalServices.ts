@@ -32,5 +32,7 @@ export async function orderFence(body: any) {
 
   const result = await createProjectService(fixedData, user);
 
-  return { success: true, message: "Fence order received" };
+  console.log(result);
+
+  return { success: true, result, message: "Fence order received" };
 }
