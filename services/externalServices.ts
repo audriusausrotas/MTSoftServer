@@ -1,4 +1,5 @@
 import { calculateEstimate } from "./calculationsServices";
+import { createProductionRecord, emitProductionEvents } from "./productionService";
 import { addProjectComment, changeCompletionDate, createProjectService } from "./projectService";
 import { getUserById } from "./userServices";
 
@@ -36,7 +37,7 @@ export async function orderFence(body: any) {
 
   await addProjectComment(
     result._id,
-    `Kliento nr: ${data.client.phone || "11111"}, Pristatymo metodas: ${deliveryMethod}`,
+    `Kliento tel. nr: ${data.client.phone},  Pristatymo metodas:  ${deliveryMethod}`,
     client,
   );
 
@@ -44,7 +45,8 @@ export async function orderFence(body: any) {
     await addProjectComment(result._id, message, client);
   }
 
-  // idet gamyba
+  const production = await createProductionRecord(result, data.bindings, data.fences);
+  emitProductionEvents(production, result);
 
   return result;
 }
