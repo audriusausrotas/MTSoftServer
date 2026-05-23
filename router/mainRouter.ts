@@ -47,15 +47,19 @@ router.post("/login", inputVerification, auth.login);
 router.get("/getUnconfirmed", checkAdmin, archive.getUnconfirmed);
 router.get("/getArchives", checkAdmin, archive.getArchives);
 router.get("/getFinished", checkAdmin, archive.getFinished);
+router.get("/getProductionArchive", checkAdmin, archive.getProduction);
 router.get("/getDeleted", checkAdmin, archive.getDeleted);
 router.get("/getBackup", checkAdmin, archive.getBackup);
 router.get("/getVersion/:_id", checkAdmin, archive.getVersion);
 router.get("/serviceSearch", checkUser, archive.serviceSearch);
 router.get("/getArchive/:_id", checkAdmin, archive.getArchive);
+router.get("/getArchiveProduction/:_id", checkAdmin, archive.getArchiveProduction);
 
 router.delete("/deleteArchive", checkAdmin, archive.deleteArchive);
+router.delete("/deleteArchiveProduction", checkAdmin, archive.deleteArchiveProduction);
 
 router.patch("/restoreArchive", checkAdmin, archive.restoreArchive);
+router.patch("/restoreProduction", checkAdmin, archive.restoreProduction);
 
 router.post("/addUnconfirmed/:_id", checkAdmin, archive.addUnconfirmed);
 router.post("/addArchive/:_id", checkAdmin, archive.addArchive);

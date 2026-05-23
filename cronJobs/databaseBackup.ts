@@ -10,7 +10,7 @@ const run = (cmd: string) =>
   });
 
 export const backupDatabase = () => {
-  cron.schedule("10 4 * * *", async () => {
+  cron.schedule("10 1 * * *", async () => {
     console.log("[CRON] MTSoft backup started");
 
     const date = new Date().toISOString().split("T")[0];

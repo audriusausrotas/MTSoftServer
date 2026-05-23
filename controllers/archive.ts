@@ -10,6 +10,8 @@ import response from "../modules/response";
 import emit from "../sockets/emits";
 import finishedSchema from "../schemas/finishedSchema";
 import versionsSchema from "../schemas/versionsSchema";
+import productionArchiveSchema from "../schemas/productionArchiveSchema";
+import productionSchema from "../schemas/productionSchema";
 
 const schemaMap = {
   archive: archiveSchema,
@@ -43,6 +45,21 @@ export default {
     }
   },
 
+  getArchiveProduction: async (req: Request, res: Response) => {
+    try {
+      const { _id } = req.params;
+
+      const data = await productionArchiveSchema.findById(_id);
+
+      if (!data) return response(res, false, null, "Projektas nerastas");
+
+      return response(res, true, data);
+    } catch (error) {
+      console.error("Klaida gaunant projektą:", error);
+      return response(res, false, null, "Serverio klaida");
+    }
+  },
+
   getArchives: async (req: Request, res: Response) => {
     try {
       const data = await archiveSchema.aggregate([
@@ -72,6 +89,39 @@ export default {
   getFinished: async (req: Request, res: Response) => {
     try {
       const data = await finishedSchema.aggregate([
+        { $sort: { "dates.dateArchieved": -1 } },
+        {
+          $project: {
+            _id: 1,
+            orderNumber: 1,
+            client: 1,
+            status: 1,
+            creator: 1,
+            dates: 1,
+            totalPrice: 1,
+            totalCost: 1,
+            totalProfit: 1,
+            totalMargin: 1,
+            priceVAT: 1,
+            priceWithDiscount: 1,
+            discount: 1,
+            advance: 1,
+          },
+        },
+      ]);
+
+      if (!data) return response(res, false, null, "Projektai nerasti");
+
+      return response(res, true, data);
+    } catch (error) {
+      console.error("Klaida gaunant projektus:", error);
+      return response(res, false, null, "Serverio klaida");
+    }
+  },
+
+  getProduction: async (req: Request, res: Response) => {
+    try {
+      const data = await productionArchiveSchema.aggregate([
         { $sort: { "dates.dateArchieved": -1 } },
         {
           $project: {
@@ -259,6 +309,25 @@ export default {
     }
   },
 
+  deleteArchiveProduction: async (req: Request, res: Response) => {
+    try {
+      const { _id } = req.body;
+
+      const data = await productionArchiveSchema.findByIdAndDelete(_id);
+
+      if (!data) return response(res, false, null, "Projektas nerastas");
+
+      const responseData = { _id };
+
+      emit.toAdmin("archiveProductionDeleted", responseData);
+
+      return response(res, true, responseData, "Projektas ištrintas");
+    } catch (error) {
+      console.error("Klaida gaunant projektus:", error);
+      return response(res, false, null, "Serverio klaida");
+    }
+  },
+
   //////////////////// update requests /////////////////////////////////
 
   restoreArchive: async (req: Request, res: Response) => {
@@ -298,6 +367,32 @@ export default {
       emit.toAdmin("restoreArchive", responseData);
 
       return response(res, true, responseData, "Projektas perkeltas į projektus");
+    } catch (error) {
+      console.error("Klaida:", error);
+      return response(res, false, null, "Serverio klaida");
+    }
+  },
+
+  restoreProduction: async (req: Request, res: Response) => {
+    try {
+      const { _id } = req.body;
+
+      const archivedProject = await productionArchiveSchema.findById(_id);
+      if (!archivedProject) return response(res, false, null, "Projektas nerastas");
+
+      const projectData = archivedProject.toObject();
+      const project = new productionSchema(projectData);
+      const data = await project.save();
+      if (!data) return response(res, false, null, "Klaida saugant projektą");
+
+      const deleted = await productionArchiveSchema.findByIdAndDelete(_id);
+      if (!deleted) return response(res, false, null, "Klaida ištrinant projektą iš archyvo");
+
+      const responseData = { data };
+
+      emit.toAdmin("restoreProduction", responseData);
+
+      return response(res, true, responseData, "Projektas perkeltas į gamybą");
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");

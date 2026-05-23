@@ -7,6 +7,7 @@ import { v4 as uuidv4 } from "uuid";
 import emit from "../sockets/emits";
 
 import { newProductionService } from "../services/productionService";
+import productionArchiveSchema from "../schemas/productionArchiveSchema";
 
 // pridet checka ar useris yra adminas
 
@@ -46,6 +47,19 @@ export default {
   deleteProduction: async (req: Request, res: Response) => {
     try {
       const { _id } = req.params;
+
+      const production = await productionSchema.findById(_id);
+      if (!production) {
+        return response(res, false, null, "Projektas nerastas");
+      }
+
+      const archived = await productionArchiveSchema.create({
+        ...production.toObject(),
+      });
+
+      if (!archived) {
+        return response(res, false, null, "Klaida perkeliant į archyvą");
+      }
 
       const data = await productionSchema.findByIdAndDelete(_id);
 

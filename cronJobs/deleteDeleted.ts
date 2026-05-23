@@ -4,7 +4,7 @@ import emit from "../sockets/emits";
 import cron from "node-cron";
 
 export const deleteDeleted = () => {
-  cron.schedule("4 4 * * *", async () => {
+  cron.schedule("4 1 * * *", async () => {
     console.log("deleting deleted projects...");
 
     try {
@@ -23,9 +23,7 @@ export const deleteDeleted = () => {
           twoMonthsAgo.setMonth(twoMonthsAgo.getMonth() - 2);
 
           if (dateArchived < twoMonthsAgo) {
-            const responseData: any = await deletedSchema.findByIdAndDelete(
-              project._id
-            );
+            const responseData: any = await deletedSchema.findByIdAndDelete(project._id);
 
             emit.toAdmin("deleteDeleted", responseData);
             deletedDeleted.push(responseData);

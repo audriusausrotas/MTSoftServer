@@ -5,7 +5,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 export const databaseBackupToAtlas = () => {
-  cron.schedule("12 4 * * *", async () => {
+  cron.schedule("12 1 * * *", async () => {
     console.log("[CRON] MTSoft restoring backup to Atlas...");
 
     const date = new Date().toISOString().split("T")[0];

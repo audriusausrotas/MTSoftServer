@@ -6,7 +6,7 @@ import emit from "../sockets/emits";
 import cron from "node-cron";
 
 export const clearUnconfirmed = () => {
-  cron.schedule("2 4 * * *", async () => {
+  cron.schedule("2 1 * * *", async () => {
     console.log("Cleaning up unconfirmed projects...");
 
     try {
