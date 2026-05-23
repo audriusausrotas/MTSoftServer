@@ -388,6 +388,7 @@ export interface Prodution {
   bindings: Bindings[] | null;
   comments: ProjectComment[];
   files: string[];
+  dateArchieved: string;
 }
 
 export interface InstallationFence {
