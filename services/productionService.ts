@@ -1,4 +1,4 @@
-import { Prodution, Project, Bindings, FenceSetup, SeeThroughSteps } from "../data/interfaces";
+import { Production, Project, Bindings, FenceSetup, SeeThroughSteps } from "../data/interfaces";
 import productionSchema from "../schemas/productionSchema";
 import { findProjectById, updateProjectStatus } from "./projectService";
 import fenceSchema from "../schemas/fenceSchema";
@@ -281,7 +281,7 @@ export function transformFencesForProduction(
 export async function createProductionRecord(
   project: HydratedDocument<Project>,
   bindings: Bindings[],
-  newFences: Prodution[],
+  newFences: Production[],
 ) {
   const newProduction = new productionSchema({
     _id: project._id!.toString(),
@@ -303,7 +303,7 @@ export async function createProductionRecord(
 // --------------------------------------------------
 // 6. Emit eventai
 // --------------------------------------------------
-export function emitProductionEvents(production: Prodution, project: HydratedDocument<Project>) {
+export function emitProductionEvents(production: Production, project: HydratedDocument<Project>) {
   emit.toAdmin("newProduction", production);
   emit.toProduction("newProduction", production);
   emit.toWarehouse("newProduction", production);

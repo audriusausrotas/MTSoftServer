@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { Prodution, ProdutionFence, ProductionMeasure, GateInfo } from "../data/interfaces";
+import { Production, ProductionFence, ProductionMeasure, GateInfo } from "../data/interfaces";
 
 const gatesSchema = new mongoose.Schema<GateInfo>(
   {
@@ -49,7 +49,7 @@ const measureSchema = new mongoose.Schema<ProductionMeasure>(
   { _id: false },
 );
 
-const fenceSchema = new mongoose.Schema<ProdutionFence>(
+const fenceSchema = new mongoose.Schema<ProductionFence>(
   {
     id: String,
     side: String,
@@ -76,7 +76,7 @@ const fenceSchema = new mongoose.Schema<ProdutionFence>(
   { _id: false },
 );
 
-const productionArchiveSchema = new mongoose.Schema<Prodution>({
+const productionArchiveSchema = new mongoose.Schema<Production>({
   client: Object,
   creator: Object,
   orderNumber: String,

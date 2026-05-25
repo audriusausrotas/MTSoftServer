@@ -1,4 +1,4 @@
-import { Prodution } from "../data/interfaces";
+import { Production } from "../data/interfaces";
 import productionSchema from "../schemas/productionSchema";
 import { HydratedDocument, Types } from "mongoose";
 import { Response, Request } from "express";
@@ -16,7 +16,7 @@ export default {
 
   getProductions: async (req: Request, res: Response) => {
     try {
-      const data: Prodution[] | null = await productionSchema.find();
+      const data: Production[] | null = await productionSchema.find();
 
       if (!data.length) return response(res, false, null, "Projektai nerasti");
 
@@ -31,7 +31,7 @@ export default {
     const { _id } = req.params;
 
     try {
-      const data: Prodution | null = await productionSchema.findById(_id);
+      const data: Production | null = await productionSchema.findById(_id);
 
       if (!data) return response(res, false, null, "Projektas nerastas");
 
@@ -193,7 +193,7 @@ export default {
     try {
       const { _id, status } = req.body;
 
-      const data: Prodution | null = await productionSchema.findByIdAndUpdate(
+      const data: Production | null = await productionSchema.findByIdAndUpdate(
         _id,
         { $set: { status: status } },
         { new: true },
@@ -323,14 +323,14 @@ export default {
         phone: "",
       };
 
-      const newProdution = new productionSchema({
+      const newProduction = new productionSchema({
         creator: creatorNew,
         client,
         orderNumber: number || "",
         status: "Negaminti",
       });
 
-      const responseData = await newProdution.save();
+      const responseData = await newProduction.save();
 
       if (!responseData) return response(res, false, null, "Įvyko klaida");
 
@@ -349,7 +349,7 @@ export default {
     try {
       const { _id } = req.params;
 
-      const order: HydratedDocument<Prodution> | null = await productionSchema.findById(_id);
+      const order: HydratedDocument<Production> | null = await productionSchema.findById(_id);
 
       if (!order) return response(res, false, null, "užsakymas nerastas");
 
@@ -386,7 +386,7 @@ export default {
     try {
       const { _id, index } = req.body;
 
-      const project: HydratedDocument<Prodution> | null = await productionSchema.findById(_id);
+      const project: HydratedDocument<Production> | null = await productionSchema.findById(_id);
 
       if (!project) return response(res, false, null, "Projektas nerastas");
 

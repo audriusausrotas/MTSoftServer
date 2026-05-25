@@ -1,4 +1,4 @@
-import { ProjectComment, Prodution, Installation, Project } from "../data/interfaces";
+import { ProjectComment, Production, Installation, Project } from "../data/interfaces";
 import installationSchema from "../schemas/installationSchema";
 import productionSchema from "../schemas/productionSchema";
 import projectSchema from "../schemas/projectSchema";
@@ -135,7 +135,7 @@ export default {
 
       const user = res.locals.user;
 
-      const project: HydratedDocument<Prodution> | null = await productionSchema.findById(_id);
+      const project: HydratedDocument<Production> | null = await productionSchema.findById(_id);
 
       if (!project) return response(res, false, null, "Projektas nerastas");
 

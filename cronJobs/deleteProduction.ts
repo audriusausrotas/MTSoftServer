@@ -1,4 +1,4 @@
-import { Prodution } from "../data/interfaces";
+import { Production } from "../data/interfaces";
 import productionArchiveSchema from "../schemas/productionArchiveSchema";
 import emit from "../sockets/emits";
 import cron from "node-cron";
@@ -14,7 +14,7 @@ export const deleteProduction = () => {
         return;
       }
 
-      const deletedProduction: Prodution[] = [];
+      const deletedProduction: Production[] = [];
 
       for (const production of deletedProjects) {
         try {

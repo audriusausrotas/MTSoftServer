@@ -351,7 +351,7 @@ export interface Installation {
   orderNumber: string;
   workers: string[];
   status: string;
-  fences: ProdutionFence[];
+  fences: ProductionFence[];
   results: InstallationResult[];
   works: InstallationWorks[];
   comments: ProjectComment[];
@@ -378,13 +378,13 @@ export interface InstallationMeasure {
   };
 }
 
-export interface Prodution {
+export interface Production {
   _id: Types.ObjectId;
   client: Client;
   creator: Creator;
   orderNumber: string;
   status: string;
-  fences: ProdutionFence[];
+  fences: ProductionFence[];
   bindings: Bindings[] | null;
   comments: ProjectComment[];
   files: string[];
@@ -414,7 +414,7 @@ export interface InstallationFence {
   measures: InstallationMeasure[];
 }
 
-export interface ProdutionFence {
+export interface ProductionFence {
   id: string;
   side: string;
   name: string;

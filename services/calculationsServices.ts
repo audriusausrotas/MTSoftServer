@@ -26,7 +26,7 @@ export async function calculateEstimate(data: any) {
     getFencePrices(),
     getDefaultValues(),
   ]);
-
+  console.log(fences);
   const results = calculateResults(fencePrices, fences, bindings, defaultValues[0]);
 
   const calculatedData = generateResults(results, defaultValues[0], productPrices, fencePrices);
