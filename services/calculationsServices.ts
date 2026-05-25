@@ -130,8 +130,6 @@ const calculateResults = (
     const fenceSettings = fencePrices.find((fence) => fence.name === item.name);
     if (!fenceSettings) throw new Error("Fence settings not found");
 
-    console.log(item);
-
     if (fenceSettings.category === "Tvora") {
       let totalQuantity = 0;
       let totalElements = 0;

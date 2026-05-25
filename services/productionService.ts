@@ -261,7 +261,9 @@ export function transformFencesForProduction(
         .toLowerCase();
 
       const step = currentFence?.steps[fenceRename as keyof SeeThroughSteps] || 0;
-
+      console.log(currentFence?.steps);
+      console.log(fenceRename);
+      console.log(step);
       return {
         ...item,
         step,
