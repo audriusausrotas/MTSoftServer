@@ -127,10 +127,12 @@ const calculateResults = (
   };
 
   for (const item of fences) {
-    const fenceSettings = fencePrices.find((fence) => fence.name === item.name);
-    if (!fenceSettings) throw new Error("Fence settings not found");
+    console.log(item);
+    const fenceSettings = fencePrices.find(
+      (fence) => fence.name.toLowerCase() === item.name.toLowerCase(),
+    );
 
-    if (fenceSettings.category === "Tvora") {
+    if (fenceSettings?.category === "Tvora") {
       let totalQuantity = 0;
       let totalElements = 0;
       let rivets = 0;
@@ -141,7 +143,7 @@ const calculateResults = (
       }
 
       if (item.holes === "Taip") {
-        data.totalHoles += totalElements * fenceSettings.details.holes;
+        data.totalHoles += totalElements * fenceSettings?.details.holes;
         rivets += Math.ceil(totalElements) * 4;
       }
 
