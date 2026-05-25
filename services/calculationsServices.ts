@@ -151,7 +151,7 @@ const calculateResults = (
   for (const binding of bindings) {
     const totalLength = (binding.height || 0) * (binding.quantity || 0);
 
-    let bindingName = "";
+    let bindingName = "NERASTA";
     let lengthMultiplier = 1;
 
     const isUkraine = manufacturer === "Ukranina";
@@ -184,7 +184,7 @@ const calculateResults = (
         break;
 
       case "elementas":
-        bindingName = "Nestandartinis elementas";
+        bindingName = binding.name || "Nestandartinis elementas";
         break;
 
       default:
@@ -200,9 +200,9 @@ const calculateResults = (
         color: binding.color,
         material,
         manufacturer,
-        quantity: totalLength,
+        quantity: length,
         elements: binding.quantity || 0,
-        length,
+        length: totalLength,
       });
     } else {
       pushBindings({
