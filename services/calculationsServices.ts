@@ -206,7 +206,12 @@ const calculateResults = (
     const length = (totalLength * lengthMultiplier) / 100;
 
     if (binding.category === "elementas") {
-      pushElements({
+      // pushElements({
+      //   name: bindingName,
+      //   color: binding.color,
+      //   length,
+      // });
+      pushBindings({
         name: bindingName,
         color: binding.color,
         length,
@@ -218,9 +223,8 @@ const calculateResults = (
         length,
       });
     }
-
-    return data;
   }
+  return data;
 };
 
 ////////////////////////////////////////////////////////
