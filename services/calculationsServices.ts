@@ -127,9 +127,8 @@ const calculateResults = (
   };
 
   for (const item of fences) {
-    console.log(item);
     const fenceSettings = fencePrices.find(
-      (fence) => fence.name.toLowerCase() === item.name.toLowerCase(),
+      (fence) => fence.name.toLowerCase() === item.name.toLowerCase().trim(),
     );
 
     if (fenceSettings?.category === "Tvora") {
