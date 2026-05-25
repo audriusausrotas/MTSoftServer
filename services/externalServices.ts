@@ -51,6 +51,7 @@ export async function orderFence(body: any) {
     data.bindings,
     data.fences,
     data.comments,
+    data.files,
   );
   emit.toAdmin("newExternalProduction", production);
   emit.toProduction("newExternalProduction", production);

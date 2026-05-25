@@ -288,6 +288,7 @@ export async function createProductionRecord(
   bindings: Bindings[],
   newFences: Production[],
   comments?: ProjectComment[],
+  files?: string[],
 ) {
   const newProduction = new productionSchema({
     _id: project._id!.toString(),
@@ -298,6 +299,7 @@ export async function createProductionRecord(
     comments: comments || [],
     bindings,
     status: "Negaminti",
+    files: files || [],
   });
 
   const saved = await newProduction.save();
