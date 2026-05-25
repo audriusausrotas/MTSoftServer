@@ -59,6 +59,7 @@ const calculateResults = (
     bindings: [] as OtherParts[],
   };
   let manufacturer = "";
+  let material = "";
 
   const pushFence = (item: any) => {
     const existing = data.fences.find(
@@ -82,7 +83,6 @@ const calculateResults = (
       });
     }
     data.totalFences += item.quantity;
-    manufacturer = item.manufacturer;
   };
 
   const addRivets = (color: string, quantity: number) => {
@@ -93,21 +93,6 @@ const calculateResults = (
     } else {
       data.rivets.push({ color, quantity });
     }
-  };
-
-  const pushElements = (item: any) => {
-    // const existing = data.elementsTemp.find(
-    //   (element: any) =>
-    //     element.name.toLowerCase() === item.name.toLowerCase() && element.color === item.color,
-    // );
-    // if (existing) {
-    //   existing.length += item.length;
-    // } else {
-    //   data.elementsTemp.push({
-    //     ...item,
-    //     length: item.length,
-    //   });
-    // }
   };
 
   const pushBindings = (item: any) => {
@@ -127,14 +112,13 @@ const calculateResults = (
   };
 
   for (const item of fences) {
+    manufacturer = item.manufacturer;
+    material = item.material;
     const fenceSettings = fencePrices.find(
       (fence) => fence.name.toLowerCase() === item.name.toLowerCase().trim(),
     );
-    console.log(fenceSettings);
-    console.log(item.name);
 
     if (fenceSettings?.category === "Tvora" || !fenceSettings) {
-      console.log("veikia");
       let totalQuantity = 0;
       let totalElements = 0;
       let rivets = 0;
@@ -159,7 +143,6 @@ const calculateResults = (
         quantity: totalQuantity,
         elements: totalElements,
       };
-      console.log(initialFenceData);
 
       pushFence(initialFenceData);
     }
@@ -212,14 +195,13 @@ const calculateResults = (
     const length = (totalLength * lengthMultiplier) / 100;
 
     if (binding.category === "elementas") {
-      // pushElements({
-      //   name: bindingName,
-      //   color: binding.color,
-      //   length,
-      // });
-      pushBindings({
+      pushFence({
         name: bindingName,
         color: binding.color,
+        material,
+        manufacturer,
+        quantity: totalLength,
+        elements: binding.quantity || 0,
         length,
       });
     } else {
