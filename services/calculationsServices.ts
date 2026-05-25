@@ -27,7 +27,7 @@ export async function calculateEstimate(data: any) {
     getDefaultValues(),
   ]);
 
-  const results = calculateResults(fencePrices, fences, bindings);
+  const results = calculateResults(fencePrices, fences, bindings, defaultValues[0]);
 
   const calculatedData = generateResults(results, defaultValues[0], productPrices, fencePrices);
 
@@ -44,23 +44,29 @@ export async function calculateEstimate(data: any) {
 ///                 calculate results                ///
 ////////////////////////////////////////////////////////
 
-const calculateResults = (fencePrices: FenceSetup[], fences: Fence[], bindings: Bindings[]) => {
+const calculateResults = (
+  fencePrices: FenceSetup[],
+  fences: Fence[],
+  bindings: Bindings[],
+  defaultValues: DefaultValues,
+) => {
   const data: any = {
-    fences: [] as Fences[],
+    fencesTemp: [] as Fences[],
     totalFences: 0,
     totalElements: 0,
     totalHoles: 0,
     rivets: [] as OtherParts[],
-    bindings: [] as OtherParts[],
+    bindingsTemp: [] as OtherParts[],
   };
+  let manufacturer = "";
 
   const pushFence = (item: any) => {
-    const existing = data.fences.find(
-      (f: any) =>
-        f.name === item.name &&
-        f.color === item.color &&
-        f.material === item.material &&
-        f.manufacturer === item.manufacturer,
+    const existing = data.fencesTemp.find(
+      (fence: any) =>
+        fence.name === item.name &&
+        fence.color === item.color &&
+        fence.material === item.material &&
+        fence.manufacturer === item.manufacturer,
     );
 
     if (existing) {
@@ -68,7 +74,7 @@ const calculateResults = (fencePrices: FenceSetup[], fences: Fence[], bindings: 
       existing.elements += item.elements;
       existing.length += item.length;
     } else {
-      data.fences.push({
+      data.fencesTemp.push({
         ...item,
         quantity: item.quantity,
         elements: item.elements,
@@ -76,6 +82,7 @@ const calculateResults = (fencePrices: FenceSetup[], fences: Fence[], bindings: 
       });
     }
     data.totalFences += item.quantity;
+    manufacturer = item.manufacturer;
   };
 
   const addRivets = (color: string, quantity: number) => {
@@ -88,15 +95,31 @@ const calculateResults = (fencePrices: FenceSetup[], fences: Fence[], bindings: 
     }
   };
 
+  const pushElements = (item: any) => {
+    // const existing = data.elementsTemp.find(
+    //   (element: any) =>
+    //     element.name.toLowerCase() === item.name.toLowerCase() && element.color === item.color,
+    // );
+    // if (existing) {
+    //   existing.length += item.length;
+    // } else {
+    //   data.elementsTemp.push({
+    //     ...item,
+    //     length: item.length,
+    //   });
+    // }
+  };
+
   const pushBindings = (item: any) => {
-    const existing = data.bindings.find(
-      (b: any) => b.name === item.name && b.color === item.color && b.category === item.category,
+    const existing = data.bindingsTemp.find(
+      (binding: any) =>
+        binding.name.toLowerCase() === item.name.toLowerCase() && binding.color === item.color,
     );
 
     if (existing) {
       existing.length += item.length;
     } else {
-      data.bindings.push({
+      data.bindingsTemp.push({
         ...item,
         length: item.length,
       });
@@ -136,18 +159,68 @@ const calculateResults = (fencePrices: FenceSetup[], fences: Fence[], bindings: 
     }
   }
 
-  for (const b of bindings) {
-    const totalLength = (b.height || 0) * (b.quantity || 0);
+  for (const binding of bindings) {
+    const totalLength = (binding.height || 0) * (binding.quantity || 0);
 
-    pushBindings({
-      name: b.name,
-      color: b.color,
-      category: b.category,
-      length: totalLength / 100,
-    });
+    let bindingName = "";
+    let lengthMultiplier = 1;
+
+    const isUkraine = manufacturer === "Ukranina";
+
+    switch (binding.category) {
+      case "koja":
+        bindingName = isUkraine ? defaultValues.retailSingleLegEco : defaultValues.retailSingleLeg;
+        break;
+
+      case "dviguba":
+        bindingName = isUkraine ? defaultValues.retailDoubleLegEco : defaultValues.retailDoubleLeg;
+        break;
+
+      case "centrinis":
+        bindingName = isUkraine ? defaultValues.retailBindingsEco : defaultValues.retailBindings;
+        break;
+
+      case "galinis":
+        bindingName = isUkraine ? defaultValues.retailBindingsEco : defaultValues.retailBindingsEco;
+        lengthMultiplier = 2;
+        break;
+
+      case "elka":
+        bindingName = isUkraine ? defaultValues.retailBindingsEco : defaultValues.retailBindings;
+        lengthMultiplier = 0.5;
+        break;
+
+      case "kampas":
+        bindingName = isUkraine ? defaultValues.retailBindingsEco : defaultValues.retailBindings;
+        break;
+
+      case "elementas":
+        bindingName = "Nestandartinis elementas";
+        break;
+
+      default:
+        bindingName = "Nestandartinis lankstinys";
+        break;
+    }
+
+    const length = (totalLength * lengthMultiplier) / 100;
+
+    if (binding.category === "elementas") {
+      pushElements({
+        name: bindingName,
+        color: binding.color,
+        length,
+      });
+    } else {
+      pushBindings({
+        name: bindingName,
+        color: binding.color,
+        length,
+      });
+    }
+
+    return data;
   }
-
-  return data;
 };
 
 ////////////////////////////////////////////////////////
@@ -180,7 +253,7 @@ const generateResults = (
       }
     }
 
-    // 2. Generate holes ONCE
+    // 2. Generate holes
     if (results.totalHoles > 0) {
       const temp = createWorkElement(
         {
@@ -229,56 +302,10 @@ const generateResults = (
   // 5. Bindings
   if (results.bindings.length > 0) {
     for (const item of results.bindings) {
-      let defaultValue = "";
-
-      if (manufacturer === "Ukranina") {
-        switch (item.category) {
-          case "koja":
-            defaultValue = defaultValues.retailSingleLegEco;
-            break;
-          case "dviguba":
-            defaultValue = defaultValues.retailDoubleLegEco;
-            break;
-          case "centrinis":
-            defaultValue = defaultValues.retailBindingsEco;
-            break;
-          case "elka":
-            defaultValue = defaultValues.retailBindingsEco;
-            break;
-          case "kampas":
-            defaultValue = defaultValues.retailBindingsEco;
-            break;
-          default:
-            defaultValue = "Nestandartinis lankstinys";
-            break;
-        }
-      } else {
-        switch (item.category) {
-          case "koja":
-            defaultValue = defaultValues.retailSingleLeg;
-            break;
-          case "dviguba":
-            defaultValue = defaultValues.retailDoubleLeg;
-            break;
-          case "centrinis":
-            defaultValue = defaultValues.retailBindings;
-            break;
-          case "elka":
-            defaultValue = defaultValues.retailBindings;
-            break;
-          case "kampas":
-            defaultValue = defaultValues.retailBindings;
-            break;
-          default:
-            defaultValue = "Nestandartinis lankstinys";
-            break;
-        }
-      }
-
       const temp = createResultElement(
         {
           ...item,
-          name: defaultValue,
+          name: item.name,
           quantity: item.length,
         },
         productPrices,
