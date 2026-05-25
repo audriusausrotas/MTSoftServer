@@ -246,35 +246,31 @@ export function transformFencesForProduction(
   project: HydratedDocument<Project>,
   fences: FenceSetup[],
 ) {
-  return project.fenceMeasures
-    .filter((item: any) => {
-      const currentFence = fences.find((f: any) => f.name === item.name);
-      return currentFence && currentFence.category === "Tvora";
-    })
-    .map((item: any) => {
-      const currentFence = fences.find((f: any) => f.name === item.name);
+  return project.fenceMeasures.reduce((acc: any[], item: any) => {
+    const currentFence = fences.find((f: any) => f.name === item.name);
+    if (!currentFence || currentFence.category !== "Tvora") return acc;
 
-      const fenceRename = item.seeThrough
-        .replace("š", "s")
-        .replace("25% Pramatomumas", "pramatoma25")
-        .replace("50% Pramatomumas", "pramatoma50")
-        .toLowerCase();
+    const fenceRename = item.seeThrough
+      .replace("š", "s")
+      .replace("25% Pramatomumas", "pramatoma25")
+      .replace("50% Pramatomumas", "pramatoma50")
+      .toLowerCase();
 
-      const step = currentFence?.steps[fenceRename as keyof SeeThroughSteps] || 0;
-      console.log(currentFence?.steps);
-      console.log(fenceRename);
-      console.log(step);
-      return {
-        ...item,
-        step,
-        measures: item.measures.map((m: any) => ({
-          ...m,
-          cut: undefined,
-          done: undefined,
-          postone: m.gates.exist ? true : false,
-        })),
-      };
+    const step = currentFence.steps[fenceRename as keyof SeeThroughSteps] || 0;
+
+    acc.push({
+      ...item,
+      step,
+      measures: item.measures.map((m: any) => ({
+        ...m,
+        cut: undefined,
+        done: undefined,
+        postone: m.gates.exist ? true : false,
+      })),
     });
+
+    return acc;
+  }, []);
 }
 
 // --------------------------------------------------
