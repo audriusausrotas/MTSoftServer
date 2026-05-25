@@ -51,17 +51,17 @@ const calculateResults = (
   defaultValues: DefaultValues,
 ) => {
   const data: any = {
-    fencesTemp: [] as Fences[],
+    fences: [] as Fences[],
     totalFences: 0,
     totalElements: 0,
     totalHoles: 0,
     rivets: [] as OtherParts[],
-    bindingsTemp: [] as OtherParts[],
+    bindings: [] as OtherParts[],
   };
   let manufacturer = "";
 
   const pushFence = (item: any) => {
-    const existing = data.fencesTemp.find(
+    const existing = data.fences.find(
       (fence: any) =>
         fence.name === item.name &&
         fence.color === item.color &&
@@ -74,7 +74,7 @@ const calculateResults = (
       existing.elements += item.elements;
       existing.length += item.length;
     } else {
-      data.fencesTemp.push({
+      data.fences.push({
         ...item,
         quantity: item.quantity,
         elements: item.elements,
@@ -111,7 +111,7 @@ const calculateResults = (
   };
 
   const pushBindings = (item: any) => {
-    const existing = data.bindingsTemp.find(
+    const existing = data.bindings.find(
       (binding: any) =>
         binding.name.toLowerCase() === item.name.toLowerCase() && binding.color === item.color,
     );
@@ -119,7 +119,7 @@ const calculateResults = (
     if (existing) {
       existing.length += item.length;
     } else {
-      data.bindingsTemp.push({
+      data.bindings.push({
         ...item,
         length: item.length,
       });
