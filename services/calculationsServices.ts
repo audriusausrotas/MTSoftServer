@@ -396,7 +396,7 @@ const createResultElement = (item: any, productPrices: Product[], fencePrices: F
         price = +fenceData.priceWholesale;
 
         // if fenceboard
-      } else if (product.category === "Tvoralentė") {
+      } else if (product?.category === "Tvoralentė") {
         price = +((product.prices.priceWholesale * item.height) / 100).toFixed(2);
         cost = +((product.prices.cost * item.height) / 100).toFixed(2);
       }
@@ -424,7 +424,7 @@ const createResultElement = (item: any, productPrices: Product[], fencePrices: F
     totalCost: +totalCost.toFixed(2),
     profit: +profit.toFixed(2),
     margin: +margin,
-    category: product.category || "",
+    category: product?.category || "",
     width: item.width || 0,
     delivered: false,
     ordered: false,
