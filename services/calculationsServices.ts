@@ -26,7 +26,7 @@ export async function calculateEstimate(data: any) {
     getFencePrices(),
     getDefaultValues(),
   ]);
-  console.log(fences);
+
   const results = calculateResults(fencePrices, fences, bindings, defaultValues[0]);
 
   const calculatedData = generateResults(results, defaultValues[0], productPrices, fencePrices);
@@ -129,6 +129,8 @@ const calculateResults = (
   for (const item of fences) {
     const fenceSettings = fencePrices.find((fence) => fence.name === item.name);
     if (!fenceSettings) throw new Error("Fence settings not found");
+
+    console.log(item);
 
     if (fenceSettings.category === "Tvora") {
       let totalQuantity = 0;
