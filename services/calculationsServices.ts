@@ -130,8 +130,11 @@ const calculateResults = (
     const fenceSettings = fencePrices.find(
       (fence) => fence.name.toLowerCase() === item.name.toLowerCase().trim(),
     );
+    console.log(fenceSettings);
+    console.log(item.name);
 
-    if (fenceSettings?.category === "Tvora") {
+    if (fenceSettings?.category === "Tvora" || !fenceSettings) {
+      console.log("veikia");
       let totalQuantity = 0;
       let totalElements = 0;
       let rivets = 0;
@@ -142,7 +145,7 @@ const calculateResults = (
       }
 
       if (item.holes === "Taip") {
-        data.totalHoles += totalElements * fenceSettings?.details.holes;
+        data.totalHoles += totalElements * (fenceSettings?.details?.holes || 0);
         rivets += Math.ceil(totalElements) * 4;
       }
 
@@ -150,11 +153,13 @@ const calculateResults = (
 
       const initialFenceData = {
         ...item,
+        name: fenceSettings?.name || "NEATPAŽINTA: " + item.name,
         length: item.totalLength,
         height: 0,
         quantity: totalQuantity,
         elements: totalElements,
       };
+      console.log(initialFenceData);
 
       pushFence(initialFenceData);
     }
