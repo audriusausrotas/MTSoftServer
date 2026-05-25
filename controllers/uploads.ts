@@ -108,7 +108,7 @@ export default {
       });
 
       await Promise.all(deletePromises);
-      data.files = data.files.filter((file: string) => !files.includes(file));
+      data.files = data?.files?.filter((file: string) => !files.includes(file));
       const newData = await data.save();
 
       const responseData = { _id, files: newData.files };
