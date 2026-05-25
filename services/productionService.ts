@@ -1,4 +1,11 @@
-import { Production, Project, Bindings, FenceSetup, SeeThroughSteps } from "../data/interfaces";
+import {
+  Production,
+  Project,
+  Bindings,
+  FenceSetup,
+  SeeThroughSteps,
+  ProjectComment,
+} from "../data/interfaces";
 import productionSchema from "../schemas/productionSchema";
 import { findProjectById, updateProjectStatus } from "./projectService";
 import fenceSchema from "../schemas/fenceSchema";
@@ -280,6 +287,7 @@ export async function createProductionRecord(
   project: HydratedDocument<Project>,
   bindings: Bindings[],
   newFences: Production[],
+  comments?: ProjectComment[],
 ) {
   const newProduction = new productionSchema({
     _id: project._id!.toString(),
@@ -287,7 +295,7 @@ export async function createProductionRecord(
     client: { ...project.client },
     orderNumber: project.orderNumber,
     fences: newFences,
-    aditional: [],
+    comments: comments || [],
     bindings,
     status: "Negaminti",
   });

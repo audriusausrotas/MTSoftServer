@@ -46,7 +46,12 @@ export async function orderFence(body: any) {
     await addProjectComment(result._id, message, client);
   }
 
-  const production = await createProductionRecord(result, data.bindings, data.fences);
+  const production = await createProductionRecord(
+    result,
+    data.bindings,
+    data.fences,
+    data.comments,
+  );
   emit.toAdmin("newExternalProduction", production);
   emit.toProduction("newExternalProduction", production);
   emit.toWarehouse("newExternalProduction", production);
