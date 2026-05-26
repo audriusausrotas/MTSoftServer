@@ -25,6 +25,7 @@ import suppliers from "../controllers/suppliers";
 import orders from "../controllers/orders";
 import checkSuperAdmin from "../middleware/checkSuperAdmin";
 import calculations from "../controllers/calculations";
+import { uploadFiles } from "../middleware/uploadFiles";
 
 const router = express.Router();
 
@@ -32,7 +33,7 @@ const router = express.Router();
 
 router.get("/getManagers", checkPartners, externalRequests.getManagers);
 
-router.post("/orderFence", checkPartners, externalRequests.orderFence);
+router.post("/orderFence", checkPartners, uploadFiles, externalRequests.orderFence);
 
 /////////////////////// Auth /////////////////////////////
 
