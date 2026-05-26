@@ -12,37 +12,16 @@ const storage = multer.diskStorage({
     cb(null, uploadRoot);
   },
 
-  //   filename: (req, file, cb) => {
-  //     cb(null, file.originalname);
-  //   },
-  // });
-
-  // const upload = multer({
-  //   storage,
-  //   limits: {
-  //     fileSize: 20 * 1024 * 1024, // 20MB
-  //   },
+  filename: (req, file, cb) => {
+    cb(null, file.originalname);
+  },
 });
 
-// export const uploadFiles = upload.array("files", 20);
+const upload = multer({
+  storage,
+  limits: {
+    fileSize: 20 * 1024 * 1024, // 20MB
+  },
+});
 
-export const uploadFiles = (req: any, res: any, next: any) => {
-  const upload = multer({
-    storage,
-    limits: {
-      fileSize: 20 * 1024 * 1024,
-    },
-  }).array("files", 20);
-
-  upload(req, res, function (err) {
-    if (err) {
-      console.error("❌ MULTER ERROR:", err);
-      return next(err);
-    }
-
-    console.log("✅ FILES RECEIVED:", req.files);
-    console.log("📦 BODY:", req.body);
-
-    next();
-  });
-};
+export const uploadFiles = upload.array("files", 20);
