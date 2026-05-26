@@ -1,6 +1,5 @@
 import multer from "multer";
 import fs from "fs";
-import path from "path";
 
 const uploadRoot = "/var/www/mtsoft/uploads";
 
@@ -14,7 +13,6 @@ const storage = multer.diskStorage({
   },
 
   filename: (req, file, cb) => {
-    // ✔ paliekam originalų pavadinimą
     cb(null, file.originalname);
   },
 });

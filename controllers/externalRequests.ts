@@ -27,7 +27,9 @@ export default {
 
   orderFence: async (req: Request, res: Response) => {
     try {
-      const result = await orderFence(req.body);
+      // const result = await orderFence(req.body);
+      const body = JSON.parse(req.body.data);
+      const result = await orderFence(body);
       return response(res, true, result, "testinu atsakyma");
     } catch (error) {
       console.error("Klaida:", error);
