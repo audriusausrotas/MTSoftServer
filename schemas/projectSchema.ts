@@ -171,6 +171,7 @@ const fenceSchema = new mongoose.Schema<Fence>(
     elements: { type: Number, required: false, default: 0 },
     totalLength: { type: Number, required: false, default: 0 },
     totalQuantity: { type: Number, required: false, default: 0 },
+    additionalBindings: { type: String, required: false, default: "Nepridėti" },
     measures: { type: [measureSchema], required: false, default: [] },
   },
   { _id: false },
