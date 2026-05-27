@@ -232,7 +232,7 @@ export async function updateProjectStatus(id: any, value: string) {
   };
 
   if (needsDates) {
-    emit.toAdmin("changeProjectDates", project.dates);
+    emit.toAdmin("changeProjectDates", { _id: project._id.toString(), dates: project.dates });
   }
 
   emit.toAdmin("changeProjectStatus", payload);
