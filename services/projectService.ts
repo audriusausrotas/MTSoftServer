@@ -2,6 +2,9 @@ import { HydratedDocument, Types } from "mongoose";
 import { Dates, Project, ProjectComment, User } from "../data/interfaces";
 import projectSchema from "../schemas/projectSchema";
 import emit from "../sockets/emits";
+import { createBackup } from "./backupServices";
+import sendEmail from "../modules/sendEmail";
+import generateHTML from "../modules/generateHTML";
 
 export async function createProjectService(body: any, user: any) {
   const {
@@ -131,18 +134,16 @@ export function generateProjectDates() {
   };
 }
 
-export async function updateProjectStatus(project: HydratedDocument<Project>, status: string) {
-  project.status = status;
-  const savedProject = await project.save();
-  if (!savedProject) throw new Error("Projektas neišsaugotas");
-  return savedProject;
-}
+export async function findProjectById(id: string | string[] | Types.ObjectId) {
+  const normalizedId = Array.isArray(id) ? id[0] : id;
 
-export async function findProjectById(id: Types.ObjectId) {
-  if (!id) throw new Error("Projekto ID yra privalomas");
-  const foundProject = await projectSchema.findById(id);
-  if (!foundProject) throw new Error("Projektas nerastas");
-  return foundProject;
+  const objectId =
+    normalizedId instanceof Types.ObjectId ? normalizedId : new Types.ObjectId(normalizedId);
+
+  const project = await projectSchema.findById(objectId);
+  if (!project) throw new Error("Projektas nerastas");
+
+  return project;
 }
 
 export async function changeCompletionDate(_id: Types.ObjectId, date: string) {
@@ -183,4 +184,58 @@ export async function addProjectComment(_id: Types.ObjectId, comment: string, us
   emit.toWarehouse("newProjectComment", responseData);
 
   return responseData;
+}
+
+export async function updateProjectStatus(id: any, value: string) {
+  const project = await findProjectById(id);
+  const oldStatus = project.status;
+
+  project.status = value;
+
+  const normalized = value.toLowerCase?.();
+
+  const needsDates =
+    normalized === "patvirtintas" ||
+    normalized === "betonuojama" ||
+    normalized === "gaminama" ||
+    normalized === "montuojama" ||
+    normalized === "laukiam vartų";
+
+  if (needsDates) {
+    const afterTwoMonths = new Date();
+    afterTwoMonths.setMonth(afterTwoMonths.getMonth() + 2);
+
+    if (!project.dates.dateConfirmed) project.dates.dateConfirmed = new Date().toISOString();
+    if (!project.dates.dateCompletion) project.dates.dateCompletion = afterTwoMonths.toISOString();
+  }
+
+  const data = await project.save();
+  if (!data) throw new Error("Klaida keičiant statusą");
+
+  if (needsDates) {
+    await createBackup(id, project);
+  }
+
+  if (normalized === "apmokėjimas" && oldStatus.toLowerCase() !== "apmokėjimas") {
+    const html = generateHTML(project);
+    await sendEmail({
+      to: "vaida@modernitvora.lt",
+      subject: "Baigtas objektas",
+      user: project.creator,
+      html,
+    });
+  }
+
+  const payload = {
+    _id: project._id.toString(),
+    status: value,
+  };
+
+  if (needsDates) {
+    emit.toAdmin("changeProjectDates", project.dates);
+  }
+
+  emit.toAdmin("changeProjectStatus", payload);
+
+  return payload;
 }

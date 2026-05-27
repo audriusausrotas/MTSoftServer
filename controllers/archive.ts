@@ -12,6 +12,7 @@ import finishedSchema from "../schemas/finishedSchema";
 import versionsSchema from "../schemas/versionsSchema";
 import productionArchiveSchema from "../schemas/productionArchiveSchema";
 import productionSchema from "../schemas/productionSchema";
+import { deleteBackup } from "../services/backupServices";
 
 const schemaMap = {
   archive: archiveSchema,
@@ -450,7 +451,7 @@ export default {
       if (!responseData) return response(res, false, null, "Klaida perkeliant projektą");
 
       await projectSchema.findByIdAndDelete(_id);
-      await backupSchema.findByIdAndDelete(_id);
+      await deleteBackup(_id);
 
       emit.toAdmin("addUnconfirmed", responseData);
 

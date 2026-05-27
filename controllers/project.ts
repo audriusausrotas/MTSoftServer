@@ -4,19 +4,21 @@ import installationSchema from "../schemas/installationSchema";
 import versionsSchema from "../schemas/versionsSchema";
 import deletedSchema from "../schemas/deletedSchema";
 import projectSchema from "../schemas/projectSchema";
-import backupSchema from "../schemas/backupSchema";
-import generateHTML from "../modules/generateHTML";
-import sendEmail from "../modules/sendEmail";
 import userSchema from "../schemas/userSchema";
 import { Project } from "../data/interfaces";
-import { HydratedDocument } from "mongoose";
 import { Request, Response } from "express";
 import response from "../modules/response";
 import emit from "../sockets/emits";
 import productionSchema from "../schemas/productionSchema";
 import gateSchema from "../schemas/gateSchema";
 import finishedSchema from "../schemas/finishedSchema";
-import { changeCompletionDate, createProjectService } from "../services/projectService";
+import {
+  changeCompletionDate,
+  createProjectService,
+  findProjectById,
+  updateProjectStatus,
+} from "../services/projectService";
+import { deleteBackup } from "../services/backupServices";
 
 export default {
   //////////////////// get requests ////////////////////////////////////
@@ -148,25 +150,28 @@ export default {
   changeAdvance: async (req: Request, res: Response) => {
     const { _id, advance } = await req.body;
     try {
-      const project = await projectSchema.findById(_id);
-
-      if (!project)
-        return {
-          success: false,
-          data: null,
-          message: "Projektas nerastas",
-        };
+      const project = await findProjectById(_id);
 
       const afterTwoMonths = new Date();
       afterTwoMonths.setMonth(afterTwoMonths.getMonth() + 2);
 
       project.advance = advance;
-      project.status = "Patvirtintas";
-      project.dates.dateConfirmed = new Date().toISOString();
-      project.dates.dateCompletion = afterTwoMonths.toISOString();
+
+      if (
+        project.status === "Nepatvirtintas" ||
+        project.status === "Tinkamas" ||
+        project.status === "Netinkamas" ||
+        project.status === "Matavimas" ||
+        project.status === "Remontas" ||
+        project.status?.toLowerCase() === "naujas užsakymas"
+      ) {
+        project.status = "Patvirtintas";
+        if (!project.dates.dateConfirmed) project.dates.dateConfirmed = new Date().toISOString();
+      }
+      if (!project.dates.dateCompletion)
+        project.dates.dateCompletion = afterTwoMonths.toISOString();
 
       const data = await project.save();
-
       if (!data) return response(res, false, null, "Klaida saugant projektą");
 
       const responseData = { _id, value: advance };
@@ -184,7 +189,8 @@ export default {
     try {
       const { _id, value } = req.body;
 
-      const project = await projectSchema.findById(_id);
+      const project = await findProjectById(_id);
+
       const users = await userSchema.find();
       let newUser = users.find((item) => item.username === value);
 
@@ -210,9 +216,7 @@ export default {
     try {
       const { _id } = req.params;
 
-      const project: HydratedDocument<Project> | null = await projectSchema.findById(_id);
-
-      if (!project) return response(res, false, null, "Projektas nerastas");
+      const project = await findProjectById(_id);
 
       const currentDate = new Date();
       let expirationDate = new Date(currentDate);
@@ -240,9 +244,7 @@ export default {
     try {
       const { _id, projectId } = req.body;
 
-      const project = await projectSchema.findById(projectId);
-
-      if (!project) return response(res, false, null, "Projektas nerastas");
+      const project = await findProjectById(projectId);
 
       const rollbackVersion = await versionsSchema.findById(_id);
 
@@ -261,48 +263,12 @@ export default {
     try {
       const { _id, value } = req.body;
 
-      const project = await projectSchema.findById(_id);
-      if (!project) return response(res, false, null, "Projektas nerastas");
-
-      project.status = value;
-
-      if (value === "Patvirtintas") {
-        const afterTwoMonths = new Date();
-        afterTwoMonths.setMonth(afterTwoMonths.getMonth() + 2);
-
-        project.dates.dateConfirmed = new Date().toISOString();
-        project.dates.dateCompletion = afterTwoMonths.toISOString();
-
-        const backupProject = await backupSchema.findById(_id);
-        if (!backupProject) {
-          const projectData = project.toObject();
-          const newBackup = new backupSchema(projectData);
-          await newBackup.save();
-        }
-      }
-
-      const data = await project.save();
-      if (!data) return response(res, true, null, "Serverio klaida");
-
-      if (value === "Apmokėjimas") {
-        const html = generateHTML(project);
-
-        await sendEmail({
-          to: "vaida@modernitvora.lt",
-          subject: "Baigtas objektas",
-          user: project.creator,
-          html,
-        });
-      }
-
-      const responseData = { _id, status: value };
-
-      emit.toAdmin("changeProjectStatus", responseData);
+      const responseData = await updateProjectStatus(_id, value);
 
       return response(res, true, responseData, "Būsena atnaujinta");
-    } catch (error) {
+    } catch (error: any) {
       console.error("Klaida:", error);
-      return response(res, false, null, "Serverio klaida");
+      return response(res, false, null, error.message);
     }
   },
 
@@ -447,7 +413,7 @@ export default {
 
       await deleteVersions(project.versions);
       await projectSchema.deleteOne({ _id });
-      await backupSchema.deleteOne({ _id });
+      await deleteBackup(_id);
       await installationSchema.deleteOne({ _id });
       await productionSchema.deleteOne({ _id });
       await gateSchema.deleteOne({ _id });
