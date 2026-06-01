@@ -35,7 +35,7 @@ const resultSchema = new mongoose.Schema<Result>(
     delivered: { type: Boolean, default: false },
     ordered: { type: Boolean, default: false },
     retail: { type: Boolean, default: false },
-    units: { type: Boolean, default: false },
+    units: { type: Boolean, default: true },
     material: { type: String, default: "" },
     manufacturer: { type: String, default: "" },
     auto: { type: String, required: false, default: "Taip" },

@@ -13,7 +13,6 @@ import { HydratedDocument, Types } from "mongoose";
 import emit from "../sockets/emits";
 import { v4 } from "uuid";
 import productionArchiveSchema from "../schemas/productionArchiveSchema";
-import { response } from "express";
 
 export async function newProductionService(projectId: Types.ObjectId) {
   const project = await validateProductionStart(projectId);
@@ -251,6 +250,37 @@ export async function calculateBindings(project: HydratedDocument<Project>, fenc
 // --------------------------------------------------
 // 3. Fences transformavimas į gamybos formatą
 // --------------------------------------------------
+// export function transformFencesForProduction(
+//   project: HydratedDocument<Project>,
+//   fences: FenceSetup[],
+// ) {
+//   return project.fenceMeasures.reduce((acc: any[], item: any) => {
+//     const currentFence = fences.find((f: any) => f.name === item.name);
+//     if (!currentFence || currentFence.category !== "Tvora") return acc;
+
+//     const fenceRename = item.seeThrough
+//       .replace("š", "s")
+//       .replace("25% Pramatomumas", "pramatoma25")
+//       .replace("50% Pramatomumas", "pramatoma50")
+//       .toLowerCase();
+
+//     const step = currentFence.steps[fenceRename as keyof SeeThroughSteps] || 0;
+
+//     acc.push({
+//       ...item,
+//       step,
+//       measures: item.measures.map((m: any) => ({
+//         ...m,
+//         cut: undefined,
+//         done: undefined,
+//         postone: m.gates.exist ? true : false,
+//       })),
+//     });
+
+//     return acc;
+//   }, []);
+// }
+
 export function transformFencesForProduction(
   project: HydratedDocument<Project>,
   fences: FenceSetup[],
@@ -267,15 +297,27 @@ export function transformFencesForProduction(
 
     const step = currentFence.steps[fenceRename as keyof SeeThroughSteps] || 0;
 
+    const isVertical = currentFence.defaultDirection === "Vertikali";
+
     acc.push({
       ...item,
       step,
-      measures: item.measures.map((m: any) => ({
-        ...m,
-        cut: undefined,
-        done: undefined,
-        postone: m.gates.exist ? true : false,
-      })),
+      measures: item.measures.map((m: any) => {
+        const updated: any = {
+          ...m.toObject(),
+          cut: undefined,
+          done: undefined,
+          postone: m.gates.exist ? true : false,
+        };
+
+        if (isVertical) {
+          const oldLength = updated.length;
+          updated.length = updated.height;
+          updated.height = oldLength;
+        }
+
+        return updated;
+      }),
     });
 
     return acc;
@@ -324,14 +366,16 @@ export async function deleteProduction(_id: string) {
   const production = await productionSchema.findById(_id);
   if (!production) throw new Error("Projektas nerastas");
 
-  const archived = await productionArchiveSchema.create({
-    ...production.toObject(),
-  });
+  const doesExist = await productionArchiveSchema.findById(_id);
+  if (!doesExist) {
+    const archived = await productionArchiveSchema.create({
+      ...production.toObject(),
+    });
 
-  if (!archived) throw new Error("Klaida perkeliant į archyvą");
+    if (!archived) throw new Error("Klaida perkeliant į archyvą");
+  }
 
   const data = await productionSchema.findByIdAndDelete(_id);
-
   if (!data) throw new Error("Projektas nerastas");
 
   emit.toAdmin("deleteProduction", { _id });
