@@ -12,6 +12,8 @@ import fenceSchema from "../schemas/fenceSchema";
 import { HydratedDocument, Types } from "mongoose";
 import emit from "../sockets/emits";
 import { v4 } from "uuid";
+import productionArchiveSchema from "../schemas/productionArchiveSchema";
+import { response } from "express";
 
 export async function newProductionService(projectId: Types.ObjectId) {
   const project = await validateProductionStart(projectId);
@@ -316,4 +318,26 @@ export function emitProductionEvents(production: Production, project: HydratedDo
   emit.toProduction("newProduction", production);
   emit.toWarehouse("newProduction", production);
   emit.toAdmin("changeProjectStatus", { status: project.status });
+}
+
+export async function deleteProduction(_id: string) {
+  const production = await productionSchema.findById(_id);
+  if (!production) throw new Error("Projektas nerastas");
+
+  const archived = await productionArchiveSchema.create({
+    ...production.toObject(),
+  });
+
+  if (!archived) throw new Error("Klaida perkeliant į archyvą");
+
+  const data = await productionSchema.findByIdAndDelete(_id);
+
+  if (!data) throw new Error("Projektas nerastas");
+
+  emit.toAdmin("deleteProduction", { _id });
+  emit.toProduction("deleteProduction", { _id });
+  emit.toWarehouse("deleteProduction", { _id });
+  emit.toInstallation("deleteProduction", { _id });
+
+  return true;
 }

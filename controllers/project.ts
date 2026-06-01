@@ -19,6 +19,7 @@ import {
   updateProjectStatus,
 } from "../services/projectService";
 import { deleteBackup } from "../services/backupServices";
+import { deleteProduction } from "../services/productionService";
 
 export default {
   //////////////////// get requests ////////////////////////////////////
@@ -389,9 +390,7 @@ export default {
 
       const project = await projectSchema.findById(_id).lean();
 
-      if (!project) {
-        return response(res, false, null, "Projektas nerastas");
-      }
+      if (!project) return response(res, false, null, "Projektas nerastas");
 
       let dateArchieved = new Date().toISOString();
 
@@ -415,7 +414,7 @@ export default {
       await projectSchema.deleteOne({ _id });
       await deleteBackup(_id);
       await installationSchema.deleteOne({ _id });
-      await productionSchema.deleteOne({ _id });
+      await deleteProduction(_id as string);
       await gateSchema.deleteOne({ _id });
 
       emit.toAdmin("finishProject", { _id });

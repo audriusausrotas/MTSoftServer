@@ -389,7 +389,7 @@ export default {
       const deleted = await productionArchiveSchema.findByIdAndDelete(_id);
       if (!deleted) return response(res, false, null, "Klaida ištrinant projektą iš archyvo");
 
-      const responseData = { data };
+      const responseData = data;
 
       emit.toAdmin("restoreProduction", responseData);
 
