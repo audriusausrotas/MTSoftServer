@@ -63,6 +63,8 @@ export async function orderFence(body: any) {
 
 export async function orderAditionalFence(body: any) {
   const { projectOrderNr, message, data } = body;
+  console.log("is serviso");
+  console.log(body);
 
   const production = await findProductionById(projectOrderNr);
 
@@ -83,7 +85,7 @@ export async function orderAditionalFence(body: any) {
       quantity: 0,
       postone: true,
     },
-    ...data.bindings,
+    ...data,
   ];
 
   await production.save();
