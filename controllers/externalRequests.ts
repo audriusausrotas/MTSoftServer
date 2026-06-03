@@ -39,8 +39,6 @@ export default {
   orderAdditionalFence: async (req: Request, res: Response) => {
     try {
       const body = JSON.parse(req.body.data);
-      console.log("is kontrolerio");
-      console.log(body);
       await orderAditionalFence(body);
       return response(res, true, null, "Papildomos detalės sėkmingai užsakytos");
     } catch (error: any) {
