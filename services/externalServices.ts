@@ -88,5 +88,9 @@ export async function orderAditionalFence(body: any) {
 
   await production.save();
 
+  emit.toAdmin("externalOrderUpdate", body);
+  emit.toProduction("externalOrderUpdate", body);
+  emit.toWarehouse("externalOrderUpdate", body);
+
   return;
 }
