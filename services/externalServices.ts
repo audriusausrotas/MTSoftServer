@@ -64,6 +64,8 @@ export async function orderFence(body: any) {
 export async function orderAditionalFence(body: any) {
   const { projectOrderNr, message, data } = body;
 
+  console.log(body);
+
   const production = await findProductionById(projectOrderNr);
 
   if (message)
