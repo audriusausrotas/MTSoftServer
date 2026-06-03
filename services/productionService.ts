@@ -247,40 +247,6 @@ export async function calculateBindings(project: HydratedDocument<Project>, fenc
   return bindings;
 }
 
-// --------------------------------------------------
-// 3. Fences transformavimas į gamybos formatą
-// --------------------------------------------------
-// export function transformFencesForProduction(
-//   project: HydratedDocument<Project>,
-//   fences: FenceSetup[],
-// ) {
-//   return project.fenceMeasures.reduce((acc: any[], item: any) => {
-//     const currentFence = fences.find((f: any) => f.name === item.name);
-//     if (!currentFence || currentFence.category !== "Tvora") return acc;
-
-//     const fenceRename = item.seeThrough
-//       .replace("š", "s")
-//       .replace("25% Pramatomumas", "pramatoma25")
-//       .replace("50% Pramatomumas", "pramatoma50")
-//       .toLowerCase();
-
-//     const step = currentFence.steps[fenceRename as keyof SeeThroughSteps] || 0;
-
-//     acc.push({
-//       ...item,
-//       step,
-//       measures: item.measures.map((m: any) => ({
-//         ...m,
-//         cut: undefined,
-//         done: undefined,
-//         postone: m.gates.exist ? true : false,
-//       })),
-//     });
-
-//     return acc;
-//   }, []);
-// }
-
 export function transformFencesForProduction(
   project: HydratedDocument<Project>,
   fences: FenceSetup[],
@@ -384,4 +350,10 @@ export async function deleteProduction(_id: string) {
   emit.toInstallation("deleteProduction", { _id });
 
   return true;
+}
+
+export async function findProductionById(_id: string) {
+  const production = await productionSchema.findById(_id);
+  if (!production) throw new Error("Gamybos įrašas nerastas");
+  return production;
 }

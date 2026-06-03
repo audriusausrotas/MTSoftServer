@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import response from "../modules/response";
 import userSchema from "../schemas/userSchema";
-import { orderFence } from "../services/externalServices";
+import { orderFence, orderAditionalFence } from "../services/externalServices";
 
 export default {
   //////////////////// get requests ////////////////////////////////////
@@ -19,21 +19,31 @@ export default {
       if (!data) return response(res, false, null, "Vartotoji nerasti");
 
       return response(res, true, data);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Klaida:", error);
-      return response(res, false, null, "Serverio klaida");
+      return response(res, false, null, error.message);
     }
   },
 
   orderFence: async (req: Request, res: Response) => {
     try {
-      // const result = await orderFence(req.body);
       const body = JSON.parse(req.body.data);
       const result = await orderFence(body);
-      return response(res, true, result, "testinu atsakyma");
-    } catch (error) {
+      return response(res, true, result, "Tvora sėkmingai užsakyta");
+    } catch (error: any) {
       console.error("Klaida:", error);
-      return response(res, false, null, "Serverio klaida");
+      return response(res, false, null, error.message);
+    }
+  },
+
+  orderAdditionalFence: async (req: Request, res: Response) => {
+    try {
+      const body = JSON.parse(req.body.data);
+      await orderAditionalFence(body);
+      return response(res, true, null, "Papildomos detalės sėkmingai užsakytos");
+    } catch (error: any) {
+      console.error("Klaida:", error);
+      return response(res, false, null, error.message);
     }
   },
 };

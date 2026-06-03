@@ -34,6 +34,12 @@ const router = express.Router();
 router.get("/getManagers", checkPartners, externalRequests.getManagers);
 
 router.post("/orderFence", checkPartners, uploadFiles, externalRequests.orderFence);
+router.post(
+  "/orderAdditionalFence",
+  checkPartners,
+  uploadFiles,
+  externalRequests.orderAdditionalFence,
+);
 
 /////////////////////// Auth /////////////////////////////
 

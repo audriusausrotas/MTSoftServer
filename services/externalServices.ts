@@ -1,5 +1,5 @@
 import { calculateEstimate } from "./calculationsServices";
-import { createProductionRecord } from "./productionService";
+import { createProductionRecord, findProductionById } from "./productionService";
 import { addProjectComment, changeCompletionDate, createProjectService } from "./projectService";
 import { getUserById } from "./userServices";
 import emit from "../sockets/emits";
@@ -53,9 +53,38 @@ export async function orderFence(body: any) {
     data.comments,
     data.files,
   );
+
   emit.toAdmin("newExternalProduction", production);
   emit.toProduction("newExternalProduction", production);
   emit.toWarehouse("newExternalProduction", production);
 
   return result;
+}
+
+export async function orderAditionalFence(body: any) {
+  const { projectOrderNr, message, data } = body;
+
+  const production = await findProductionById(projectOrderNr);
+
+  if (message)
+    production.comments.push({
+      date: new Date().toISOString(),
+      comment: message,
+      creator: production.client.username,
+    });
+
+  production.bindings = [
+    ...(production?.bindings || []),
+    {
+      id: new Date().getTime().toString(),
+      color: "",
+      height: 0,
+      name: "PAPILDOMAS UŽSAKYMAS",
+      quantity: 0,
+      postone: true,
+    },
+    ...data.bindings,
+  ];
+
+  await production.save();
 }
