@@ -493,6 +493,8 @@ export interface Worker {
 export interface Job {
   _id: Types.ObjectId;
   address: string;
+  orderNumber: string;
+  color: string;
 }
 
 export interface Schedule {
