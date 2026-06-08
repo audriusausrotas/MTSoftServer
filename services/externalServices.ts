@@ -8,6 +8,7 @@ import {
 } from "./projectService";
 import { getUserById } from "./userServices";
 import emit from "../sockets/emits";
+import { v4 as uuidv4 } from "uuid";
 
 export async function orderFence(body: any) {
   const { data, client, date, deliveryMethod, message, to, discount } = body;
@@ -101,7 +102,7 @@ export async function orderAditionalFence(body: any) {
   const calculateEstimateResult = await calculateEstimate(estimateData);
 
   const defaultResult = {
-    id: "",
+    id: uuidv4(),
     name: "---------- Naunas užsakymas ----------",
     price: 0,
     cost: 0,
@@ -130,7 +131,7 @@ export async function orderAditionalFence(body: any) {
   };
 
   const defaultWorks = {
-    id: "",
+    id: uuidv4(),
     name: "---------- Naunas užsakymas ----------",
     quantity: 0,
     price: 0,
