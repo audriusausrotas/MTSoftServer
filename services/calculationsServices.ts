@@ -170,7 +170,7 @@ const calculateResults = (
         break;
 
       case "galinis":
-        bindingName = isUkraine ? defaultValues.retailBindingsEco : defaultValues.retailBindingsEco;
+        bindingName = isUkraine ? defaultValues.retailBindingsEco : defaultValues.retailBindings;
         lengthMultiplier = 2;
         break;
 
@@ -181,6 +181,7 @@ const calculateResults = (
 
       case "kampas":
         bindingName = isUkraine ? defaultValues.retailBindingsEco : defaultValues.retailBindings;
+        lengthMultiplier = 2;
         break;
 
       case "elementas":
