@@ -62,7 +62,7 @@ const calculateResults = (
   let material = "";
 
   const pushFence = (item: any) => {
-    const existing = data.fences.find(
+    const existing = data?.fences?.find(
       (fence: any) =>
         fence.name === item.name &&
         fence.color === item.color &&
@@ -75,7 +75,7 @@ const calculateResults = (
       existing.elements += item.elements;
       existing.length += item.length;
     } else {
-      data.fences.push({
+      data?.fences?.push({
         ...item,
         quantity: item.quantity,
         elements: item.elements,
