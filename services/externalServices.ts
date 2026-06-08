@@ -1,6 +1,11 @@
 import { calculateEstimate } from "./calculationsServices";
 import { createProductionRecord, findProductionById } from "./productionService";
-import { addProjectComment, changeCompletionDate, createProjectService } from "./projectService";
+import {
+  addProjectComment,
+  changeCompletionDate,
+  createProjectService,
+  findProjectById,
+} from "./projectService";
 import { getUserById } from "./userServices";
 import emit from "../sockets/emits";
 
@@ -65,6 +70,7 @@ export async function orderAditionalFence(body: any) {
   const { projectOrderNr, message, data } = body;
 
   const production = await findProductionById(projectOrderNr);
+  const project = await findProjectById(projectOrderNr);
 
   if (message)
     production.comments.push({
@@ -87,6 +93,23 @@ export async function orderAditionalFence(body: any) {
   ];
 
   await production.save();
+
+  const estimateData = {
+    bindings: data,
+  };
+  const calculateEstimateResult = await calculateEstimate(estimateData);
+
+  project.results = [...project.results, ...calculateEstimateResult.results];
+  project.works = [...project.works, ...calculateEstimateResult.works];
+  project.totalPrice = project.totalPrice + calculateEstimateResult.totals.totalPrice;
+  project.totalCost = project.totalCost + calculateEstimateResult.totals.totalCost;
+  project.totalProfit = project.totalProfit + calculateEstimateResult.totals.totalProfit;
+  project.totalMargin = (project.totalMargin + calculateEstimateResult.totals.totalMargin) / 2;
+  project.priceVAT = project.priceVAT + calculateEstimateResult.totals.priceVAT;
+  project.priceWithDiscount =
+    project.priceWithDiscount + calculateEstimateResult.totals.priceWithDiscount;
+
+  await project.save();
 
   emit.toAdmin("externalOrderUpdate", body);
   emit.toProduction("externalOrderUpdate", body);
