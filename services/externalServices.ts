@@ -100,8 +100,51 @@ export async function orderAditionalFence(body: any) {
   };
   const calculateEstimateResult = await calculateEstimate(estimateData);
 
-  project.results = [...project.results, ...calculateEstimateResult.results];
-  project.works = [...project.works, ...calculateEstimateResult.works];
+  const defaultResult = {
+    id: "",
+    name: "---------- Naunas užsakymas ----------",
+    price: 0,
+    cost: 0,
+    category: "",
+    quantity: 0,
+    height: 0,
+    twoSided: "",
+    direction: "",
+    seeThrough: "",
+    space: 0,
+    color: "",
+    totalPrice: 0,
+    totalCost: 0,
+    profit: 0,
+    margin: 0,
+    width: null,
+    delivered: false,
+    ordered: false,
+    retail: false,
+    units: false,
+    material: "",
+    manufacturer: "",
+    auto: "",
+    lock: "",
+    installation: "",
+  };
+
+  const defaultWorks = {
+    id: "",
+    name: "---------- Naunas užsakymas ----------",
+    quantity: 0,
+    price: 0,
+    cost: 0,
+    totalCost: 0,
+    totalPrice: 0,
+    margin: 0,
+    profit: 0,
+    done: false,
+    retail: false,
+  };
+
+  project.results = [...project.results, defaultResult, ...calculateEstimateResult.results];
+  project.works = [...project.works, defaultWorks, ...calculateEstimateResult.works];
   project.totalPrice = project.totalPrice + calculateEstimateResult.totals.totalPrice;
   project.totalCost = project.totalCost + calculateEstimateResult.totals.totalCost;
   project.totalProfit = project.totalProfit + calculateEstimateResult.totals.totalProfit;
