@@ -9,7 +9,6 @@ import { Project } from "../data/interfaces";
 import { Request, Response } from "express";
 import response from "../modules/response";
 import emit from "../sockets/emits";
-import productionSchema from "../schemas/productionSchema";
 import gateSchema from "../schemas/gateSchema";
 import finishedSchema from "../schemas/finishedSchema";
 import {
