@@ -33,7 +33,7 @@ export async function orderFence(body: any) {
     priceVAT: calculateEstimateResult.totals.priceVAT,
     priceWithDiscount: calculateEstimateResult.totals.priceWithDiscount,
     discount: discount,
-    status: "Naujas užsakymas",
+    status: "Papildomas užsalymas",
     advance: 0,
     retail: false,
   };
@@ -103,7 +103,7 @@ export async function orderAditionalFence(body: any) {
 
   const defaultResult = {
     id: uuidv4(),
-    name: "---------- Naunas užsakymas ----------",
+    name: "---------- Papildomas užsakymas ----------",
     price: 0,
     cost: 0,
     category: "",
@@ -132,7 +132,7 @@ export async function orderAditionalFence(body: any) {
 
   const defaultWorks = {
     id: uuidv4(),
-    name: "---------- Naunas užsakymas ----------",
+    name: "---------- Papildomas užsakymas ----------",
     quantity: 0,
     price: 0,
     cost: 0,
