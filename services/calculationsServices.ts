@@ -60,7 +60,7 @@ const calculateResults = (
   };
   let manufacturer = "";
   let material = "";
-
+  let holesNeeded = false;
   const pushFence = (item: any) => {
     const existing = data?.fences?.find(
       (fence: any) =>
@@ -114,6 +114,8 @@ const calculateResults = (
   for (const item of fences) {
     manufacturer = item.manufacturer;
     material = item.material;
+    holesNeeded = item.holes === "Taip";
+
     const fenceSettings = fencePrices.find(
       (fence) => fence.name.toLowerCase() === item.name.toLowerCase().trim(),
     );
@@ -128,7 +130,7 @@ const calculateResults = (
         totalElements += measure.elements;
       }
 
-      if (item.holes === "Taip") {
+      if (holesNeeded) {
         data.totalHoles += totalElements * (fenceSettings?.details?.holes || 0);
         rivets += Math.ceil(totalElements) * 4;
       }
@@ -186,6 +188,10 @@ const calculateResults = (
 
       case "elementas":
         bindingName = binding.name || "Nestandartinis elementas";
+        if (holesNeeded) {
+          data.totalHoles += (binding.quantity || 0) * 8;
+          addRivets(binding.color || "", Math.ceil(binding.quantity || 0) * 4);
+        }
         break;
 
       default:
