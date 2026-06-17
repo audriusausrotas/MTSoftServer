@@ -70,12 +70,6 @@ export async function orderFence(body: any) {
 
 export async function orderAditionalFence(body: any) {
   const { projectOrderNr, message, data } = body;
-  console.log("=== orderAditionalFence ===");
-  console.log(data.fences);
-  console.log(data.bindings);
-  console.log("======");
-  console.log(data);
-  console.log("=== orderAditionalFence ===");
 
   const production = await findProductionById(projectOrderNr);
   const project = await findProjectById(projectOrderNr);
@@ -97,14 +91,14 @@ export async function orderAditionalFence(body: any) {
       quantity: 0,
       postone: true,
     },
-    ...data,
+    ...data[0].bindings,
   ];
 
   await production.save();
 
   const estimateData = {
-    fences: data.fences || [],
-    bindings: data.bindings || [],
+    fences: data[0].fences || [],
+    bindings: data[0].bindings || [],
   };
 
   const calculateEstimateResult = await calculateEstimate(estimateData);
