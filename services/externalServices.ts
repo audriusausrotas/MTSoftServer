@@ -81,6 +81,7 @@ export async function orderAditionalFence(body: any) {
       creator: production.client.username,
     });
 
+  data[0].fences.side = "Papildoma" + production.fences.length;
   production.fences = [...(production?.fences || []), ...data[0].fences];
 
   production.bindings = [
@@ -89,7 +90,7 @@ export async function orderAditionalFence(body: any) {
       id: new Date().getTime().toString(),
       color: "",
       height: 0,
-      name: "PAPILDOMAS UŽSAKYMAS",
+      name: "----Papildomai----",
       quantity: 0,
       postone: true,
     },
@@ -107,7 +108,7 @@ export async function orderAditionalFence(body: any) {
 
   const defaultResult = {
     id: uuidv4(),
-    name: "---------- Papildomas užsakymas ----------",
+    name: "------------- Papildomas užsakymas -------------",
     price: 0,
     cost: 0,
     category: "",
@@ -136,7 +137,7 @@ export async function orderAditionalFence(body: any) {
 
   const defaultWorks = {
     id: uuidv4(),
-    name: "---------- Papildomas užsakymas ----------",
+    name: "------------- Papildomas užsakymas -------------",
     quantity: 0,
     price: 0,
     cost: 0,
