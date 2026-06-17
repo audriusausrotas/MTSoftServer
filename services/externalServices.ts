@@ -81,7 +81,6 @@ export async function orderAditionalFence(body: any) {
       creator: production.client.username,
     });
 
-  data[0].fences[0].side = "Papildoma" + production.fences.length;
   production.fences = [...(production?.fences || []), ...data[0].fences];
 
   production.bindings = [
