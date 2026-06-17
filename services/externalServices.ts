@@ -81,6 +81,8 @@ export async function orderAditionalFence(body: any) {
       creator: production.client.username,
     });
 
+  production.fences = [...(production?.fences || []), ...data[0].fences];
+
   production.bindings = [
     ...(production?.bindings || []),
     {
