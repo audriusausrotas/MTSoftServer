@@ -81,7 +81,7 @@ export async function orderAditionalFence(body: any) {
       creator: production.client.username,
     });
 
-  data[0].fences.side = "Papildoma" + production.fences.length;
+  data[0].fences[0].side = "Papildoma" + production.fences.length;
   production.fences = [...(production?.fences || []), ...data[0].fences];
 
   production.bindings = [
@@ -90,7 +90,7 @@ export async function orderAditionalFence(body: any) {
       id: new Date().getTime().toString(),
       color: "",
       height: 0,
-      name: "----Papildomai----",
+      name: "------ Papildomai ------",
       quantity: 0,
       postone: true,
     },
