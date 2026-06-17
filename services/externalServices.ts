@@ -96,8 +96,8 @@ export async function orderAditionalFence(body: any) {
   await production.save();
 
   const estimateData = {
-    fences: [],
-    bindings: data,
+    fences: data.fences || [],
+    bindings: data.bindings || [],
   };
   const calculateEstimateResult = await calculateEstimate(estimateData);
 
