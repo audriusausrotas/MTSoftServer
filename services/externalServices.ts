@@ -73,6 +73,8 @@ export async function orderAditionalFence(body: any) {
   console.log("=== orderAditionalFence ===");
   console.log(data.fences);
   console.log(data.bindings);
+  console.log("======");
+  console.log(data);
   console.log("=== orderAditionalFence ===");
 
   const production = await findProductionById(projectOrderNr);
