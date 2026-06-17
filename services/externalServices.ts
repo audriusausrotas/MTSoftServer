@@ -9,6 +9,7 @@ import {
 import { getUserById } from "./userServices";
 import emit from "../sockets/emits";
 import { v4 as uuidv4 } from "uuid";
+import console from "node:console";
 
 export async function orderFence(body: any) {
   const { data, client, date, deliveryMethod, message, to, discount } = body;
@@ -70,6 +71,14 @@ export async function orderFence(body: any) {
 export async function orderAditionalFence(body: any) {
   const { projectOrderNr, message, data } = body;
 
+  console.log(projectOrderNr);
+  console.log(message);
+  console.log(data);
+
+  console.log("===========================");
+
+  console.log(body);
+
   const production = await findProductionById(projectOrderNr);
   const project = await findProjectById(projectOrderNr);
 
@@ -100,7 +109,6 @@ export async function orderAditionalFence(body: any) {
     bindings: data.bindings || [],
   };
 
-  console.log(estimateData);
   const calculateEstimateResult = await calculateEstimate(estimateData);
 
   const defaultResult = {
