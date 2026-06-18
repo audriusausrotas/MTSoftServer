@@ -89,7 +89,7 @@ export async function orderAditionalFence(body: any) {
         id: new Date().getTime().toString(),
         color: "",
         height: 0,
-        name: "======= Papildomai =======",
+        name: "------ Papildomai ------",
         quantity: 0,
         postone: true,
       },
@@ -111,7 +111,7 @@ export async function orderAditionalFence(body: any) {
 
   const defaultResult = {
     id: uuidv4(),
-    name: "=============== Papildomas užsakymas ===============",
+    name: "---------- Papildomas užsakymas ----------",
     price: 0,
     cost: 0,
     category: "",
@@ -140,7 +140,7 @@ export async function orderAditionalFence(body: any) {
 
   const defaultWorks = {
     id: uuidv4(),
-    name: "=============== Papildomas užsakymas ===============",
+    name: "---------- Papildomas užsakymas ----------",
     quantity: 0,
     price: 0,
     cost: 0,
