@@ -125,98 +125,106 @@ const calculateResults = (
       let totalElements = 0;
       let rivets = 0;
 
-      for (const measure of item.measures) {
-        totalQuantity += (measure.length / 100) * measure.elements;
-        totalElements += measure.elements;
+      if (item.measures.length > 0) {
+        for (const measure of item.measures) {
+          totalQuantity += (measure.length / 100) * measure.elements;
+          totalElements += measure.elements;
+        }
+
+        if (holesNeeded) {
+          data.totalHoles += totalElements * (fenceSettings?.details?.holes || 0);
+          rivets += Math.ceil(totalElements) * 4;
+        }
+
+        if (rivets) addRivets(item.color, rivets);
+
+        const initialFenceData = {
+          ...item,
+          name: fenceSettings?.name || "NEATPAŽINTA: " + item.name,
+          length: item.totalLength,
+          height: 0,
+          quantity: totalQuantity,
+          elements: totalElements,
+        };
+
+        pushFence(initialFenceData);
       }
-
-      if (holesNeeded) {
-        data.totalHoles += totalElements * (fenceSettings?.details?.holes || 0);
-        rivets += Math.ceil(totalElements) * 4;
-      }
-
-      if (rivets) addRivets(item.color, rivets);
-
-      const initialFenceData = {
-        ...item,
-        name: fenceSettings?.name || "NEATPAŽINTA: " + item.name,
-        length: item.totalLength,
-        height: 0,
-        quantity: totalQuantity,
-        elements: totalElements,
-      };
-
-      pushFence(initialFenceData);
     }
   }
 
-  for (const binding of bindings) {
-    const totalLength = (binding.height || 0) * (binding.quantity || 0);
+  if (bindings.length > 0) {
+    for (const binding of bindings) {
+      const totalLength = (binding.height || 0) * (binding.quantity || 0);
 
-    let bindingName = "NERASTA";
-    let lengthMultiplier = 1;
+      let bindingName = "NERASTA";
+      let lengthMultiplier = 1;
 
-    const isUkraine = manufacturer === "Ukranina";
+      const isUkraine = manufacturer === "Ukranina";
 
-    switch (binding.category) {
-      case "koja":
-        bindingName = isUkraine ? defaultValues.retailSingleLegEco : defaultValues.retailSingleLeg;
-        break;
+      switch (binding.category) {
+        case "koja":
+          bindingName = isUkraine
+            ? defaultValues.retailSingleLegEco
+            : defaultValues.retailSingleLeg;
+          break;
 
-      case "dviguba":
-        bindingName = isUkraine ? defaultValues.retailDoubleLegEco : defaultValues.retailDoubleLeg;
-        break;
+        case "dviguba":
+          bindingName = isUkraine
+            ? defaultValues.retailDoubleLegEco
+            : defaultValues.retailDoubleLeg;
+          break;
 
-      case "centrinis":
-        bindingName = isUkraine ? defaultValues.retailBindingsEco : defaultValues.retailBindings;
-        break;
+        case "centrinis":
+          bindingName = isUkraine ? defaultValues.retailBindingsEco : defaultValues.retailBindings;
+          break;
 
-      case "galinis":
-        bindingName = isUkraine ? defaultValues.retailBindingsEco : defaultValues.retailBindings;
-        lengthMultiplier = 2;
-        break;
+        case "galinis":
+          bindingName = isUkraine ? defaultValues.retailBindingsEco : defaultValues.retailBindings;
+          lengthMultiplier = 2;
+          break;
 
-      case "elka":
-        bindingName = isUkraine ? defaultValues.retailBindingsEco : defaultValues.retailBindings;
-        lengthMultiplier = 0.5;
-        break;
+        case "elka":
+          bindingName = isUkraine ? defaultValues.retailBindingsEco : defaultValues.retailBindings;
+          lengthMultiplier = 0.5;
+          break;
 
-      case "kampas":
-        bindingName = isUkraine ? defaultValues.retailBindingsEco : defaultValues.retailBindings;
-        lengthMultiplier = 2;
-        break;
+        case "kampas":
+          bindingName = isUkraine ? defaultValues.retailBindingsEco : defaultValues.retailBindings;
+          lengthMultiplier = 2;
+          break;
 
-      case "elementas":
-        bindingName = binding.name || "Nestandartinis elementas";
-        if (holesNeeded) {
-          data.totalHoles += (binding.quantity || 0) * 8;
-          addRivets(binding.color || "", Math.ceil(binding.quantity || 0) * 4);
-        }
-        break;
+        case "elementas":
+          bindingName = binding.name || "Nestandartinis elementas";
+          if (holesNeeded) {
+            data.totalHoles += (binding.quantity || 0) * 8;
+            addRivets(binding.color || "", Math.ceil(binding.quantity || 0) * 4);
+          }
+          break;
 
-      default:
-        bindingName = "Nestandartinis lankstinys";
-        break;
-    }
+        default:
+          bindingName = "Nestandartinis lankstinys";
+          break;
+      }
 
-    const length = (totalLength * lengthMultiplier) / 100;
+      const length = (totalLength * lengthMultiplier) / 100;
 
-    if (binding.category === "elementas") {
-      pushFence({
-        name: bindingName,
-        color: binding.color,
-        material,
-        manufacturer,
-        quantity: length,
-        elements: binding.quantity || 0,
-        length: totalLength,
-      });
-    } else {
-      pushBindings({
-        name: bindingName,
-        color: binding.color,
-        length,
-      });
+      if (binding.category === "elementas") {
+        pushFence({
+          name: bindingName,
+          color: binding.color,
+          material,
+          manufacturer,
+          quantity: length,
+          elements: binding.quantity || 0,
+          length: totalLength,
+        });
+      } else {
+        pushBindings({
+          name: bindingName,
+          color: binding.color,
+          length,
+        });
+      }
     }
   }
   return data;
