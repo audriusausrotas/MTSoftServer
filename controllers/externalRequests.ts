@@ -40,7 +40,7 @@ export default {
     try {
       const body = JSON.parse(req.body.data);
       await orderAditionalFence(body);
-      return response(res, true, body, "Papildomos detalės sėkmingai užsakytos");
+      return response(res, true, null, "Papildomos detalės sėkmingai užsakytos");
     } catch (error: any) {
       console.error("Klaida:", error);
       return response(res, false, null, error.message);
