@@ -9,7 +9,6 @@ import {
 import { getUserById } from "./userServices";
 import emit from "../sockets/emits";
 import { v4 as uuidv4 } from "uuid";
-import console from "node:console";
 
 export async function orderFence(body: any) {
   const { data, client, date, deliveryMethod, message, to, discount } = body;
@@ -81,22 +80,27 @@ export async function orderAditionalFence(body: any) {
       creator: production.client.username,
     });
 
-  production.fences = [...(production?.fences || []), ...data[0].fences];
+  if (data[0].fences.length) production.fences = [...(production?.fences || []), ...data[0].fences];
 
-  production.bindings = [
-    ...(production?.bindings || []),
-    {
-      id: new Date().getTime().toString(),
-      color: "",
-      height: 0,
-      name: "------ Papildomai ------",
-      quantity: 0,
-      postone: true,
-    },
-    ...data[0].bindings,
-  ];
+  if (data[0].bindings.length)
+    production.bindings = [
+      ...(production?.bindings || []),
+      {
+        id: new Date().getTime().toString(),
+        color: "",
+        height: 0,
+        name: "======= Papildomai =======",
+        quantity: 0,
+        postone: true,
+      },
+      ...data[0].bindings,
+    ];
 
   await production.save();
+
+  emit.toAdmin("aditionalOrderedProduction", body);
+  emit.toProduction("aditionalOrderedProduction", body);
+  emit.toWarehouse("aditionalOrderedProduction", body);
 
   const estimateData = {
     fences: data[0].fences || [],
@@ -107,7 +111,7 @@ export async function orderAditionalFence(body: any) {
 
   const defaultResult = {
     id: uuidv4(),
-    name: "------------- Papildomas užsakymas -------------",
+    name: "=============== Papildomas užsakymas ===============",
     price: 0,
     cost: 0,
     category: "",
@@ -136,7 +140,7 @@ export async function orderAditionalFence(body: any) {
 
   const defaultWorks = {
     id: uuidv4(),
-    name: "------------- Papildomas užsakymas -------------",
+    name: "=============== Papildomas užsakymas ===============",
     quantity: 0,
     price: 0,
     cost: 0,
@@ -158,11 +162,11 @@ export async function orderAditionalFence(body: any) {
   project.priceWithDiscount =
     project.priceWithDiscount + calculateEstimateResult.totals.priceWithDiscount;
 
-  await project.save();
+  const newProject = await project.save();
 
-  emit.toAdmin("externalOrderUpdate", body);
-  emit.toProduction("externalOrderUpdate", body);
-  emit.toWarehouse("externalOrderUpdate", body);
+  emit.toAdmin("aditionalOrderedProject", newProject);
+  emit.toProduction("aditionalOrderedProject", newProject);
+  emit.toWarehouse("aditionalOrderedProject", newProject);
 
   return;
 }
