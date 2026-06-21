@@ -81,7 +81,13 @@ export default {
       if (!newData) {
         return response(res, false, null, "Klaida saugant duomenis");
       }
+
       const responseData = { _id, id, files: newData.files };
+
+      if (category === "fence")
+        responseData.files = newData.fences.find((fence: any) => fence.id === id)?.files;
+      else if (category === "binding")
+        responseData.files = newData.bindings.find((binding: any) => binding.id === id)?.files;
 
       if (category === "production") {
         emit.toAdmin("updateProductionFiles", responseData);
