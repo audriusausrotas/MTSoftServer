@@ -342,6 +342,7 @@ export default {
         cut: undefined,
         done: undefined,
         postone: false,
+        files: [],
       };
 
       order.bindings?.push(newBinding);

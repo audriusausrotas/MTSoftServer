@@ -6,6 +6,7 @@ import emit from "../sockets/emits";
 import path from "path";
 import fs from "fs";
 import multer from "multer";
+import { ProductionFence } from "../data/interfaces";
 
 const uploadRoot = "/var/www/mtsoft/uploads";
 
@@ -40,28 +41,60 @@ export default {
       const filesArray = req.files as Express.Multer.File[];
       const filePaths = filesArray.map((file) => `/uploads/${file.filename}`);
 
-      const { category, _id } = req.body;
+      const { category, _id, id } = req.body;
 
-      let project;
-      if (category === "production") project = await productionSchema.findById(_id);
+      let project: any;
+
+      if (category === "production" || category === "binding" || category === "fence")
+        project = await productionSchema.findById(_id);
       else project = await projectSchema.findById(_id);
 
       if (!project) {
         return response(res, false, null, "Klaida įkeliant failus");
       }
 
-      project.files = [...(project.files || []), ...filePaths];
+      if (category === "fence") {
+        project.fences = project.fences.map((fence: ProductionFence) => {
+          if (fence.id === id) {
+            return {
+              ...fence,
+              files: [...(fence.files || []), ...filePaths],
+            };
+          }
+          return fence;
+        });
+      } else if (category === "binding") {
+        project.bindings = project.bindings.map((binding: any) => {
+          if (binding.id === id) {
+            return {
+              ...binding,
+              files: [...(binding.files || []), ...filePaths],
+            };
+          }
+          return binding;
+        });
+      } else {
+        project.files = [...(project.files || []), ...filePaths];
+      }
       const newData = await project.save();
 
       if (!newData) {
         return response(res, false, null, "Klaida saugant duomenis");
       }
-      const responseData = { _id, files: newData.files };
+      const responseData = { _id, id, files: newData.files };
 
       if (category === "production") {
         emit.toAdmin("updateProductionFiles", responseData);
         emit.toProduction("updateProductionFiles", responseData);
         emit.toWarehouse("updateProductionFiles", responseData);
+      } else if (category === "fence") {
+        emit.toAdmin("updateFenceFiles", responseData);
+        emit.toProduction("updateFenceFiles", responseData);
+        emit.toWarehouse("updateFenceFiles", responseData);
+      } else if (category === "binding") {
+        emit.toAdmin("updateBindingFiles", responseData);
+        emit.toProduction("updateBindingFiles", responseData);
+        emit.toWarehouse("updateBindingFiles", responseData);
       } else {
         emit.toAdmin("updateProjectFiles", responseData);
         emit.toInstallation("updateProjectFiles", responseData);

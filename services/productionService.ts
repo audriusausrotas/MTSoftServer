@@ -65,6 +65,7 @@ export async function calculateBindings(project: HydratedDocument<Project>, fenc
         cut: undefined,
         done: undefined,
         postone: false,
+        files: [],
       });
     }
     found = false;

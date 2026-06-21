@@ -436,6 +436,7 @@ export interface ProductionFence {
   elements: number;
   totalLength: number;
   totalQuantity: number;
+  files: string[];
   measures: ProductionMeasure[];
 }
 
@@ -476,6 +477,7 @@ export interface Bindings {
   done: number | undefined;
   postone: boolean;
   category?: string;
+  files: string[];
 }
 
 export interface BindingItem {
