@@ -7,6 +7,7 @@ import path from "path";
 import fs from "fs";
 import multer from "multer";
 import { ProductionFence } from "../data/interfaces";
+import { deleteFiles } from "../services/uploadServices";
 
 const uploadRoot = "/var/www/mtsoft/uploads";
 
@@ -120,7 +121,8 @@ export default {
       const { files, category, _id } = req.body;
 
       let data;
-      if (category === "production") data = await productionSchema.findById(_id);
+      if (category === "production" || category === "binding" || category === "fence")
+        data = await productionSchema.findById(_id);
       else data = await projectSchema.findById(_id);
 
       if (!data) return response(res, false, null, "Serverio klaida");
@@ -129,24 +131,8 @@ export default {
         return response(res, false, null, "Nepasirinkti failai");
       }
 
-      const deletePromises = files.map((filePath: string) => {
-        const sanitizedPath = path.join(__dirname, "..", filePath);
-        return new Promise((resolve) => {
-          fs.unlink(sanitizedPath, (err: any) => {
-            if (err) {
-              if (err.code === "ENOENT") {
-                // File does not exist, resolve silently
-                console.warn(`File not found, skipping: ${filePath}`);
-                return resolve(`File not found, skipped: ${filePath}`);
-              }
-              console.error(`Error deleting ${filePath}:`, err);
-            }
-            resolve(`Failas ištrintas arba jau neegzistuoja: ${filePath}`);
-          });
-        });
-      });
+      await deleteFiles(files);
 
-      await Promise.all(deletePromises);
       data.files = data?.files?.filter((file: string) => !files.includes(file));
       const newData = await data.save();
 

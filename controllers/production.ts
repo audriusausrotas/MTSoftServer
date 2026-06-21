@@ -8,6 +8,7 @@ import emit from "../sockets/emits";
 
 import { deleteProduction, newProductionService } from "../services/productionService";
 import productionArchiveSchema from "../schemas/productionArchiveSchema";
+import { deleteFiles } from "../services/uploadServices";
 
 // pridet checka ar useris yra adminas
 
@@ -63,9 +64,22 @@ export default {
 
       const order = await productionSchema.findById(_id);
 
-      if (!order) return response(res, false, null, "Užsakymas nerastas");
+      if (!order) {
+        return response(res, false, null, "Užsakymas nerastas");
+      }
 
-      order!.bindings = order.bindings!.filter((item) => item.id !== bindingId);
+      // randam binding prieš ištrinant
+      const binding = order.bindings?.find((item) => item.id === bindingId);
+
+      if (!binding) {
+        return response(res, false, null, "Apkaustas nerastas");
+      }
+
+      const files = binding.files || [];
+
+      await deleteFiles(files);
+
+      order.bindings = order.bindings?.filter((item) => item.id !== bindingId) || [];
 
       await order.save();
 
@@ -85,24 +99,36 @@ export default {
 
   deleteFence: async (req: Request, res: Response) => {
     try {
-      const { _id, index } = req.body;
+      const { _id, fenceId } = req.body;
 
       const project = await productionSchema.findById(_id);
 
-      if (!project) return response(res, false, null, "Projektas nerastas");
+      if (!project) {
+        return response(res, false, null, "Projektas nerastas");
+      }
 
-      project.fences = project.fences.filter((fence, i) => i !== index);
+      const fence = project.fences?.find((item) => item.id === fenceId);
+
+      if (!fence) {
+        return response(res, false, null, "Tvora nerasta");
+      }
+
+      const files = fence.files || [];
+
+      await deleteFiles(files);
+
+      project.fences = project.fences.filter((item) => item.id !== fenceId);
 
       await project.save();
 
-      const responseData = { _id, index };
+      const responseData = { _id, fenceId };
 
       emit.toAdmin("deleteProductionFence", responseData);
       emit.toProduction("deleteProductionFence", responseData);
       emit.toWarehouse("deleteProductionFence", responseData);
       emit.toInstallation("deleteProductionFence", responseData);
 
-      return response(res, true, responseData, "Išsaugota");
+      return response(res, true, responseData, "Ištrinta");
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");

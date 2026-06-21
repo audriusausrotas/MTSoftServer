@@ -13,6 +13,7 @@ import { HydratedDocument, Types } from "mongoose";
 import emit from "../sockets/emits";
 import { v4 } from "uuid";
 import productionArchiveSchema from "../schemas/productionArchiveSchema";
+import { deleteFiles } from "./uploadServices";
 
 export async function newProductionService(projectId: Types.ObjectId) {
   const project = await validateProductionStart(projectId);
@@ -289,7 +290,16 @@ export function emitProductionEvents(production: Production, project: HydratedDo
 
 export async function deleteProduction(_id: string) {
   const production = await productionSchema.findById(_id);
+
   if (!production) throw new Error("Projektas nerastas");
+
+  const files: string[] = [
+    ...(production.files || []),
+    ...(production.fences?.flatMap((fence: any) => fence.files || []) || []),
+    ...(production.bindings?.flatMap((binding: any) => binding.files || []) || []),
+  ];
+
+  await deleteFiles(files);
 
   const doesExist = await productionArchiveSchema.findById(_id);
   if (!doesExist) {
