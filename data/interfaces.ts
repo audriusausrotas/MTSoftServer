@@ -386,7 +386,7 @@ export interface Production {
   orderNumber: string;
   status: string;
   fences: ProductionFence[];
-  bindings: Bindings[] | null;
+  bindings: Bindings[];
   comments: ProjectComment[];
   files: string[];
   dateArchieved: string;
@@ -469,12 +469,12 @@ export interface ProjectComment {
 
 export interface Bindings {
   id: string;
-  color: string | undefined;
-  height: number | undefined;
-  name: string | undefined;
-  quantity: number | undefined;
-  cut: number | undefined;
-  done: number | undefined;
+  color: string;
+  height: number;
+  name: string;
+  quantity: number;
+  cut: number;
+  done: number;
   postone: boolean;
   category?: string;
   files: string[];

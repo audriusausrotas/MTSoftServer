@@ -360,12 +360,12 @@ export default {
 
       const newBinding = {
         id: uuidv4(),
-        name: undefined,
-        height: undefined,
-        quantity: undefined,
-        color: undefined,
-        cut: undefined,
-        done: undefined,
+        name: "",
+        height: 0,
+        quantity: 0,
+        color: "",
+        cut: 0,
+        done: 0,
         postone: false,
         files: [],
       };

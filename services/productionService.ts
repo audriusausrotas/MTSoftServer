@@ -63,8 +63,8 @@ export async function calculateBindings(project: HydratedDocument<Project>, fenc
         height,
         name,
         quantity,
-        cut: undefined,
-        done: undefined,
+        cut: 0,
+        done: 0,
         postone: false,
         files: [],
       });
@@ -102,7 +102,7 @@ export async function calculateBindings(project: HydratedDocument<Project>, fenc
       // Calculating Dile
       if (currentFence.name.includes("Dilė")) {
         if (item.direction === "Horizontali")
-          addBindings(color, measure.height, "Koja dviguba 20", 2);
+          addBindings(color, measure.height, "Koja dviguba 20 mm", 2);
 
         const currentLength = item.direction === "Vertikali" ? measure.height : measure.length;
 
@@ -172,13 +172,15 @@ export async function calculateBindings(project: HydratedDocument<Project>, fenc
                 ? lastHeight + stepHeight - (lastHeight - measure.height)
                 : measure.height + stepHeight - (measure.height - lastHeight);
 
-            isBindings && addBindings(color, maxHeight, "Kampas " + cornerRadius, 1);
+            isBindings && addBindings(color, maxHeight, "Kampas vidus" + cornerRadius, 1);
+            isBindings && addBindings(color, maxHeight, "Kampas išorė" + cornerRadius, 1);
             wasCorner = false;
             wasStep = false;
             lastHeight = measure.height;
           } else if (wasCorner) {
             const maxHeight = Math.max(lastHeight, measure.height);
-            isBindings && addBindings(color, maxHeight, "Kampas " + cornerRadius, 1);
+            isBindings && addBindings(color, maxHeight, "Kampas vidus" + cornerRadius, 1);
+            isBindings && addBindings(color, maxHeight, "Kampas išorė" + cornerRadius, 1);
             wasCorner = false;
             lastHeight = measure.height;
           } else if (wasStep) {
@@ -204,7 +206,19 @@ export async function calculateBindings(project: HydratedDocument<Project>, fenc
       });
     }
   });
-  return bindings;
+
+  const bindingsWithFiles = bindings.map((binding: Bindings) => {
+    const foundFile = findFilesByName(binding.name);
+    if (foundFile) {
+      return {
+        ...binding,
+        files: [foundFile],
+      };
+    }
+    return binding;
+  });
+
+  return bindingsWithFiles;
 }
 
 export function transformFencesForProduction(
@@ -214,6 +228,8 @@ export function transformFencesForProduction(
   return project.fenceMeasures.reduce((acc: any[], item: any) => {
     const currentFence = fences.find((f: any) => f.name === item.name);
     if (!currentFence || currentFence.category !== "Tvora") return acc;
+
+    const file = findFilesByName(currentFence.name);
 
     const fenceRename = item.seeThrough
       .replace("š", "s")
@@ -227,6 +243,7 @@ export function transformFencesForProduction(
 
     acc.push({
       ...item,
+      files: file ? [file] : [],
       step,
       measures: item.measures.map((m: any) => {
         const updated: any = {
@@ -288,6 +305,76 @@ export function emitProductionEvents(production: Production, project: HydratedDo
   emit.toAdmin("changeProjectStatus", { status: project.status });
 }
 
+// --------------------------------------------------
+// 7. failų suradimas pagal pavadinimą
+// --------------------------------------------------
+
+function findFilesByName(name: string) {
+  let foundFile: string = "";
+
+  switch (name.toLowerCase()) {
+    case "koja vienguba 20 mm":
+      foundFile = "/images/blueprints/koja_vienguba_20.jpg";
+      break;
+    case "koja vienguba 40 mm":
+      foundFile = "/images/blueprints/koja_vienguba_40.jpg";
+      break;
+    case "koja vienguba 55 mm":
+      foundFile = "/images/blueprints/koja_vienguba_55.jpg";
+      break;
+    case "koja dviguba 20 mm":
+      foundFile = "/images/blueprints/koja_dviguba_20.jpg";
+      break;
+    case "koja dviguba 40 mm":
+      foundFile = "/images/blueprints/koja_dviguba_40.jpg";
+      break;
+    case "koja dviguba 55 mm":
+      foundFile = "/images/blueprints/koja_dviguba_55.jpg";
+      break;
+    case "kampas vidus 90":
+      foundFile = "/images/blueprints/kampas_vidus_90.jpg";
+      break;
+    case "kampas išorė 90":
+      foundFile = "/images/blueprints/kampas_isore_90.jpg";
+      break;
+    case "daimond 60/90":
+      foundFile = "/images/blueprints/daimond6090.jpg";
+      break;
+    case "daimond 40/105":
+      foundFile = "/images/blueprints/daimond40105.jpg";
+      break;
+    case "daimond 60/140":
+      foundFile = "/images/blueprints/daimond60140.jpg";
+      break;
+    case "daimond vertical":
+      foundFile = "/images/blueprints/daimondvertical.jpg";
+      break;
+    case "dilė":
+      foundFile = "/images/blueprints/dilė.jpg";
+      break;
+    case "eglė":
+      foundFile = "/images/blueprints/eglė.jpg";
+      break;
+    case "eglė plus":
+      foundFile = "/images/blueprints/eglėplus.jpg";
+      break;
+    case "plank":
+      foundFile = "/images/blueprints/plank.jpg";
+      break;
+    case "žaliuzi":
+      foundFile = "/images/blueprints/žaliuzi.jpg";
+      break;
+
+    default:
+      break;
+  }
+
+  return foundFile;
+}
+
+// --------------------------------------------------
+// 8. Gamybos failų trynimas
+// --------------------------------------------------
 export async function deleteProduction(_id: string) {
   const production = await productionSchema.findById(_id);
 
