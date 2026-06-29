@@ -3,7 +3,6 @@ import productionSchema from "../schemas/productionSchema";
 import { Request, Response } from "express";
 import response from "../modules/response";
 import emit from "../sockets/emits";
-import path from "path";
 import fs from "fs";
 import multer from "multer";
 import { ProductionFence } from "../data/interfaces";
@@ -118,35 +117,87 @@ export default {
 
   deleteFiles: async (req: Request, res: Response) => {
     try {
-      const { files, category, _id } = req.body;
-
-      let data;
-      if (category === "production" || category === "binding" || category === "fence")
-        data = await productionSchema.findById(_id);
-      else data = await projectSchema.findById(_id);
-
-      if (!data) return response(res, false, null, "Serverio klaida");
+      const { files, category, _id, id } = req.body;
 
       if (!files || !Array.isArray(files) || files.length === 0) {
         return response(res, false, null, "Nepasirinkti failai");
       }
 
+      let project: any;
+
+      if (category === "production" || category === "binding" || category === "fence")
+        project = await productionSchema.findById(_id);
+      else project = await projectSchema.findById(_id);
+
+      if (!project) {
+        return response(res, false, null, "Projektas nerastas");
+      }
+
+      // Ištrina failus iš disko
       await deleteFiles(files);
 
-      data.files = data?.files?.filter((file: string) => !files.includes(file));
-      const newData = await data.save();
+      if (category === "fence") {
+        project.fences = project.fences.map((fence: ProductionFence) => {
+          if (fence.id === id) {
+            return {
+              ...fence,
+              files: (fence.files || []).filter((file: string) => !files.includes(file)),
+            };
+          }
 
-      const responseData = { _id, files: newData.files };
+          return fence;
+        });
+      } else if (category === "binding") {
+        project.bindings = project.bindings.map((binding: any) => {
+          if (binding.id === id) {
+            return {
+              ...binding,
+              files: (binding.files || []).filter((file: string) => !files.includes(file)),
+            };
+          }
+
+          return binding;
+        });
+      } else {
+        project.files = (project.files || []).filter((file: string) => !files.includes(file));
+      }
+
+      const newData = await project.save();
+
+      if (!newData) {
+        return response(res, false, null, "Klaida saugant duomenis");
+      }
+
+      const responseData = {
+        _id,
+        id,
+        files: newData.files,
+      };
+
+      if (category === "fence") {
+        responseData.files = newData.fences.find((fence: any) => fence.id === id)?.files || [];
+      } else if (category === "binding") {
+        responseData.files =
+          newData.bindings.find((binding: any) => binding.id === id)?.files || [];
+      }
 
       if (category === "production") {
         emit.toAdmin("updateProductionFiles", responseData);
         emit.toProduction("updateProductionFiles", responseData);
         emit.toWarehouse("updateProductionFiles", responseData);
+      } else if (category === "fence") {
+        emit.toAdmin("updateFenceFiles", responseData);
+        emit.toProduction("updateFenceFiles", responseData);
+        emit.toWarehouse("updateFenceFiles", responseData);
+      } else if (category === "binding") {
+        emit.toAdmin("updateBindingFiles", responseData);
+        emit.toProduction("updateBindingFiles", responseData);
+        emit.toWarehouse("updateBindingFiles", responseData);
       } else {
         emit.toAdmin("updateProjectFiles", responseData);
+        emit.toInstallation("updateProjectFiles", responseData);
         emit.toProduction("updateProjectFiles", responseData);
         emit.toWarehouse("updateProjectFiles", responseData);
-        emit.toInstallation("updateProjectFiles", responseData);
       }
 
       return response(res, true, responseData, "Failai sėkmingai ištrinti");

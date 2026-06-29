@@ -7,7 +7,6 @@ import { v4 as uuidv4 } from "uuid";
 import emit from "../sockets/emits";
 
 import { deleteProduction, newProductionService } from "../services/productionService";
-import productionArchiveSchema from "../schemas/productionArchiveSchema";
 import { deleteFiles } from "../services/uploadServices";
 
 // pridet checka ar useris yra adminas
