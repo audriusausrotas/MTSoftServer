@@ -185,6 +185,8 @@ router.patch("/updateMeasure", checkUser, production.updateMeasure);
 router.patch("/updateProductionStatus", checkUser, production.updateStatus);
 router.patch("/updateProductionGate", checkAdmin, production.updateGate);
 router.patch("/updateFence", checkAdmin, production.updateFence);
+router.patch("/updateProductionBindingFiles", checkAdmin, production.updateBindingFiles);
+router.patch("/updateProductionFenceFiles", checkAdmin, production.updateFenceFiles);
 
 router.post("/newProduction/:_id", checkUser, production.newProduction);
 router.post("/addNewProduction", checkUser, production.addNewProduction);
@@ -228,6 +230,8 @@ router.get("/getUserRights", checkUser, settings.getUserRights);
 router.get("/getSelects", checkUser, settings.getSelects);
 router.get("/getFences", settings.getFences);
 router.get("/getGateData", settings.getGateData);
+
+router.get("/getBlueprints", checkUser, settings.getBlueprints);
 
 router.delete("/deleteSelect", checkSuperAdmin, settings.deleteSelect);
 router.delete("/deleteFenceSettings/:_id", checkSuperAdmin, settings.deleteFenceSettings);

@@ -1,4 +1,4 @@
-import { Production } from "../data/interfaces";
+import { Bindings, Production, ProductionFence } from "../data/interfaces";
 import productionSchema from "../schemas/productionSchema";
 import { HydratedDocument, Types } from "mongoose";
 import { Response, Request } from "express";
@@ -278,6 +278,84 @@ export default {
       emit.toProduction("updateProductionFence", responseData);
       emit.toWarehouse("updateProductionFence", responseData);
       emit.toInstallation("updateProductionFence", responseData);
+
+      return response(res, true, responseData, "išsaugota");
+    } catch (error) {
+      console.error("Klaida:", error);
+      return response(res, false, null, "Serverio klaida");
+    }
+  },
+
+  updateBindingFiles: async (req: Request, res: Response) => {
+    try {
+      const { _id, id, file } = req.body;
+
+      const project = await productionSchema.findByIdAndUpdate(
+        _id,
+        {
+          $push: {
+            "bindings.$[elem].files": file,
+          },
+        },
+        {
+          new: true,
+          arrayFilters: [{ "elem.id": id }],
+        },
+      );
+
+      if (!project) return response(res, false, null, "Projektas nerastas");
+
+      const binding = project.bindings.find((b: Bindings) => b.id === id);
+
+      const responseData = {
+        _id,
+        id,
+        files: binding?.files || [],
+      };
+
+      emit.toAdmin("updateBindingFiles", responseData);
+      emit.toProduction("updateBindingFiles", responseData);
+      emit.toWarehouse("updateBindingFiles", responseData);
+      emit.toInstallation("updateBindingFiles", responseData);
+
+      return response(res, true, responseData, "išsaugota");
+    } catch (error) {
+      console.error("Klaida:", error);
+      return response(res, false, null, "Serverio klaida");
+    }
+  },
+
+  updateFenceFiles: async (req: Request, res: Response) => {
+    try {
+      const { _id, id, file } = req.body;
+
+      const project = await productionSchema.findByIdAndUpdate(
+        _id,
+        {
+          $push: {
+            "fences.$[elem].files": file,
+          },
+        },
+        {
+          new: true,
+          arrayFilters: [{ "elem.id": id }],
+        },
+      );
+
+      if (!project) return response(res, false, null, "Projektas nerastas");
+
+      const fence = project.fences.find((f: ProductionFence) => f.id === id);
+
+      const responseData = {
+        _id,
+        id,
+        files: fence?.files || [],
+      };
+
+      emit.toAdmin("updateFenceFiles", responseData);
+      emit.toProduction("updateFenceFiles", responseData);
+      emit.toWarehouse("updateFenceFiles", responseData);
+      emit.toInstallation("updateFenceFiles", responseData);
 
       return response(res, true, responseData, "išsaugota");
     } catch (error) {

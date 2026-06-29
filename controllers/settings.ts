@@ -1,6 +1,5 @@
 import defaultValuesSchema from "../schemas/defaultValuesSchema";
 import userRightsSchema from "../schemas/userRightsSchema";
-import productSchema from "../schemas/productSchema";
 import selectSchema from "../schemas/selectSchema";
 import { Request, Response } from "express";
 import response from "../modules/response";
@@ -9,6 +8,8 @@ import fenceSchema from "../schemas/fenceSchema";
 import { FenceSetup } from "../data/interfaces";
 import gatePriceSchema from "../schemas/gatePriceSchema";
 import { getFencePrices } from "../services/priceServices";
+import fs from "fs";
+import path from "path";
 
 export default {
   //////////////////// get requests ////////////////////////////////////
@@ -53,6 +54,25 @@ export default {
       const data = await gatePriceSchema.find();
 
       if (data.length === 0) return response(res, false, null, "Vartai nerasti");
+
+      return response(res, true, data);
+    } catch (error) {
+      console.error("Klaida:", error);
+      return response(res, false, null, "Serverio klaida");
+    }
+  },
+
+  getBlueprints: async (req: Request, res: Response) => {
+    try {
+      const dir = "/var/www/mtsoft/public/images/blueprints";
+
+      const data = fs
+        .readdirSync(dir)
+        .filter((f) => /\.(jpg)$/i.test(f))
+        .map((f) => ({
+          name: f.replace(".jpg", ""),
+          url: `/images/blueprints/${f}`,
+        }));
 
       return response(res, true, data);
     } catch (error) {

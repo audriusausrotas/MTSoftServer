@@ -46,7 +46,13 @@ export async function calculateBindings(project: HydratedDocument<Project>, fenc
   const bindings: Bindings[] = [];
 
   //adds bindings as new or update quantity of existing
-  const addBindings = (color: string, height: number, name: string, quantity: number) => {
+  const addBindings = (
+    color: string,
+    height: number,
+    name: string,
+    quantity: number,
+    postone: boolean = false,
+  ) => {
     let found = false;
     for (const binding of bindings) {
       if (binding.color === color && binding.height === height && binding.name === name) {
@@ -65,7 +71,7 @@ export async function calculateBindings(project: HydratedDocument<Project>, fenc
         quantity,
         cut: 0,
         done: 0,
-        postone: false,
+        postone: postone || false,
         files: [],
       });
     }
@@ -135,7 +141,8 @@ export async function calculateBindings(project: HydratedDocument<Project>, fenc
         if (ifFence) addBindings(color, measure.height, "Koja dviguba " + legWidth, 2);
       } else {
         if (notSpecial) addBindings(color, measure.height, "Koja vienguba " + legWidth, 2);
-        if (measure.gates.exist) addBindings(color, measure.height, "Koja dviguba " + legWidth, 2);
+        if (measure.gates.exist)
+          addBindings(color, measure.height, "Koja dviguba " + legWidth, 2, true);
         if (index === 0) {
           if (ifFence) lastHeight = measure.height;
           if (measure.gates.exist) wasGates = true;
@@ -149,7 +156,7 @@ export async function calculateBindings(project: HydratedDocument<Project>, fenc
         if (measure.gates.exist) {
           if (index !== 0 && !wasGates) {
             const maxHeight = Math.max(lastHeight, measure.height);
-            isBindings && addBindings(color, maxHeight, "Elka", 2);
+            isBindings && addBindings(color, maxHeight + 1, "Elka", 2);
           }
           wasGates = true;
           if (index === 0) lastHeight = measure.height;
@@ -163,7 +170,7 @@ export async function calculateBindings(project: HydratedDocument<Project>, fenc
         } else {
           if (wasGates) {
             const maxHeight = Math.max(lastHeight, measure.height);
-            isBindings && addBindings(color, maxHeight, "Elka", 2);
+            isBindings && addBindings(color, maxHeight + 1, "Elka", 2);
             wasGates = false;
             lastHeight = measure.height;
           } else if (wasCorner && wasStep) {
@@ -172,15 +179,50 @@ export async function calculateBindings(project: HydratedDocument<Project>, fenc
                 ? lastHeight + stepHeight - (lastHeight - measure.height)
                 : measure.height + stepHeight - (measure.height - lastHeight);
 
-            isBindings && addBindings(color, maxHeight, "Kampas vidus" + cornerRadius, 1);
-            isBindings && addBindings(color, maxHeight, "Kampas išorė" + cornerRadius, 1);
+            isBindings &&
+              addBindings(
+                color,
+                maxHeight + (legWidth === "40 mm" ? 1 : 14),
+                "Kampas vidus " +
+                  cornerRadius +
+                  " " +
+                  (legWidth === "40 mm" ? "40" : "60") +
+                  "x" +
+                  (legWidth === "40 mm" ? "40" : "60"),
+                1,
+              );
+            isBindings &&
+              addBindings(
+                color,
+                maxHeight + (legWidth === "40 mm" ? 1 : 14),
+                "Kampas išorė " +
+                  cornerRadius +
+                  " " +
+                  (legWidth === "40 mm" ? "40" : "60") +
+                  "x" +
+                  (legWidth === "40 mm" ? "40" : "60"),
+                1,
+              );
             wasCorner = false;
             wasStep = false;
             lastHeight = measure.height;
           } else if (wasCorner) {
             const maxHeight = Math.max(lastHeight, measure.height);
-            isBindings && addBindings(color, maxHeight, "Kampas vidus" + cornerRadius, 1);
-            isBindings && addBindings(color, maxHeight, "Kampas išorė" + cornerRadius, 1);
+            if (isBindings) {
+              addBindings(
+                color,
+                maxHeight + (legWidth === "40 mm" ? 1 : 14),
+                "Kampas vidus " + cornerRadius,
+                1,
+              );
+              addBindings(
+                color,
+                maxHeight + (legWidth === "40 mm" ? 1 : 14),
+                "Kampas išorė " + cornerRadius,
+                1,
+              );
+              addBindings(color, 0, "Kepurė kampinė " + (legWidth === "40 mm" ? "40" : "60"), 1);
+            }
             wasCorner = false;
             lastHeight = measure.height;
           } else if (wasStep) {
@@ -188,12 +230,18 @@ export async function calculateBindings(project: HydratedDocument<Project>, fenc
               stepDirection === "Aukštyn"
                 ? lastHeight + stepHeight - (lastHeight - measure.height)
                 : measure.height + stepHeight - (measure.height - lastHeight);
-            isBindings && addBindings(color, maxHeight, "Centrinis", 2);
+            if (isBindings) {
+              addBindings(color, maxHeight + (legWidth === "40 mm" ? 1 : 14), "Centrinis", 2);
+              addBindings(color, 0, "Kepurė " + (legWidth === "40 mm" ? "40" : "60"), 1);
+            }
             wasStep = false;
             lastHeight = measure.height;
           } else {
             const maxHeight = Math.max(lastHeight, measure.height);
-            isBindings && addBindings(color, maxHeight, "Centrinis", 2);
+            if (isBindings) {
+              addBindings(color, maxHeight + (legWidth === "40 mm" ? 1 : 14), "Centrinis", 2);
+              addBindings(color, 0, "Kepurė " + (legWidth === "40 mm" ? "40" : "60"), 1);
+            }
             lastHeight = measure.height;
           }
         }
@@ -331,23 +379,53 @@ function findFilesByName(name: string) {
     case "koja dviguba 55 mm":
       foundFile = "/images/blueprints/koja_dviguba_55.jpg";
       break;
+    case "elka":
+      foundFile = "/images/blueprints/elka.jpg";
+      break;
+    case "centrinis":
+      foundFile = "/images/blueprints/centrinis.jpg";
+      break;
+    case "galinis 40":
+      foundFile = "/images/blueprints/galinis_40.jpg";
+      break;
+    case "galinis 60":
+      foundFile = "/images/blueprints/galinis_60.jpg";
+      break;
     case "kampas vidus 90":
       foundFile = "/images/blueprints/kampas_vidus_90.jpg";
       break;
     case "kampas išorė 90":
       foundFile = "/images/blueprints/kampas_isore_90.jpg";
       break;
+    case "kampas vidus 90 6x6":
+      foundFile = "/images/blueprints/kampas_vidus_90_6x6.jpg";
+      break;
+    case "kampas išorė 90 6x6":
+      foundFile = "/images/blueprints/kampas_isore_90_6x6.jpg";
+      break;
+    case "kepurė 60":
+      foundFile = "/images/blueprints/kepure_60.jpg";
+      break;
+    case "kepurė 40":
+      foundFile = "/images/blueprints/kepure_40.jpg";
+      break;
+    case "kepurė kampinė 40":
+      foundFile = "/images/blueprints/kepure_kampine_40.jpg";
+      break;
+    case "kepurė kampinė 60":
+      foundFile = "/images/blueprints/kepure_kampine_60.jpg";
+      break;
     case "daimond 60/90":
-      foundFile = "/images/blueprints/daimond6090.jpg";
+      foundFile = "/images/blueprints/daimond_60_90.jpg";
       break;
     case "daimond 40/105":
-      foundFile = "/images/blueprints/daimond40105.jpg";
+      foundFile = "/images/blueprints/daimond_40_105.jpg";
       break;
     case "daimond 60/140":
-      foundFile = "/images/blueprints/daimond60140.jpg";
+      foundFile = "/images/blueprints/daimond_60_140.jpg";
       break;
     case "daimond vertical":
-      foundFile = "/images/blueprints/daimondvertical.jpg";
+      foundFile = "/images/blueprints/daimond_vertical.jpg";
       break;
     case "dilė":
       foundFile = "/images/blueprints/dilė.jpg";
