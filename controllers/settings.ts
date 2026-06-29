@@ -64,7 +64,7 @@ export default {
 
   getBlueprints: async (req: Request, res: Response) => {
     try {
-      const dir = "/var/www/mtsoft/public/images/blueprints";
+      const dir = "/var/www/mtsoft/frontend/.output/public/images/blueprints";
 
       const data = fs
         .readdirSync(dir)
