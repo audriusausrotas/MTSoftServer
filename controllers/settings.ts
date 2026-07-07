@@ -16,7 +16,7 @@ export default {
 
   getDefaultValues: async (req: Request, res: Response) => {
     try {
-      const data = await defaultValuesSchema.find();
+      const data = await defaultValuesSchema.find().lean();
 
       return response(res, true, data[0]);
     } catch (error) {
@@ -27,7 +27,7 @@ export default {
 
   getSelects: async (req: Request, res: Response) => {
     try {
-      const data = await selectSchema.find();
+      const data = await selectSchema.find().lean();
 
       if (data.length === 0) return response(res, false, null, "Nustatymai nerasti");
 
@@ -51,9 +51,22 @@ export default {
 
   getGateData: async (req: Request, res: Response) => {
     try {
-      const data = await gatePriceSchema.find();
+      const data = await gatePriceSchema.find().lean();
 
       if (data.length === 0) return response(res, false, null, "Vartai nerasti");
+
+      return response(res, true, data);
+    } catch (error) {
+      console.error("Klaida:", error);
+      return response(res, false, null, "Serverio klaida");
+    }
+  },
+
+  getUserRights: async (req: Request, res: Response) => {
+    try {
+      const data = await userRightsSchema.find().lean();
+
+      if (data.length === 0) return response(res, false, null, "Nustatymai nerasti");
 
       return response(res, true, data);
     } catch (error) {
@@ -73,19 +86,6 @@ export default {
           name: f.replace(".jpg", ""),
           url: `/images/blueprints/${f}`,
         }));
-
-      return response(res, true, data);
-    } catch (error) {
-      console.error("Klaida:", error);
-      return response(res, false, null, "Serverio klaida");
-    }
-  },
-
-  getUserRights: async (req: Request, res: Response) => {
-    try {
-      const data = await userRightsSchema.find();
-
-      if (data.length === 0) return response(res, false, null, "Nustatymai nerasti");
 
       return response(res, true, data);
     } catch (error) {

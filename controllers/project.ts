@@ -25,7 +25,7 @@ export default {
 
   getProjects: async (req: Request, res: Response) => {
     try {
-      const projects = await projectSchema.find();
+      const projects = await projectSchema.find().lean();
 
       if (!projects.length) return response(res, false, null, "Projektai nerasti");
 
@@ -59,7 +59,8 @@ export default {
             "dates.dateConfirmed": 1,
           },
         )
-        .sort({ _id: -1 });
+        .sort({ _id: -1 })
+        .lean();
 
       if (!projects.length) return response(res, false, null, "Projektai nerasti");
 
@@ -74,7 +75,7 @@ export default {
     try {
       const { _id } = req.params;
 
-      const project = await projectSchema.findById(_id);
+      const project = await projectSchema.findById(_id).lean();
       if (!project) return response(res, false, null, "Projektas nerastas");
 
       return response(res, true, project, "Projektas sėkmingai gautas");
@@ -91,16 +92,14 @@ export default {
       const { _id } = req.params;
       if (!_id) return response(res, false, null, "Trūksta projekto ID");
 
-      const project = await projectSchema.findById(_id);
+      const project = await projectSchema.findById(_id).lean();
       if (!project) return response(res, false, null, "Projektas nerastas");
 
       await deleteProjectVersions(project.versions);
 
-      const projectData = project.toObject();
+      project.dates.dateExparation = new Date().toISOString();
 
-      projectData.dates.dateExparation = new Date().toISOString();
-
-      const deletedProject = new deletedSchema({ ...projectData });
+      const deletedProject = new deletedSchema({ ...project });
       const deletedData = await deletedProject.save();
       if (!deletedData) return response(res, false, null, "Klaida trinant projektą");
 

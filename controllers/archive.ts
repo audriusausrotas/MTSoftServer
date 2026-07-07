@@ -31,11 +31,11 @@ export default {
     try {
       const { _id } = req.params;
 
-      let data = await archiveSchema.findById(_id);
-      if (!data) data = await finishedSchema.findById(_id);
-      if (!data) data = await unconfirmedSchema.findById(_id);
-      if (!data) data = await deletedSchema.findById(_id);
-      if (!data) data = await backupSchema.findById(_id);
+      let data = await archiveSchema.findById(_id).lean();
+      if (!data) data = await finishedSchema.findById(_id).lean();
+      if (!data) data = await unconfirmedSchema.findById(_id).lean();
+      if (!data) data = await deletedSchema.findById(_id).lean();
+      if (!data) data = await backupSchema.findById(_id).lean();
 
       if (!data) return response(res, false, null, "Projektai nerasti");
 
@@ -50,7 +50,7 @@ export default {
     try {
       const { _id } = req.params;
 
-      const data = await productionArchiveSchema.findById(_id);
+      const data = await productionArchiveSchema.findById(_id).lean();
 
       if (!data) return response(res, false, null, "Projektas nerastas");
 
@@ -182,7 +182,7 @@ export default {
   getVersion: async (req: Request, res: Response) => {
     const { _id } = req.params;
     try {
-      const data = await versionsSchema.findById(_id);
+      const data = await versionsSchema.findById(_id).lean();
 
       if (!data) return response(res, false, null, "Versija nerasta");
 
@@ -378,10 +378,10 @@ export default {
     try {
       const { _id } = req.body;
 
-      const archivedProject = await productionArchiveSchema.findById(_id);
+      const archivedProject = await productionArchiveSchema.findById(_id).lean();
       if (!archivedProject) return response(res, false, null, "Projektas nerastas");
 
-      const projectData = archivedProject.toObject();
+      const projectData = archivedProject;
       const project = new productionSchema(projectData);
       const data = await project.save();
       if (!data) return response(res, false, null, "Klaida saugant projektą");
@@ -406,7 +406,7 @@ export default {
     try {
       const { _id } = req.params;
 
-      const project = await projectSchema.findById(_id);
+      const project = await projectSchema.findById(_id).lean();
 
       if (!project) return response(res, false, null, "Projektas nerastas");
 
@@ -414,7 +414,7 @@ export default {
 
       project.versions = [];
 
-      const projectData = project.toObject();
+      const projectData = project;
 
       projectData.dates.dateExparation = new Date().toISOString();
 
@@ -438,12 +438,12 @@ export default {
     try {
       const { _id } = req.params;
 
-      const project = await projectSchema.findById(_id);
+      const project = await projectSchema.findById(_id).lean();
       if (!project) return response(res, false, null, "Projektas nerastas");
 
       await deleteVersions(project.versions);
 
-      const projectData = project.toObject();
+      const projectData = project;
       const unconfirmedProject = new unconfirmedSchema(projectData);
 
       const responseData = await unconfirmedProject.save();

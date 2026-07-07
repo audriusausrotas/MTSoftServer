@@ -10,7 +10,7 @@ export default {
 
   getWorks: async (req: Request, res: Response) => {
     try {
-      const data: Installation[] = await installationSchema.find();
+      const data: Installation[] = await installationSchema.find().lean();
 
       if (!data) return response(res, false, null, "Montavimo nėra");
 
@@ -81,7 +81,7 @@ export default {
         {
           $set: { [`fences.${index}.measures.${measureIndex}.postone`]: value },
         },
-        { new: true }
+        { new: true },
       );
 
       if (!project) return response(res, false, null, "Projektas nerastas");
@@ -106,7 +106,7 @@ export default {
       const project = await installationSchema.findByIdAndUpdate(
         _id,
         { $set: { [`fences.${index}.measures.${measureIndex}.done`]: value } },
-        { new: true }
+        { new: true },
       );
 
       if (!project) return response(res, false, null, "Projektas nerastas");
@@ -131,7 +131,7 @@ export default {
       const data: Installation | null = await installationSchema.findByIdAndUpdate(
         _id,
         { $set: { status: status } },
-        { new: true }
+        { new: true },
       );
 
       if (!data) return response(res, false, null, "Įvyko klaida");

@@ -6,7 +6,12 @@ import response from "../modules/response";
 import { v4 as uuidv4 } from "uuid";
 import emit from "../sockets/emits";
 
-import { deleteProduction, newProductionService } from "../services/productionService";
+import {
+  deleteProduction,
+  newProductionService,
+  updateHoles,
+  updateMeasure,
+} from "../services/productionService";
 import { deleteFiles } from "../services/uploadServices";
 
 // pridet checka ar useris yra adminas
@@ -16,7 +21,7 @@ export default {
 
   getProductions: async (req: Request, res: Response) => {
     try {
-      const data: Production[] | null = await productionSchema.find();
+      const data: Production[] | null = await productionSchema.find().lean();
 
       if (!data.length) return response(res, false, null, "Projektai nerasti");
 
@@ -31,7 +36,7 @@ export default {
     const { _id } = req.params;
 
     try {
-      const data: Production | null = await productionSchema.findById(_id);
+      const data: Production | null = await productionSchema.findById(_id).lean();
 
       if (!data) return response(res, false, null, "Projektas nerastas");
 
@@ -221,29 +226,20 @@ export default {
 
   updateMeasure: async (req: Request, res: Response) => {
     try {
-      const { _id, index, measureIndex, value, field, option } = req.body;
+      const responseData = await updateMeasure(req.body, res.locals.user);
 
-      let updatePath = "";
+      return response(res, true, responseData, "Išsaugota");
+    } catch (error) {
+      console.error("Klaida:", error);
+      return response(res, false, null, "Serverio klaida");
+    }
+  },
 
-      if (option === "bindings") updatePath = `bindings.${index}.${field}`;
-      else updatePath = `fences.${index}.measures.${measureIndex}.${field}`;
+  updateHoles: async (req: Request, res: Response) => {
+    try {
+      const responseData = await updateHoles(req.body, res.locals.user);
 
-      const project = await productionSchema.findByIdAndUpdate(
-        _id,
-        { $set: { [updatePath]: value } },
-        { new: true },
-      );
-
-      if (!project) return response(res, false, null, "Projektas nerastas");
-
-      const responseData = { _id, index, measureIndex, value, field, option };
-
-      emit.toAdmin("updateProductionMeasure", responseData);
-      emit.toProduction("updateProductionMeasure", responseData);
-      emit.toWarehouse("updateProductionMeasure", responseData);
-      emit.toInstallation("updateProductionMeasure", responseData);
-
-      return response(res, true, responseData, "issaugota");
+      return response(res, true, responseData, "Išsaugota");
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");
@@ -279,7 +275,7 @@ export default {
       emit.toWarehouse("updateProductionFence", responseData);
       emit.toInstallation("updateProductionFence", responseData);
 
-      return response(res, true, responseData, "išsaugota");
+      return response(res, true, responseData, "Išsaugota");
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");
@@ -318,7 +314,7 @@ export default {
       emit.toWarehouse("updateBindingFiles", responseData);
       emit.toInstallation("updateBindingFiles", responseData);
 
-      return response(res, true, responseData, "išsaugota");
+      return response(res, true, responseData, "Išsaugota");
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");
@@ -357,7 +353,7 @@ export default {
       emit.toWarehouse("updateFenceFiles", responseData);
       emit.toInstallation("updateFenceFiles", responseData);
 
-      return response(res, true, responseData, "išsaugota");
+      return response(res, true, responseData, "Išsaugota");
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");
@@ -385,7 +381,7 @@ export default {
       emit.toWarehouse("updateProductionGate", responseData);
       emit.toInstallation("updateProductionGate", responseData);
 
-      return response(res, true, responseData, "issaugota");
+      return response(res, true, responseData, "Išsaugota");
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");
@@ -492,6 +488,7 @@ export default {
         },
         cut: 0,
         done: 0,
+        holes: 0,
         postone: false,
         kampas: {
           exist: false,

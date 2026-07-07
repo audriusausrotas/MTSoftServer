@@ -10,6 +10,7 @@ import checkUser from "../middleware/checkUser";
 import comments from "../controllers/comments";
 import settings from "../controllers/settings";
 import schedule from "../controllers/schedule";
+import reports from "../controllers/reports";
 import product from "../controllers/product";
 import project from "../controllers/project";
 import uploads from "../controllers/uploads";
@@ -26,6 +27,7 @@ import orders from "../controllers/orders";
 import checkSuperAdmin from "../middleware/checkSuperAdmin";
 import calculations from "../controllers/calculations";
 import { uploadFiles } from "../middleware/uploadFiles";
+import checkProductionData from "../middleware/checkProductionData";
 
 const router = express.Router();
 
@@ -48,6 +50,8 @@ router.get("/logout", checkUser, auth.logout);
 
 router.post("/register", inputVerification, auth.register);
 router.post("/login", inputVerification, auth.login);
+router.post("/resetPassword", auth.resetPassword);
+router.post("/loginWithoutPassword", auth.loginWithoutPassword);
 
 /////////////////////// Archive //////////////////////////
 
@@ -181,7 +185,8 @@ router.delete("/deleteMeasure", checkAdmin, production.deleteMeasure);
 router.delete("/deleteFence", checkAdmin, production.deleteFence);
 
 router.patch("/updateProductionPostone", checkAdmin, production.updatePostone);
-router.patch("/updateMeasure", checkUser, production.updateMeasure);
+router.patch("/updateMeasure", checkUser, checkProductionData, production.updateMeasure);
+router.patch("/updateHoles", checkUser, checkProductionData, production.updateHoles);
 router.patch("/updateProductionStatus", checkUser, production.updateStatus);
 router.patch("/updateProductionGate", checkAdmin, production.updateGate);
 router.patch("/updateFence", checkAdmin, production.updateFence);
@@ -216,6 +221,10 @@ router.patch("/updateProject", checkAdmin, project.updateProject);
 router.patch("/addGateManufacturer", checkAdmin, project.addGateManufacturer);
 
 router.post("/newProject", checkAdmin, project.newProject);
+
+/////////////////////// Reports/ /////////////////////////
+
+router.post("/getProductionReport", checkAdmin, reports.getProductionReport);
 
 /////////////////////// Schedule /////////////////////////
 

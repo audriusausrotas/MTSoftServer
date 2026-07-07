@@ -425,6 +425,7 @@ export interface ProductionFence {
   services: string;
   seeThrough: string;
   direction: string;
+  holesDone: number;
   holes: string;
   step: number;
   parts: string;
@@ -448,6 +449,7 @@ export interface ProductionMeasure {
   gates: GateInfo;
   cut: number | undefined;
   done: number | undefined;
+  holes: number | undefined;
   postone: boolean;
   kampas: {
     exist: boolean;
@@ -737,4 +739,22 @@ export interface Gates {
 export interface WebsiteSettings {
   gallery: Image[];
   funded: Image[];
+}
+
+export interface ProductionEvent {
+  _id: string;
+  orderNumber: string;
+  timestamp: string;
+  user: string;
+  machine: string;
+  operation: "bend" | "cut";
+  element: {
+    name: string;
+    quantity: number;
+    length: number;
+    location: {
+      mainIndex: number;
+      subIndex?: number;
+    };
+  };
 }

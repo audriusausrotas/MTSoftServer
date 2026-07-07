@@ -9,7 +9,7 @@ export default {
 
   getWebsiteSettings: async (req: Request, res: Response) => {
     try {
-      const resnposeData = await websiteSettingsSchema.findOne({});
+      const resnposeData = await websiteSettingsSchema.findOne({}).lean();
 
       if (!resnposeData) return response(res, false, null, "Nustatymai nerasti");
 
@@ -22,7 +22,7 @@ export default {
 
   getGallery: async (req: Request, res: Response) => {
     try {
-      const resnposeData = await websiteSettingsSchema.findOne({});
+      const resnposeData = await websiteSettingsSchema.findOne({}).lean();
       if (!resnposeData) return response(res, false, null, "Nustatymai nerasti");
 
       return response(res, true, resnposeData.gallery);
@@ -34,7 +34,7 @@ export default {
 
   getFunded: async (req: Request, res: Response) => {
     try {
-      const resnposeData = await websiteSettingsSchema.findOne({});
+      const resnposeData = await websiteSettingsSchema.findOne({}).lean();
       if (!resnposeData) return response(res, false, null, "Nustatymai nerasti");
 
       return response(res, true, resnposeData.funded);

@@ -4,8 +4,7 @@ import emit from "../sockets/emits";
 import orderSchema from "../schemas/orderSchema";
 import projectSchema from "../schemas/projectSchema";
 import sendEmail from "../modules/sendEmail";
-import { truncate } from "fs/promises";
-import { Order, Supplier } from "../data/interfaces";
+import { Supplier } from "../data/interfaces";
 
 export default {
   //////////////////// get requests ////////////////////////////////////
@@ -14,7 +13,7 @@ export default {
     try {
       const user = res.locals.user;
 
-      const data = await orderSchema.find();
+      const data = await orderSchema.find().lean();
       const responseData =
         user.accountType === "Administratorius" ||
         user.accountType === "Vadybininkas" ||

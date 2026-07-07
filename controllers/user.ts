@@ -11,7 +11,7 @@ export default {
 
   getUsers: async (req: Request, res: Response) => {
     try {
-      const data: User[] = await userSchema.find();
+      const data: User[] = await userSchema.find().lean();
 
       if (!data) return response(res, false, null, "Vartotojai nerasti");
 

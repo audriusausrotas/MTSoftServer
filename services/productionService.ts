@@ -5,6 +5,7 @@ import {
   FenceSetup,
   SeeThroughSteps,
   ProjectComment,
+  User,
 } from "../data/interfaces";
 import productionSchema from "../schemas/productionSchema";
 import { findProjectById, updateProjectStatus } from "./projectService";
@@ -14,6 +15,7 @@ import emit from "../sockets/emits";
 import { v4 } from "uuid";
 import productionArchiveSchema from "../schemas/productionArchiveSchema";
 import { deleteFiles } from "./uploadServices";
+import productionEventSchema from "../schemas/productionEventSchema";
 
 export async function newProductionService(projectId: Types.ObjectId) {
   const project = await validateProductionStart(projectId);
@@ -298,6 +300,7 @@ export function transformFencesForProduction(
           ...m.toObject(),
           cut: undefined,
           done: undefined,
+          holes: undefined,
           postone: m.gates.exist ? true : false,
         };
 
@@ -490,4 +493,98 @@ export async function findProductionById(_id: string) {
   const production = await productionSchema.findById(_id);
   if (!production) throw new Error("Gamybos įrašas nerastas");
   return production;
+}
+
+export async function updateMeasure(data: any, user: User) {
+  const { _id, index, measureIndex, value, field } = data;
+
+  const project = await findProductionById(_id);
+
+  const isBinding = measureIndex === undefined;
+  let oldValue = 0;
+
+  if (isBinding) {
+    oldValue = (project as any).bindings?.[index]?.[field] ?? 0;
+    (project as any).bindings[index][field] = value;
+  } else {
+    oldValue = (project as any).fences?.[index]?.measures?.[measureIndex]?.[field] ?? 0;
+    (project as any).fences[index].measures[measureIndex][field] = value;
+  }
+
+  const quantity = value - oldValue;
+
+  const savedProject = await project.save();
+
+  if (!savedProject) throw new Error("Projektas neišsaugotas");
+
+  const event = buildProductionEvent(data, quantity, savedProject, user);
+
+  await new productionEventSchema(event).save();
+
+  emit.toAdmin("updateProductionMeasure", data);
+  emit.toProduction("updateProductionMeasure", data);
+  emit.toWarehouse("updateProductionMeasure", data);
+  emit.toInstallation("updateProductionMeasure", data);
+
+  return data;
+}
+
+export async function updateHoles(data: any, user: User) {
+  const { _id, index, value } = data;
+
+  const project = await findProductionById(_id);
+
+  const oldValue = project.fences[index].holesDone;
+  const quantity = value - oldValue;
+
+  project.fences[index].holesDone = value;
+
+  const savedProject = await project.save();
+
+  const event = buildProductionEvent(data, quantity, savedProject, user);
+
+  await new productionEventSchema(event).save();
+
+  emit.toAdmin("updateProductionHoles", data);
+  emit.toProduction("updateProductionHoles", data);
+  emit.toWarehouse("updateProductionHoles", data);
+  emit.toInstallation("updateProductionHoles", data);
+
+  return data;
+}
+
+function buildProductionEvent(data: any, quantity: number, project: any, user: User) {
+  const isBinding = data.measureIndex === undefined;
+
+  const location = {
+    index: data.index,
+    measureIndex: isBinding ? null : data.measureIndex,
+  };
+
+  return {
+    orderNumber: project.orderNumber,
+    timestamp: new Date().toISOString(),
+
+    user: {
+      username: user.username,
+      lastName: user.lastName,
+      email: user.email,
+    },
+
+    machine: data.selectedMachine,
+    holeInformation: data.selectedHolesInfo,
+
+    operation: data.field,
+
+    element: {
+      name: isBinding ? project.bindings?.[data.index]?.name : project.fences?.[data.index]?.name,
+
+      quantity,
+      length: isBinding
+        ? project.bindings?.[data.index]?.length
+        : project.fences?.[data.index]?.measures?.[data.measureIndex]?.length,
+
+      location,
+    },
+  };
 }

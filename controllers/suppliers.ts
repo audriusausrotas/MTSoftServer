@@ -8,7 +8,7 @@ export default {
 
   getSuppliers: async (req: Request, res: Response) => {
     try {
-      const suppliers = await supplierSchema.find();
+      const suppliers = await supplierSchema.find().lean();
 
       if (!suppliers.length) return response(res, false, null, "Klientai nerasti");
 
@@ -46,7 +46,7 @@ export default {
     try {
       const { username, email, phone, address, company } = req.body;
 
-      const supplierExist = await supplierSchema.findOne({ email });
+      const supplierExist = await supplierSchema.findOne({ email }).lean();
 
       if (supplierExist) return response(res, false, null, "Klientas jau egzistuoja");
 

@@ -24,11 +24,13 @@ export default {
         user.accountType === "Sandėlys" ||
         user.accountType === "Vadybininkas"
       ) {
-        schedule = await scheduleSchema.find();
+        schedule = await scheduleSchema.find().lean();
       } else if (user.accountType === "Montavimas") {
-        schedule = await scheduleSchema.find({
-          "worker.lastName": user.lastName,
-        });
+        schedule = await scheduleSchema
+          .find({
+            "worker.lastName": user.lastName,
+          })
+          .lean();
       }
 
       if (schedule.length === 0) return response(res, false, null, "Grafikas nerastas");
@@ -50,7 +52,6 @@ export default {
     try {
       const { date, comment, selectedJobs, worker } = req.body;
 
-      // delete if no comment or job is passed
       if (comment.trim() === "" && selectedJobs.length === 0) {
         const existingSchedule = await scheduleSchema.findOneAndDelete({
           date,

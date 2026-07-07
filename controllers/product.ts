@@ -10,7 +10,7 @@ export default {
 
   getProducts: async (req: Request, res: Response) => {
     try {
-      const data = await productSchema.find();
+      const data = await productSchema.find().lean();
 
       if (!data) return response(res, false, null, "Produktai nerasti");
 
@@ -115,7 +115,7 @@ export default {
     try {
       const { name, prices, category, profit } = req.body;
 
-      const doesExist = await productSchema.findOne({ name });
+      const doesExist = await productSchema.findOne({ name }).lean();
 
       if (doesExist) return response(res, false, null, "Produktas jau egzistuoja");
 

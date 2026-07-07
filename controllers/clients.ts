@@ -8,10 +8,9 @@ export default {
 
   getClients: async (req: Request, res: Response) => {
     try {
-      const clients = await clientSchema.find();
+      const clients = await clientSchema.find().lean();
 
-      if (!clients.length)
-        return response(res, false, null, "Klientai nerasti");
+      if (!clients.length) return response(res, false, null, "Klientai nerasti");
 
       return response(res, true, clients);
     } catch (error) {
@@ -28,8 +27,7 @@ export default {
 
       const deletedClient = await clientSchema.findByIdAndDelete(_id);
 
-      if (!deletedClient)
-        return response(res, false, null, "Klientas nerastas");
+      if (!deletedClient) return response(res, false, null, "Klientas nerastas");
 
       emit.toAdmin("deleteClient", { _id });
 
@@ -48,10 +46,9 @@ export default {
     try {
       const { username, email, phone, address } = req.body;
 
-      const clientExist = await clientSchema.findOne({ email });
+      const clientExist = await clientSchema.findOne({ email }).lean();
 
-      if (clientExist)
-        return response(res, false, null, "Klientas jau egzistuoja");
+      if (clientExist) return response(res, false, null, "Klientas jau egzistuoja");
 
       const client = new clientSchema({
         username,

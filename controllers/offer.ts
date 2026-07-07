@@ -10,7 +10,7 @@ export default {
     try {
       const { _id } = req.params;
 
-      const data = await projectSchema.findById(_id);
+      const data = await projectSchema.findById(_id).lean();
 
       if (!data) return response(res, false, null, "Užsakymas nerastas");
 
@@ -47,7 +47,7 @@ export default {
         res,
         true,
         responseData,
-        value ? "Užsakymas patvirtintas" : "Užsakymas atšauktas"
+        value ? "Užsakymas patvirtintas" : "Užsakymas atšauktas",
       );
     } catch (error) {
       console.error("Klaida:", error);

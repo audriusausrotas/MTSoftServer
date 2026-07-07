@@ -10,7 +10,7 @@ export default {
 
   getGates: async (req: Request, res: Response) => {
     try {
-      const data = await gateSchema.find();
+      const data = await gateSchema.find().lean();
 
       if (!data) return response(res, false, null, "Vartai nerasti");
 
