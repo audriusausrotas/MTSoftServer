@@ -6,15 +6,6 @@ export default {
     try {
       const { user, year, month, day, machine, search } = req.body;
 
-      console.log("REQUEST:", {
-        user,
-        year,
-        month,
-        day,
-        machine,
-        search,
-      });
-
       const filter: any = {};
 
       const isAll = (value: any) => {
@@ -108,18 +99,27 @@ export default {
             operation: event.operation || "",
             totalQuantity: 0,
             totalLength: 0,
+            totalBends: 0,
+            totalHoles: 0,
             elements: [],
           };
         }
 
         const row = report[key];
 
-        row.totalQuantity += Number(event.element?.quantity || 0);
-        row.totalLength += Number(event.element?.length || 0);
+        const quantity = Number(event.element?.quantity || 0);
+        const length = Number(event.element?.length || 0);
+        const hoolesCount = Number(event.element?.holesCount || 0);
+
+        row.totalQuantity += quantity;
+        row.totalLength += quantity * length;
+        row.totalBends += event.operation === "done" ? quantity * 4 : 0;
+        row.totalHoles += quantity * hoolesCount;
 
         row.elements.push({
           name: event.element?.name || "",
           quantity: Number(event.element?.quantity || 0),
+          holesCount: Number(event.element?.holesCount || 0),
           length: Number(event.element?.length || 0),
           location: event.element?.location || null,
           timestamp: event.timestamp,

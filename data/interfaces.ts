@@ -751,6 +751,7 @@ export interface ProductionEvent {
   element: {
     name: string;
     quantity: number;
+    holesCount: number;
     length: number;
     location: {
       mainIndex: number;

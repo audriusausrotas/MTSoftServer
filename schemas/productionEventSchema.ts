@@ -16,6 +16,7 @@ const productionEventSchema = new mongoose.Schema({
   element: {
     name: { type: String, required: false, default: "" },
     quantity: { type: Number, required: false, default: 0 },
+    holesCount: { type: Number, required: false, default: 0 },
     length: { type: Number, required: false, default: 0 },
     location: {
       index: { type: Number, required: true },
