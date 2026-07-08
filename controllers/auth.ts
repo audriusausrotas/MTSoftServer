@@ -6,6 +6,7 @@ import response from "../modules/response";
 import emit from "../sockets/emits";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
+import productionSchema from "../schemas/productionSchema";
 
 export default {
   //////////////////// get requests ////////////////////////////////////
@@ -46,7 +47,9 @@ export default {
     try {
       const { email, password } = req.body;
 
-      const data = await userSchema.findOne({ email }).lean();
+      const data = await userSchema
+        .findOne({ email: email.toLowerCase() })
+        .lean();
 
       if (!data) {
         return response(res, false, null, "Vartotojas nerastas");
@@ -95,16 +98,21 @@ export default {
     try {
       const { email, password, username } = req.body;
 
-      const userExists = await userSchema.findOne({ email }).lean();
+      const userExists = await userSchema
+        .findOne({ email: email.toLowerCase() })
+        .lean();
       if (userExists) {
         return response(res, false, null, "Vartotojas jau egzistuoja");
       }
 
-      const hashedPassword = await bcrypt.hash(password, parseInt(process.env.SALT as string));
+      const hashedPassword = await bcrypt.hash(
+        password,
+        parseInt(process.env.SALT as string),
+      );
 
       const user = new userSchema({
         username,
-        email,
+        email: email.toLowerCase(),
         password: hashedPassword,
       });
 
@@ -125,7 +133,9 @@ export default {
     try {
       const { email } = req.body;
 
-      const data = await userSchema.findOne({ email }).lean();
+      const data = await userSchema
+        .findOne({ email: email.toLowerCase() })
+        .lean();
 
       if (!data) {
         return response(res, false, null, "Vartotojas nerastas");
@@ -134,7 +144,9 @@ export default {
         return response(res, false, null, "Vartotojas nepatvirtintas");
       }
 
-      const resetPasswordCode = Math.floor(100000 + Math.random() * 900000).toString();
+      const resetPasswordCode = Math.floor(
+        100000 + Math.random() * 900000,
+      ).toString();
 
       const resetPassword = new resetPasswordSchema({
         email,
@@ -154,7 +166,12 @@ export default {
         return response(res, false, null, emailResult.message);
       }
 
-      return response(res, true, data, "Slaptažodžio atstatymo kodas išsiųstas");
+      return response(
+        res,
+        true,
+        data,
+        "Slaptažodžio atstatymo kodas išsiųstas",
+      );
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");
@@ -165,7 +182,9 @@ export default {
     try {
       const { email, code } = req.body;
 
-      const data = await userSchema.findOne({ email }).lean();
+      const data = await userSchema
+        .findOne({ email: email.toLowerCase() })
+        .lean();
 
       if (!data) {
         return response(res, false, null, "Vartotojas nerastas");
@@ -174,7 +193,10 @@ export default {
         return response(res, false, null, "Vartotojas nepatvirtintas");
       }
 
-      const resetPassword = await resetPasswordSchema.findOne({ email, code });
+      const resetPassword = await resetPasswordSchema.findOne({
+        email: email.toLowerCase(),
+        code,
+      });
 
       if (!resetPassword) {
         return response(res, false, null, "Neteisingas kodas");
@@ -185,7 +207,10 @@ export default {
       const fiveMinutes = 5 * 60 * 1000;
 
       if (codeAge > fiveMinutes) {
-        await resetPasswordSchema.deleteOne({ email, code });
+        await resetPasswordSchema.deleteOne({
+          email: email.toLowerCase(),
+          code,
+        });
         return response(res, false, null, "Kodas nebegalioja");
       }
 
@@ -213,7 +238,7 @@ export default {
         path: "/",
       });
 
-      await resetPasswordSchema.deleteOne({ email, code });
+      await resetPasswordSchema.deleteOne({ email: email.toLowerCase(), code });
 
       return response(res, true, data, "Prisijungimas sėkmingas");
     } catch (error) {

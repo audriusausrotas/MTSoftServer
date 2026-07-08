@@ -3,7 +3,6 @@ import cookieParser from "cookie-parser";
 import dns from "node:dns/promises";
 import mongoose from "mongoose";
 import express from "express";
-import path from "path";
 import cors from "cors";
 
 require("dotenv").config();
@@ -47,7 +46,9 @@ server.use(express.json({ limit: "10mb" }));
 server.use(cookieParser());
 server.use("/api", mainRouter);
 
-server.listen(port, () => console.log(`MTSoft server is running on port ${port}`));
+server.listen(port, () =>
+  console.log(`MTSoft server is running on port ${port}`),
+);
 
 const shutdownHandler = async (signal: string) => {
   console.log(`Received ${signal}. Closing MongoDB connection...`);
