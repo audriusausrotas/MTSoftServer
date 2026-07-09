@@ -6,6 +6,7 @@ import {
   SeeThroughSteps,
   ProjectComment,
   User,
+  ProductionEvent,
 } from "../data/interfaces";
 import productionSchema from "../schemas/productionSchema";
 import { findProjectById, updateProjectStatus } from "./projectService";
@@ -555,10 +556,37 @@ export async function updateHoles(data: any, user: User) {
   return data;
 }
 
+export async function productionDefect(data: any, user: User) {
+  const { _id, index, measureIndex } = data;
+
+  const project = await findProductionById(_id);
+
+  const isBinding = measureIndex === undefined || measureIndex === null;
+  if (isBinding) {
+    (project as any).bindings[index]["cut"] -= 1;
+    (project as any).bindings[index]["done"] -= 1;
+  } else {
+    (project as any).fences[index].measures[measureIndex]["cut"] -= 1;
+    (project as any).fences[index].measures[measureIndex]["done"] -= 1;
+  }
+
+  const savedProject = await project.save();
+
+  const event = buildProductionEvent(data, 1, savedProject, user, 0);
+  await new productionEventSchema(event).save();
+
+  emit.toAdmin("productionDefect", data);
+  emit.toProduction("productionDefect", data);
+  emit.toWarehouse("productionDefect", data);
+  emit.toInstallation("productionDefect", data);
+
+  return data;
+}
+
 function buildProductionEvent(
   data: any,
   quantity: number,
-  project: any,
+  project: Production,
   user: User,
   holesCount: number,
 ) {
@@ -590,7 +618,7 @@ function buildProductionEvent(
       quantity,
       holesCount,
       length:
-        data.field === "holes"
+        data.field === "holes" || data.field === "defect"
           ? 0
           : isBinding
             ? project.bindings?.[data.index]?.height

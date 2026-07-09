@@ -184,14 +184,16 @@ router.delete("/deleteBindings", checkAdmin, production.deleteBindings);
 router.delete("/deleteMeasure", checkAdmin, production.deleteMeasure);
 router.delete("/deleteFence", checkAdmin, production.deleteFence);
 
+router.patch("/updateProductionBindingFiles", checkAdmin, production.updateBindingFiles);
+router.patch("/updateProductionFenceFiles", checkAdmin, production.updateFenceFiles);
 router.patch("/updateProductionPostone", checkAdmin, production.updatePostone);
-router.patch("/updateMeasure", checkUser, checkProductionData, production.updateMeasure);
-router.patch("/updateHoles", checkUser, checkProductionData, production.updateHoles);
 router.patch("/updateProductionStatus", checkUser, production.updateStatus);
 router.patch("/updateProductionGate", checkAdmin, production.updateGate);
 router.patch("/updateFence", checkAdmin, production.updateFence);
-router.patch("/updateProductionBindingFiles", checkAdmin, production.updateBindingFiles);
-router.patch("/updateProductionFenceFiles", checkAdmin, production.updateFenceFiles);
+
+router.patch("/productionDefect", checkUser, checkProductionData, production.productionDefect);
+router.patch("/updateMeasure", checkUser, checkProductionData, production.updateMeasure);
+router.patch("/updateHoles", checkUser, checkProductionData, production.updateHoles);
 
 router.post("/newProduction/:_id", checkUser, production.newProduction);
 router.post("/addNewProduction", checkUser, production.addNewProduction);

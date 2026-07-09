@@ -11,6 +11,7 @@ import {
   newProductionService,
   updateHoles,
   updateMeasure,
+  productionDefect,
 } from "../services/productionService";
 import { deleteFiles } from "../services/uploadServices";
 
@@ -171,10 +172,12 @@ export default {
 
   updatePostone: async (req: Request, res: Response) => {
     try {
-      const { _id, index, measureIndex, value, option } = req.body;
+      const { _id, index, measureIndex, value } = req.body;
 
       let updatePath = "";
-      if (option === "bindings") updatePath = `bindings.${index}.postone`;
+
+      if (measureIndex === undefined || measureIndex === null)
+        updatePath = `bindings.${index}.postone`;
       else updatePath = `fences.${index}.measures.${measureIndex}.postone`;
 
       const project = await productionSchema.findByIdAndUpdate(
@@ -185,7 +188,7 @@ export default {
 
       if (!project) return response(res, false, null, "Projektas nerastas");
 
-      const responseData = { _id, index, measureIndex, value, option };
+      const responseData = { _id, index, measureIndex, value };
 
       emit.toAdmin("updateProductionPostone", responseData);
       emit.toProduction("updateProductionPostone", responseData);
@@ -238,6 +241,17 @@ export default {
   updateHoles: async (req: Request, res: Response) => {
     try {
       const responseData = await updateHoles(req.body, res.locals.user);
+
+      return response(res, true, responseData, "Išsaugota");
+    } catch (error) {
+      console.error("Klaida:", error);
+      return response(res, false, null, "Serverio klaida");
+    }
+  },
+
+  productionDefect: async (req: Request, res: Response) => {
+    try {
+      const responseData = await productionDefect(req.body, res.locals.user);
 
       return response(res, true, responseData, "Išsaugota");
     } catch (error) {
