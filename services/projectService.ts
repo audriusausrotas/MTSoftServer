@@ -163,6 +163,25 @@ export async function changeCompletionDate(_id: Types.ObjectId, date: string) {
   return responseData;
 }
 
+export async function confirmProject(_id: Types.ObjectId) {
+  const date = new Date().toISOString();
+
+  const project = await projectSchema.findByIdAndUpdate(
+    _id,
+    { "dates.dateConfirmed": date },
+    { new: true },
+  );
+  if (!project) throw new Error("Projektas nerastas");
+
+  const responseData = { _id, dateConfirmed: date };
+
+  emit.toAdmin("confirmProject", responseData);
+  emit.toInstallation("confirmProject", responseData);
+  emit.toWarehouse("confirmProject", responseData);
+
+  return responseData;
+}
+
 export async function addProjectComment(_id: Types.ObjectId, comment: string, user: User) {
   const project = await findProjectById(_id);
 

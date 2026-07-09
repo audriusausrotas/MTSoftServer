@@ -209,6 +209,7 @@ router.delete("/deleteVersion", checkAdmin, project.deleteVersion);
 
 router.patch("/extendExparationDate/:_id", checkAdmin, project.extendExparationDate);
 router.patch("/changeCompletionDate", checkUser, project.changeCompletionDate);
+router.patch("/confirmProject", checkUser, project.confirmProject);
 router.patch("/projectFinished/:_id", checkAdmin, project.projectFinished);
 router.patch("/partsDelivered", checkUser, project.partsDelivered);
 router.patch("/partsOrdered", checkUser, project.partsOrdered);

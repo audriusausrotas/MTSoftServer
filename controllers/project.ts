@@ -13,6 +13,7 @@ import gateSchema from "../schemas/gateSchema";
 import finishedSchema from "../schemas/finishedSchema";
 import {
   changeCompletionDate,
+  confirmProject,
   createProjectService,
   findProjectById,
   updateProjectStatus,
@@ -376,6 +377,19 @@ export default {
       const data = await changeCompletionDate(_id, date);
 
       return response(res, true, data, "Pristatymas patvirtintas");
+    } catch (error) {
+      console.error("Klaida:", error);
+      return response(res, false, null, "Serverio klaida");
+    }
+  },
+
+  confirmProject: async (req: Request, res: Response) => {
+    try {
+      const { _id } = req.body;
+
+      const data = await confirmProject(_id);
+
+      return response(res, true, data, "Projektas patvirtintas");
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");
