@@ -240,19 +240,23 @@ router.get("/getUserRights", checkUser, settings.getUserRights);
 router.get("/getSelects", checkUser, settings.getSelects);
 router.get("/getFences", settings.getFences);
 router.get("/getGateData", settings.getGateData);
+router.get("/getReportSettings", settings.getReportSettings);
 
 router.get("/getBlueprints", checkUser, settings.getBlueprints);
 
 router.delete("/deleteSelect", checkSuperAdmin, settings.deleteSelect);
 router.delete("/deleteFenceSettings/:_id", checkSuperAdmin, settings.deleteFenceSettings);
+router.delete("/deleteReport/:_id", checkSuperAdmin, settings.deleteReport);
 
 router.patch("/updateFenceData", checkSuperAdmin, settings.updateFenceData);
 router.patch("/updateGateData", checkSuperAdmin, settings.updateGateData);
+router.patch("/updateReport", checkSuperAdmin, settings.updateReport);
 
 router.post("/newDefaultValue", checkSuperAdmin, settings.newDefaultValue);
 router.post("/newUserRights", checkSuperAdmin, settings.newUserRights);
 router.post("/newSelect", checkSuperAdmin, settings.newSelect);
 router.post("/newFence", checkSuperAdmin, settings.newFence);
+router.post("/newReport", checkSuperAdmin, settings.newReport);
 
 /////////////////////// Website settings /////////////////
 

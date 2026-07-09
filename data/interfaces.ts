@@ -759,3 +759,10 @@ export interface ProductionEvent {
     };
   };
 }
+
+export interface ReportSettings {
+  _id: string;
+  name: string;
+  keyword: string;
+  bends: string;
+}

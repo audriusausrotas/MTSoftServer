@@ -10,6 +10,7 @@ import gatePriceSchema from "../schemas/gatePriceSchema";
 import { getFencePrices } from "../services/priceServices";
 import fs from "fs";
 import path from "path";
+import reportSettingsSchema from "../schemas/reportSettingsSchema";
 
 export default {
   //////////////////// get requests ////////////////////////////////////
@@ -54,6 +55,19 @@ export default {
       const data = await gatePriceSchema.find().lean();
 
       if (data.length === 0) return response(res, false, null, "Vartai nerasti");
+
+      return response(res, true, data);
+    } catch (error) {
+      console.error("Klaida:", error);
+      return response(res, false, null, "Serverio klaida");
+    }
+  },
+
+  getReportSettings: async (req: Request, res: Response) => {
+    try {
+      const data = await reportSettingsSchema.find().lean();
+
+      if (data.length === 0) return response(res, false, null, "Nustatymai nerasti");
 
       return response(res, true, data);
     } catch (error) {
@@ -131,6 +145,23 @@ export default {
       emit.toAdmin("deleteFenceSettings", { _id });
 
       return response(res, true, { _id }, "Tvora ištrinta");
+    } catch (error) {
+      console.error("Klaida:", error);
+      return response(res, false, null, "Serverio klaida");
+    }
+  },
+
+  deleteReport: async (req: Request, res: Response) => {
+    try {
+      const { _id } = req.params;
+
+      const deleteFence = await reportSettingsSchema.findByIdAndDelete(_id);
+
+      if (!deleteFence) return response(res, false, null, "Nustatymai nerasti");
+
+      emit.toAdmin("deleteReport", { _id });
+
+      return response(res, true, { _id }, "Nustatymai ištrinti");
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");
@@ -296,6 +327,25 @@ export default {
     }
   },
 
+  updateReport: async (req: Request, res: Response) => {
+    try {
+      const data = req.body;
+
+      const responseData = await reportSettingsSchema.findByIdAndUpdate(data._id, data, {
+        new: true,
+      });
+
+      if (!responseData) return response(res, false, null, "Nustatymai nerasti");
+
+      emit.toAdmin("editReport", responseData);
+
+      return response(res, true, responseData, "Pakeitimai atlikti");
+    } catch (error) {
+      console.error("Klaida:", error);
+      return response(res, false, null, "Serverio klaida");
+    }
+  },
+
   //////////////////// post requests ///////////////////////////////////
 
   newDefaultValue: async (req: Request, res: Response) => {
@@ -410,6 +460,27 @@ export default {
       const responseData = await newFence.save();
 
       emit.toAdmin("newFence", responseData);
+
+      return response(res, true, responseData, "Išsaugota");
+    } catch (error) {
+      console.error("Klaida:", error);
+      return response(res, false, null, "Serverio klaida");
+    }
+  },
+
+  newReport: async (req: Request, res: Response) => {
+    try {
+      const { name, keyword, bends } = req.body;
+
+      const doesExist = await reportSettingsSchema.findOne({ name });
+
+      if (doesExist) return response(res, false, null, "Jau egzistuoja");
+
+      const newReport = new reportSettingsSchema({ name, keyword, bends });
+
+      const responseData = await newReport.save();
+
+      emit.toAdmin("newReport", responseData);
 
       return response(res, true, responseData, "Išsaugota");
     } catch (error) {
