@@ -618,7 +618,7 @@ function buildProductionEvent(
       quantity,
       holesCount,
       length:
-        data.field === "holes" || data.field === "defect"
+        data.field === "holes"
           ? 0
           : isBinding
             ? project.bindings?.[data.index]?.height
