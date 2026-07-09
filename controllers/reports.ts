@@ -1,5 +1,7 @@
 import productionEventSchema from "../schemas/productionEventSchema";
 import response from "../modules/response";
+import { ReportSettings } from "../data/interfaces";
+import reportSettingsSchema from "../schemas/reportSettingsSchema";
 
 export default {
   getProductionReport: async (req: any, res: any) => {
@@ -84,6 +86,8 @@ export default {
 
       const report: any = {};
 
+      const bendData: ReportSettings[] = await reportSettingsSchema.find();
+
       for (const event of events) {
         const key =
           `${event.orderNumber}_` +
@@ -100,6 +104,7 @@ export default {
             totalQuantity: 0,
             totalLength: 0,
             totalBends: 0,
+            totalBendLength: 0,
             totalHoles: 0,
             elements: [],
           };
@@ -110,10 +115,20 @@ export default {
         const quantity = Number(event.element?.quantity || 0);
         const length = Number(event.element?.length || 0);
         const hoolesCount = Number(event.element?.holesCount || 0);
+        let bendCount: number = 0;
+
+        if (event.operation === "done") {
+          const bendDataFound = bendData.find((bend) =>
+            event.element?.name?.toLowerCase().includes(bend.keyword),
+          );
+
+          if (bendDataFound) bendCount = Number(bendDataFound?.bends);
+        }
 
         row.totalQuantity += quantity;
         row.totalLength += quantity * length;
-        row.totalBends += event.operation === "done" ? quantity * 4 : 0;
+        row.totalBends += bendCount * quantity;
+        row.totalBendLength += bendCount * quantity * length;
         row.totalHoles += quantity * hoolesCount;
 
         row.elements.push({
@@ -121,6 +136,8 @@ export default {
           quantity: Number(event.element?.quantity || 0),
           holesCount: Number(event.element?.holesCount || 0),
           length: Number(event.element?.length || 0),
+          bends: bendCount * quantity,
+          bendLength: bendCount * length * quantity,
           location: event.element?.location || null,
           timestamp: event.timestamp,
         });
