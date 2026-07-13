@@ -506,13 +506,13 @@ export async function updateMeasure(data: any, user: User) {
 
   if (isBinding) {
     oldValue = (project as any).bindings?.[index]?.[field] ?? 0;
-    (project as any).bindings[index][field] = value;
+    (project as any).bindings[index][field] = +value;
   } else {
     oldValue = (project as any).fences?.[index]?.measures?.[measureIndex]?.[field] ?? 0;
-    (project as any).fences[index].measures[measureIndex][field] = value;
+    (project as any).fences[index].measures[measureIndex][field] = +value;
   }
 
-  const quantity = value - oldValue;
+  const quantity = +value - +oldValue;
 
   const savedProject = await project.save();
 

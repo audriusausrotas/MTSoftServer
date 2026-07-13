@@ -10,7 +10,7 @@ require("dotenv").config();
 import "./sockets/main";
 import "./cronJobs/main";
 
-const port = process.env.PORT || 3001;
+const port = 3001;
 const server = express();
 dns.setServers(["8.8.8.8"]);
 
@@ -46,9 +46,7 @@ server.use(express.json({ limit: "10mb" }));
 server.use(cookieParser());
 server.use("/api", mainRouter);
 
-server.listen(port, () =>
-  console.log(`MTSoft server is running on port ${port}`),
-);
+server.listen(port, "127.0.0.1", () => console.log(`MTSoft server is running on port ${port}`));
 
 const shutdownHandler = async (signal: string) => {
   console.log(`Received ${signal}. Closing MongoDB connection...`);
