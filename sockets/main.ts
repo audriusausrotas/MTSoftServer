@@ -28,7 +28,7 @@ io.on("connection", async (socket: Socket) => {
 });
 
 const port = 3002;
-server.listen(port, () => {
+server.listen(port, "127.0.0.1", () => {
   console.log(`Socket.io server is running on port ${port}`);
 });
 
