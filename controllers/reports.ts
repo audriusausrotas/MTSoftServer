@@ -119,7 +119,7 @@ export default {
 
         if (event.operation === "done") {
           const bendDataFound = bendData.find((bend) =>
-            event.element?.name?.toLowerCase().includes(bend.keyword),
+            event.element?.name?.toLowerCase().includes(bend.keyword.toLowerCase()),
           );
 
           if (bendDataFound) bendCount = Number(bendDataFound?.bends);
