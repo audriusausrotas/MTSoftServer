@@ -37,9 +37,13 @@ export default {
     const { _id } = req.params;
 
     try {
-      const data: Production | null = await productionSchema.findById(_id).lean();
+      const data: Production | null = await productionSchema
+        .findById(_id)
+        .lean();
 
       if (!data) return response(res, false, null, "Projektas nerastas");
+
+      console.log(data.bindings);
 
       return response(res, true, data);
     } catch (error) {
@@ -84,7 +88,8 @@ export default {
 
       await deleteFiles(files);
 
-      order.bindings = order.bindings?.filter((item) => item.id !== bindingId) || [];
+      order.bindings =
+        order.bindings?.filter((item) => item.id !== bindingId) || [];
 
       await order.save();
 
@@ -262,7 +267,17 @@ export default {
 
   updateFence: async (req: Request, res: Response) => {
     try {
-      const { _id, index, side, color, name, manufacturer, material, holes, step } = req.body;
+      const {
+        _id,
+        index,
+        side,
+        color,
+        name,
+        manufacturer,
+        material,
+        holes,
+        step,
+      } = req.body;
 
       const project = await productionSchema.findByIdAndUpdate(
         _id,
@@ -282,7 +297,17 @@ export default {
 
       if (!project) return response(res, false, null, "Projektas nerastas");
 
-      const responseData = { _id, index, side, color, name, manufacturer, material, holes, step };
+      const responseData = {
+        _id,
+        index,
+        side,
+        color,
+        name,
+        manufacturer,
+        material,
+        holes,
+        step,
+      };
 
       emit.toAdmin("updateProductionFence", responseData);
       emit.toProduction("updateProductionFence", responseData);
@@ -442,7 +467,8 @@ export default {
     try {
       const { _id } = req.params;
 
-      const order: HydratedDocument<Production> | null = await productionSchema.findById(_id);
+      const order: HydratedDocument<Production> | null =
+        await productionSchema.findById(_id);
 
       if (!order) return response(res, false, null, "užsakymas nerastas");
 
@@ -480,7 +506,8 @@ export default {
     try {
       const { _id, index } = req.body;
 
-      const project: HydratedDocument<Production> | null = await productionSchema.findById(_id);
+      const project: HydratedDocument<Production> | null =
+        await productionSchema.findById(_id);
 
       if (!project) return response(res, false, null, "Projektas nerastas");
 
