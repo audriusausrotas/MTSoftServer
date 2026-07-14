@@ -143,7 +143,18 @@ export default {
         });
       }
 
-      return response(res, true, Object.values(report), "Užsakymai rasti");
+      const data = { totalCut: 0, totalBend: 0, totalHoles: 0, totalDefect: 0 };
+
+      Object.values(report).forEach((item: any) => {
+        if (item.operation === "cut") data.totalCut += item.totalLength / 100;
+        if (item.operation === "done") data.totalBend += item.totalBends;
+        if (item.operation === "holes") data.totalHoles += item.totalHoles;
+        if (item.operation === "defect") data.totalDefect += item.totalQuantity;
+      });
+
+      const responseData = { totalData: data, data: Object.values(report) };
+
+      return response(res, true, responseData, "Užsakymai rasti");
     } catch (error) {
       console.error("Klaida:", error);
 
