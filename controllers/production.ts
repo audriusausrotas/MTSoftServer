@@ -26,6 +26,12 @@ export default {
 
       if (!data.length) return response(res, false, null, "Projektai nerasti");
 
+      data.forEach((item) => {
+        if (item.orderNumber === "AUD-1416") {
+          console.log(item.bindings);
+        }
+      });
+
       return response(res, true, data);
     } catch (error) {
       console.error("Klaida:", error);
@@ -42,8 +48,6 @@ export default {
         .lean();
 
       if (!data) return response(res, false, null, "Projektas nerastas");
-
-      console.log(data.bindings);
 
       return response(res, true, data);
     } catch (error) {
