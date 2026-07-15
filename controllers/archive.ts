@@ -342,7 +342,8 @@ export default {
 
       const archivedProject = await schema.findById(_id);
 
-      if (!archivedProject) return response(res, false, null, "Projektas nerastas");
+      if (!archivedProject)
+        return response(res, false, null, "Projektas nerastas");
 
       const currentDate = new Date();
       let expirationDate = new Date(currentDate);
@@ -367,7 +368,12 @@ export default {
 
       emit.toAdmin("restoreArchive", responseData);
 
-      return response(res, true, responseData, "Projektas perkeltas į projektus");
+      return response(
+        res,
+        true,
+        responseData,
+        "Projektas perkeltas į projektus",
+      );
     } catch (error) {
       console.error("Klaida:", error);
       return response(res, false, null, "Serverio klaida");
@@ -378,8 +384,11 @@ export default {
     try {
       const { _id } = req.body;
 
-      const archivedProject = await productionArchiveSchema.findById(_id).lean();
-      if (!archivedProject) return response(res, false, null, "Projektas nerastas");
+      const archivedProject = await productionArchiveSchema
+        .findById(_id)
+        .lean();
+      if (!archivedProject)
+        return response(res, false, null, "Projektas nerastas");
 
       const projectData = archivedProject;
       const project = new productionSchema(projectData);
@@ -387,7 +396,13 @@ export default {
       if (!data) return response(res, false, null, "Klaida saugant projektą");
 
       const deleted = await productionArchiveSchema.findByIdAndDelete(_id);
-      if (!deleted) return response(res, false, null, "Klaida ištrinant projektą iš archyvo");
+      if (!deleted)
+        return response(
+          res,
+          false,
+          null,
+          "Klaida ištrinant projektą iš archyvo",
+        );
 
       const responseData = data;
 
@@ -448,7 +463,8 @@ export default {
 
       const responseData = await unconfirmedProject.save();
 
-      if (!responseData) return response(res, false, null, "Klaida perkeliant projektą");
+      if (!responseData)
+        return response(res, false, null, "Klaida perkeliant projektą");
 
       await projectSchema.findByIdAndDelete(_id);
       await deleteBackup(_id);
