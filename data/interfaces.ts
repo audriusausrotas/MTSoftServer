@@ -766,3 +766,20 @@ export interface ReportSettings {
   keyword: string;
   bends: string;
 }
+
+export interface ReportsGeneral {
+  workStart1: string;
+  workStart2: string;
+  workEnd1: string;
+  workEnd2: string;
+  cutGoal1: number;
+  cutGoal2: number;
+  bendGoal1M1: number;
+  bendGoal2M1: number;
+  bendGoal1M2: number;
+  bendGoal2M2: number;
+  holesGoal1: number;
+  holesGoal2: number;
+  holesIndex: number;
+  bendCost: number;
+}

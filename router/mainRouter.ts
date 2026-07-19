@@ -253,6 +253,7 @@ router.delete("/deleteReport/:_id", checkSuperAdmin, settings.deleteReport);
 router.patch("/updateFenceData", checkSuperAdmin, settings.updateFenceData);
 router.patch("/updateGateData", checkSuperAdmin, settings.updateGateData);
 router.patch("/updateReport", checkSuperAdmin, settings.updateReport);
+router.patch("/updateReportsGeneral", checkAdmin, settings.updateReportsGeneral);
 
 router.post("/newDefaultValue", checkSuperAdmin, settings.newDefaultValue);
 router.post("/newUserRights", checkSuperAdmin, settings.newUserRights);

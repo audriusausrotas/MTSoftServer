@@ -11,6 +11,7 @@ import { getFencePrices } from "../services/priceServices";
 import fs from "fs";
 import path from "path";
 import reportSettingsSchema from "../schemas/reportSettingsSchema";
+import reportGeneralSettingsSchema from "../schemas/reportGeneralSettingsSchema";
 
 export default {
   //////////////////// get requests ////////////////////////////////////
@@ -65,9 +66,16 @@ export default {
 
   getReportSettings: async (req: Request, res: Response) => {
     try {
-      const data = await reportSettingsSchema.find().lean();
+      const reportSettings = await reportSettingsSchema.find().lean();
+      const reportGeneralSettings = await reportGeneralSettingsSchema.find().lean();
 
-      if (data.length === 0) return response(res, false, null, "Nustatymai nerasti");
+      if (reportSettings.length === 0 || reportGeneralSettings.length === 0)
+        return response(res, false, null, "Nustatymai nerasti");
+
+      const data = {
+        reportSettings,
+        reportGeneralSettings: reportGeneralSettings[0],
+      };
 
       return response(res, true, data);
     } catch (error) {
@@ -338,6 +346,35 @@ export default {
       if (!responseData) return response(res, false, null, "Nustatymai nerasti");
 
       emit.toAdmin("editReport", responseData);
+
+      return response(res, true, responseData, "Pakeitimai atlikti");
+    } catch (error) {
+      console.error("Klaida:", error);
+      return response(res, false, null, "Serverio klaida");
+    }
+  },
+
+  updateReportsGeneral: async (req: Request, res: Response) => {
+    try {
+      const data = req.body;
+
+      const responseData = await reportGeneralSettingsSchema.findOneAndUpdate(
+        {},
+        {
+          $set: data,
+        },
+        {
+          new: true,
+          upsert: true,
+          runValidators: true,
+        },
+      );
+
+      if (!responseData) {
+        return response(res, false, null, "Nustatymai nerasti");
+      }
+
+      emit.toAdmin("updateReportsGeneral", responseData);
 
       return response(res, true, responseData, "Pakeitimai atlikti");
     } catch (error) {

@@ -154,7 +154,7 @@ export default {
 
       const responseData = { totalData: data, data: Object.values(report) };
 
-      return response(res, true, responseData, "Užsakymai rasti");
+      return response(res, true, responseData, "");
     } catch (error) {
       console.error("Klaida:", error);
 
