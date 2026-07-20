@@ -597,10 +597,10 @@ export default {
       if (hasWorkerWithBend) holesMultiplier = +generalSettings.holesIndex;
 
       if (production.holes.shifts.shift1.active)
-        production.holes.shifts.shift1.goal = generalSettings.holesGoal1 * holesMultiplier;
+        production.holes.shifts.shift1.goal = generalSettings.holesGoal1;
 
       if (production.holes.shifts.shift2.active)
-        production.holes.shifts.shift2.goal = generalSettings.holesGoal2 * holesMultiplier;
+        production.holes.shifts.shift2.goal = generalSettings.holesGoal2;
 
       /*
         ======================
