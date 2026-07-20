@@ -45,10 +45,7 @@ export async function validateProductionStart(projectId: Types.ObjectId) {
 // --------------------------------------------------
 // 2. Bindings skaičiavimas
 // --------------------------------------------------
-export async function calculateBindings(
-  project: HydratedDocument<Project>,
-  fences: FenceSetup[],
-) {
+export async function calculateBindings(project: HydratedDocument<Project>, fences: FenceSetup[]) {
   const bindings: Bindings[] = [];
 
   //adds bindings as new or update quantity of existing
@@ -61,11 +58,7 @@ export async function calculateBindings(
   ) => {
     let found = false;
     for (const binding of bindings) {
-      if (
-        binding.color === color &&
-        binding.height === height &&
-        binding.name === name
-      ) {
+      if (binding.color === color && binding.height === height && binding.name === name) {
         binding.quantity = binding.quantity! + quantity;
         found = true;
         break;
@@ -112,8 +105,7 @@ export async function calculateBindings(
     let totalFenceboards: any = [];
 
     item.measures.forEach((measure, index) => {
-      const notSpecial =
-        !measure.laiptas.exist && !measure.kampas.exist && !measure.gates.exist;
+      const notSpecial = !measure.laiptas.exist && !measure.kampas.exist && !measure.gates.exist;
       const ifFence = !measure.laiptas.exist && !measure.kampas.exist;
 
       // Calculating Dile
@@ -121,8 +113,7 @@ export async function calculateBindings(
         if (item.direction === "Horizontali")
           addBindings(color, measure.height, "Koja dviguba 20 mm", 2);
 
-        const currentLength =
-          item.direction === "Vertikali" ? measure.height : measure.length;
+        const currentLength = item.direction === "Vertikali" ? measure.height : measure.length;
 
         if (totalFenceboards.length < 1) {
           totalFenceboards.push({
@@ -150,19 +141,11 @@ export async function calculateBindings(
       }
       ////////////////////////////
       if (!isBindings) {
-        if (ifFence)
-          addBindings(color, measure.height, "Koja dviguba " + legWidth, 2);
+        if (ifFence) addBindings(color, measure.height, "Koja dviguba " + legWidth, 2);
       } else {
-        if (notSpecial)
-          addBindings(color, measure.height, "Koja vienguba " + legWidth, 2);
+        if (notSpecial) addBindings(color, measure.height, "Koja vienguba " + legWidth, 2);
         if (measure.gates.exist)
-          addBindings(
-            color,
-            measure.height,
-            "Koja dviguba " + legWidth,
-            2,
-            true,
-          );
+          addBindings(color, measure.height, "Koja dviguba " + legWidth, 2, true);
         if (index === 0) {
           if (ifFence) lastHeight = measure.height;
           if (measure.gates.exist) wasGates = true;
@@ -241,12 +224,7 @@ export async function calculateBindings(
                 "Kampas išorė " + cornerRadius,
                 1,
               );
-              addBindings(
-                color,
-                0,
-                "Kepurė kampinė " + (legWidth === "40 mm" ? "40" : "60"),
-                1,
-              );
+              addBindings(color, 0, "Kepurė kampinė " + (legWidth === "40 mm" ? "40" : "60"), 1);
             }
             wasCorner = false;
             lastHeight = measure.height;
@@ -256,36 +234,16 @@ export async function calculateBindings(
                 ? lastHeight + stepHeight - (lastHeight - measure.height)
                 : measure.height + stepHeight - (measure.height - lastHeight);
             if (isBindings) {
-              addBindings(
-                color,
-                maxHeight + (legWidth === "40 mm" ? 1 : 14),
-                "Centrinis",
-                2,
-              );
-              addBindings(
-                color,
-                0,
-                "Kepurė " + (legWidth === "40 mm" ? "40" : "60"),
-                1,
-              );
+              addBindings(color, maxHeight + (legWidth === "40 mm" ? 1 : 14), "Centrinis", 2);
+              addBindings(color, 0, "Kepurė " + (legWidth === "40 mm" ? "40" : "60"), 1);
             }
             wasStep = false;
             lastHeight = measure.height;
           } else {
             const maxHeight = Math.max(lastHeight, measure.height);
             if (isBindings) {
-              addBindings(
-                color,
-                maxHeight + (legWidth === "40 mm" ? 1 : 14),
-                "Centrinis",
-                2,
-              );
-              addBindings(
-                color,
-                0,
-                "Kepurė " + (legWidth === "40 mm" ? "40" : "60"),
-                1,
-              );
+              addBindings(color, maxHeight + (legWidth === "40 mm" ? 1 : 14), "Centrinis", 2);
+              addBindings(color, 0, "Kepurė " + (legWidth === "40 mm" ? "40" : "60"), 1);
             }
             lastHeight = measure.height;
           }
@@ -392,10 +350,7 @@ export async function createProductionRecord(
 // --------------------------------------------------
 // 6. Emit eventai
 // --------------------------------------------------
-export function emitProductionEvents(
-  production: Production,
-  project: HydratedDocument<Project>,
-) {
+export function emitProductionEvents(production: Production, project: HydratedDocument<Project>) {
   emit.toAdmin("newProduction", production);
   emit.toProduction("newProduction", production);
   emit.toWarehouse("newProduction", production);
@@ -510,8 +465,7 @@ export async function deleteProduction(_id: string) {
   const files: string[] = [
     ...(production.files || []),
     ...(production.fences?.flatMap((fence: any) => fence.files || []) || []),
-    ...(production.bindings?.flatMap((binding: any) => binding.files || []) ||
-      []),
+    ...(production.bindings?.flatMap((binding: any) => binding.files || []) || []),
   ];
 
   await deleteFiles(files);
@@ -554,8 +508,7 @@ export async function updateMeasure(data: any, user: User) {
     oldValue = (project as any).bindings?.[index]?.[field] ?? 0;
     (project as any).bindings[index][field] = value;
   } else {
-    oldValue =
-      (project as any).fences?.[index]?.measures?.[measureIndex]?.[field] ?? 0;
+    oldValue = (project as any).fences?.[index]?.measures?.[measureIndex]?.[field] ?? 0;
     (project as any).fences[index].measures[measureIndex][field] = value;
   }
 
@@ -565,17 +518,8 @@ export async function updateMeasure(data: any, user: User) {
 
   if (!savedProject) throw new Error("Projektas neišsaugotas");
 
-  if (
-    (field === "cut" || field === "done" || field === "holes") &&
-    quantity > 0
-  ) {
-    const event = buildProductionEvent(
-      data,
-      quantity,
-      savedProject,
-      user,
-      holesCount,
-    );
+  if ((field === "cut" || field === "done" || field === "holes") && quantity > 0) {
+    const event = buildProductionEvent(data, quantity, savedProject, user, holesCount);
     await new productionEventSchema(event).save();
   }
 
@@ -600,13 +544,7 @@ export async function updateHoles(data: any, user: User) {
   const savedProject = await project.save();
 
   if (quantity > 0) {
-    const event = buildProductionEvent(
-      data,
-      quantity,
-      savedProject,
-      user,
-      holesCount,
-    );
+    const event = buildProductionEvent(data, quantity, savedProject, user, holesCount);
     await new productionEventSchema(event).save();
   }
 
@@ -652,8 +590,7 @@ function buildProductionEvent(
   user: User,
   holesCount: number,
 ) {
-  const isBinding =
-    data.measureIndex === undefined || data.measureIndex === null;
+  const isBinding = data.measureIndex === undefined || data.measureIndex === null;
 
   const location = {
     index: data.index,
@@ -676,9 +613,7 @@ function buildProductionEvent(
     operation: data.field,
 
     element: {
-      name: isBinding
-        ? project.bindings?.[data.index]?.name
-        : project.fences?.[data.index]?.name,
+      name: isBinding ? project.bindings?.[data.index]?.name : project.fences?.[data.index]?.name,
 
       quantity,
       holesCount,
@@ -687,8 +622,7 @@ function buildProductionEvent(
           ? 0
           : isBinding
             ? project.bindings?.[data.index]?.height
-            : project.fences?.[data.index]?.measures?.[data.measureIndex]
-                ?.length,
+            : project.fences?.[data.index]?.measures?.[data.measureIndex]?.length,
 
       location,
     },

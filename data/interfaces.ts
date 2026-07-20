@@ -782,7 +782,7 @@ export interface ReportsGeneral {
   holesGoal2: number;
   holesIndex: number;
   bendCost: number;
-  //broko tikslas
-  //samybos savikainos tikslas
-  //skyluciu musimo savikaina
+  holesCost: number;
+  defectPercentage: number;
+  costTarget: number;
 }

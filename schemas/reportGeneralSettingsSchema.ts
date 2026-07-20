@@ -16,6 +16,9 @@ const reportGeneralSettingsSchema = new mongoose.Schema<ReportsGeneral>({
   holesGoal2: { type: Number, required: false, default: 0 },
   holesIndex: { type: Number, required: false, default: 0 },
   bendCost: { type: Number, required: false, default: 0 },
+  holesCost: { type: Number, required: false, default: 0 },
+  defectPercentage: { type: Number, required: false, default: 0 },
+  costTarget: { type: Number, required: false, default: 0 },
 });
 
 export default mongoose.model(

@@ -654,6 +654,7 @@ export default {
 
         defects: {
           quantity: production.defects.quantity,
+          target: generalSettings.defectPercentage,
           percentage:
             (production.defects.quantity /
               (production.bend.M1.bends + production.bend.M2.bends + production.defects.quantity)) *
@@ -668,10 +669,13 @@ export default {
           bendCost
         */
 
-        selfCost:
-          (production.bend.M1.meters / 100 + production.bend.M2.meters / 100) *
-            +generalSettings.bendCost +
-          production.holes.count * 0.02,
+        selfCost: {
+          value:
+            (production.bend.M1.meters / 100 + production.bend.M2.meters / 100) *
+              +generalSettings.bendCost +
+            production.holes.count * +generalSettings.holesCost,
+          target: generalSettings.costTarget,
+        },
 
         kpi,
       };
