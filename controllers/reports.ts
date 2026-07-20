@@ -670,7 +670,8 @@ export default {
 
         selfCost:
           (production.bend.M1.meters / 100 + production.bend.M2.meters / 100) *
-          +generalSettings.bendCost,
+            +generalSettings.bendCost +
+          production.holes.count * 0.02,
 
         kpi,
       };
