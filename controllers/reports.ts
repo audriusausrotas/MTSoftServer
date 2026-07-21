@@ -15,22 +15,40 @@ const timeToMinutes = (time: string) => {
 /**
  * Pagal event laiką nustato pamainą
  */
-const getShift = (
-  timestamp: Date,
-  settings: ReportsGeneral,
-): "shift1" | "shift2" | null => {
-  const currentMinutes = timestamp.getHours() * 60 + timestamp.getMinutes();
+
+const getLithuaniaMinutes = (date: Date) => {
+  const formatter = new Intl.DateTimeFormat("lt-LT", {
+    timeZone: "Europe/Vilnius",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  });
+
+  const parts = formatter.formatToParts(date);
+
+  const hour = Number(parts.find((p) => p.type === "hour")?.value ?? 0);
+
+  const minute = Number(parts.find((p) => p.type === "minute")?.value ?? 0);
+
+  return hour * 60 + minute;
+};
+
+const getShift = (timestamp: Date, settings: ReportsGeneral): "shift1" | "shift2" | null => {
+  const currentMinutes = getLithuaniaMinutes(timestamp);
 
   const shift1Start = timeToMinutes(settings.workStart1);
   const shift1End = timeToMinutes(settings.workEnd1);
+
   const shift2Start = timeToMinutes(settings.workStart2);
   const shift2End = timeToMinutes(settings.workEnd2);
 
-  if (currentMinutes >= shift1Start && currentMinutes < shift1End)
+  if (currentMinutes >= shift1Start && currentMinutes < shift1End) {
     return "shift1";
+  }
 
-  if (currentMinutes >= shift2Start && currentMinutes < shift2End)
+  if (currentMinutes >= shift2Start && currentMinutes < shift2End) {
     return "shift2";
+  }
 
   return null;
 };
@@ -203,24 +221,8 @@ export default {
             if (!isAll(month) && !isNaN(selectedMonth)) {
               const realMonth = selectedMonth - 1;
               if (!isAll(day) && !isNaN(selectedDay)) {
-                start = new Date(
-                  selectedYear,
-                  realMonth,
-                  selectedDay,
-                  0,
-                  0,
-                  0,
-                  0,
-                );
-                end = new Date(
-                  selectedYear,
-                  realMonth,
-                  selectedDay,
-                  23,
-                  59,
-                  59,
-                  999,
-                );
+                start = new Date(selectedYear, realMonth, selectedDay, 0, 0, 0, 0);
+                end = new Date(selectedYear, realMonth, selectedDay, 23, 59, 59, 999);
               } else {
                 start = new Date(selectedYear, realMonth, 1, 0, 0, 0, 0);
                 end = new Date(selectedYear, realMonth + 1, 0, 23, 59, 59, 999);
@@ -250,12 +252,7 @@ export default {
       const generalSettings = await reportGeneralSettingsSchema.findOne();
 
       if (!generalSettings) {
-        return response(
-          res,
-          false,
-          null,
-          "Nerasti bendri ataskaitos nustatymai",
-        );
+        return response(res, false, null, "Nerasti bendri ataskaitos nustatymai");
       }
 
       const production: any = createProductionReport();
@@ -300,12 +297,9 @@ export default {
           if (event.machine === "Lenkimo staklės 2") machineKey = "M2";
 
           if (machineKey) {
-            const bends =
-              getBendCount(event.element?.name || "", bendSettings) * quantity;
+            const bends = getBendCount(event.element?.name || "", bendSettings) * quantity;
             const bendMeters =
-              getBendCount(event.element?.name || "", bendSettings) *
-              quantity *
-              length;
+              getBendCount(event.element?.name || "", bendSettings) * quantity * length;
 
             production.bend[machineKey].shifts[shift].active = true;
             production.bend[machineKey].shifts[shift].bends += bends;
@@ -371,10 +365,7 @@ export default {
         */
 
         const key =
-          `${event.orderNumber}_` +
-          `${email}_` +
-          `${event.machine}_` +
-          `${event.operation}`;
+          `${event.orderNumber}_` + `${email}_` + `${event.machine}_` + `${event.operation}`;
 
         if (!detailReport[key]) {
           detailReport[key] = {
@@ -394,9 +385,7 @@ export default {
         const row = detailReport[key];
 
         const bendCount =
-          event.operation === "done"
-            ? getBendCount(event.element?.name || "", bendSettings)
-            : 0;
+          event.operation === "done" ? getBendCount(event.element?.name || "", bendSettings) : 0;
         row.totalQuantity += quantity;
         row.totalLength += quantity * length;
         row.totalBends += bendCount * quantity;
@@ -483,21 +472,15 @@ export default {
       */
 
       const kpi = {
-        M1:
-          production.kpi.M1.bends +
-          production.kpi.M1.holes * +generalSettings.holesIndex,
-        M2:
-          production.kpi.M2.bends +
-          production.kpi.M2.holes * +generalSettings.holesIndex,
+        M1: production.kpi.M1.bends + production.kpi.M1.holes * +generalSettings.holesIndex,
+        M2: production.kpi.M2.bends + production.kpi.M2.holes * +generalSettings.holesIndex,
       };
 
       const totalData = {
         cut: {
           meters: production.cut.meters / 100,
           quantity: production.cut.quantity,
-          goal:
-            production.cut.shifts.shift1.goal +
-            production.cut.shifts.shift2.goal,
+          goal: production.cut.shifts.shift1.goal + production.cut.shifts.shift2.goal,
           shifts: production.cut.shifts,
         },
 
@@ -505,39 +488,31 @@ export default {
           M1: {
             bends: production.bend.M1.bends,
             meters: production.bend.M1.meters / 100,
-            goal:
-              production.bend.M1.shifts.shift1.goal +
-              production.bend.M1.shifts.shift2.goal,
+            goal: production.bend.M1.shifts.shift1.goal + production.bend.M1.shifts.shift2.goal,
             shifts: production.bend.M1.shifts,
           },
 
           M2: {
             bends: production.bend.M2.bends,
             meters: production.bend.M2.meters / 100,
-            goal:
-              production.bend.M2.shifts.shift1.goal +
-              production.bend.M2.shifts.shift2.goal,
+            goal: production.bend.M2.shifts.shift1.goal + production.bend.M2.shifts.shift2.goal,
             shifts: production.bend.M2.shifts,
           },
 
           total: {
             bends: production.bend.M1.bends + production.bend.M2.bends,
             quantity: production.bend.M1.quantity + production.bend.M2.quantity,
-            meters:
-              production.bend.M1.meters / 100 + production.bend.M2.meters / 100,
+            meters: production.bend.M1.meters / 100 + production.bend.M2.meters / 100,
             goal:
               production.bend.M1.shifts.shift1.goal +
               production.bend.M1.shifts.shift2.goal +
-              (production.bend.M2.shifts.shift1.goal +
-                production.bend.M2.shifts.shift2.goal),
+              (production.bend.M2.shifts.shift1.goal + production.bend.M2.shifts.shift2.goal),
           },
         },
 
         holes: {
           count: production.holes.count,
-          goal:
-            production.holes.shifts.shift1.goal +
-            production.holes.shifts.shift2.goal,
+          goal: production.holes.shifts.shift1.goal + production.holes.shifts.shift2.goal,
           shifts: production.holes.shifts,
         },
 
@@ -546,9 +521,7 @@ export default {
           target: generalSettings.defectPercentage,
           percentage:
             (production.defects.quantity /
-              (production.bend.M1.bends +
-                production.bend.M2.bends +
-                production.defects.quantity)) *
+              (production.bend.M1.bends + production.bend.M2.bends + production.defects.quantity)) *
             100,
           shifts: production.defects.shifts,
         },
@@ -562,8 +535,7 @@ export default {
 
         selfCost: {
           value:
-            (production.bend.M1.meters / 100 +
-              production.bend.M2.meters / 100) *
+            (production.bend.M1.meters / 100 + production.bend.M2.meters / 100) *
               +generalSettings.bendCost +
             production.holes.count * +generalSettings.holesCost,
           target: generalSettings.costTarget,
