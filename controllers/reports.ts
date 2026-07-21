@@ -53,6 +53,22 @@ const getShift = (timestamp: Date, settings: ReportsGeneral): "shift1" | "shift2
   return null;
 };
 
+const getLithuaniaDateRange = (start: string, end: string) => {
+  return {
+    start: new Date(`${start}T00:00:00+03:00`),
+    end: new Date(`${end}T23:59:59.999+03:00`),
+  };
+};
+
+const getDateRangeDays = (start: string, end: string) => {
+  const startDate = new Date(`${start}T00:00:00`);
+  const endDate = new Date(`${end}T00:00:00`);
+
+  const diff = endDate.getTime() - startDate.getTime();
+
+  return Math.floor(diff / (1000 * 60 * 60 * 24)) + 1;
+};
+
 /**
  * Suranda kiek lenkimų turi detalė
  */
@@ -174,8 +190,11 @@ const createProductionReport = () => ({
 export default {
   getProductionReport: async (req: any, res: any) => {
     try {
-      const { user, year, month, day, machine, search } = req.body;
+      const { user, year, month, day, weekStart, weekEnd, machine, search } = req.body;
+
       const filter: any = {};
+      let selectedDays = 1;
+
       const isAll = (value: any) => {
         return (
           value === undefined ||
@@ -185,58 +204,68 @@ export default {
         );
       };
 
-      /*
-        Paieška pagal užsakymo numerį
-      */
       if (search && search.trim() !== "") {
         filter.orderNumber = {
           $regex: search.trim(),
           $options: "i",
         };
-      } else {
-        /*
-          Filtras pagal darbuotoją
-        */
-        if (!isAll(user)) {
-          filter["user.email"] = user;
-        }
-        /*
-          Filtras pagal stakles
-        */
-        if (!isAll(machine)) {
-          filter.machine = machine;
-        }
-        /*
-          Filtras pagal datą
-        */
-        if (!isAll(year)) {
-          const selectedYear = Number(year);
+      }
 
-          if (!isNaN(selectedYear)) {
-            let start: Date;
-            let end: Date;
-            const selectedMonth = Number(month);
-            const selectedDay = Number(day);
+      //USER FILTER
+      if (!isAll(user)) {
+        filter["user.email"] = user;
+      }
 
-            if (!isAll(month) && !isNaN(selectedMonth)) {
-              const realMonth = selectedMonth - 1;
-              if (!isAll(day) && !isNaN(selectedDay)) {
-                start = new Date(selectedYear, realMonth, selectedDay, 0, 0, 0, 0);
-                end = new Date(selectedYear, realMonth, selectedDay, 23, 59, 59, 999);
-              } else {
-                start = new Date(selectedYear, realMonth, 1, 0, 0, 0, 0);
-                end = new Date(selectedYear, realMonth + 1, 0, 23, 59, 59, 999);
-              }
-            } else {
-              start = new Date(selectedYear, 0, 1, 0, 0, 0, 0);
-              end = new Date(selectedYear, 11, 31, 23, 59, 59, 999);
-            }
+      // MACHINE FILTER
+      if (!isAll(machine)) {
+        filter.machine = machine;
+      }
 
-            filter.timestamp = {
-              $gte: start,
-              $lte: end,
-            };
+      //DATE FILTER
+      if (!isAll(weekStart) && !isAll(weekEnd)) {
+        selectedDays = getDateRangeDays(weekStart, weekEnd);
+
+        const start = new Date(`${weekStart}T00:00:00+03:00`);
+        const end = new Date(`${weekEnd}T23:59:59.999+03:00`);
+
+        filter.timestamp = {
+          $gte: start,
+          $lte: end,
+        };
+      } else if (!isAll(year)) {
+        const selectedYear = Number(year);
+
+        if (!isNaN(selectedYear)) {
+          let start: Date;
+          let end: Date;
+
+          const selectedMonth = Number(month);
+          const selectedDay = Number(day);
+
+          // KONKRETI DIENA
+          if (!isAll(month) && !isAll(day) && !isNaN(selectedMonth) && !isNaN(selectedDay)) {
+            const monthString = String(selectedMonth).padStart(2, "0");
+            const dayString = String(selectedDay).padStart(2, "0");
+            start = new Date(`${selectedYear}-${monthString}-${dayString}T00:00:00+03:00`);
+            end = new Date(`${selectedYear}-${monthString}-${dayString}T23:59:59.999+03:00`);
+          } else if (!isAll(month) && !isNaN(selectedMonth)) {
+            //VISAS MENESIS
+            const monthString = String(selectedMonth).padStart(2, "0");
+            start = new Date(`${selectedYear}-${monthString}-01T00:00:00+03:00`);
+            const nextMonth = selectedMonth === 12 ? 1 : selectedMonth + 1;
+            const nextYear = selectedMonth === 12 ? selectedYear + 1 : selectedYear;
+            end = new Date(`${nextYear}-${String(nextMonth).padStart(2, "0")}-01T00:00:00+03:00`);
+            end.setMilliseconds(end.getMilliseconds() - 1);
+          } else {
+            // VISI METAI
+            start = new Date(`${selectedYear}-01-01T00:00:00+03:00`);
+            end = new Date(`${selectedYear}-12-31T23:59:59.999+03:00`);
           }
+
+          filter.timestamp = {
+            $gte: start,
+            $lte: end,
+          };
         }
       }
 
@@ -416,26 +445,26 @@ export default {
       // CUT
 
       if (production.cut.shifts.shift1.active)
-        production.cut.shifts.shift1.goal = generalSettings.cutGoal1;
+        production.cut.shifts.shift1.goal = generalSettings.cutGoal1 * selectedDays;
 
       if (production.cut.shifts.shift2.active)
-        production.cut.shifts.shift2.goal = generalSettings.cutGoal2;
+        production.cut.shifts.shift2.goal = generalSettings.cutGoal2 * selectedDays;
 
       // BEND M1
 
       if (production.bend.M1.shifts.shift1.active)
-        production.bend.M1.shifts.shift1.goal = generalSettings.bendGoal1M1;
+        production.bend.M1.shifts.shift1.goal = generalSettings.bendGoal1M1 * selectedDays;
 
       if (production.bend.M1.shifts.shift2.active)
-        production.bend.M1.shifts.shift2.goal = generalSettings.bendGoal2M1;
+        production.bend.M1.shifts.shift2.goal = generalSettings.bendGoal2M1 * selectedDays;
 
       // BEND M2
 
       if (production.bend.M2.shifts.shift1.active)
-        production.bend.M2.shifts.shift1.goal = generalSettings.bendGoal1M2;
+        production.bend.M2.shifts.shift1.goal = generalSettings.bendGoal1M2 * selectedDays;
 
       if (production.bend.M2.shifts.shift2.active)
-        production.bend.M2.shifts.shift2.goal = generalSettings.bendGoal2M2;
+        production.bend.M2.shifts.shift2.goal = generalSettings.bendGoal2M2 * selectedDays;
 
       /*
         ======================
@@ -457,10 +486,10 @@ export default {
       if (hasWorkerWithBend) holesMultiplier = +generalSettings.holesIndex;
 
       if (production.holes.shifts.shift1.active)
-        production.holes.shifts.shift1.goal = generalSettings.holesGoal1;
+        production.holes.shifts.shift1.goal = generalSettings.holesGoal1 * selectedDays;
 
       if (production.holes.shifts.shift2.active)
-        production.holes.shifts.shift2.goal = generalSettings.holesGoal2;
+        production.holes.shifts.shift2.goal = generalSettings.holesGoal2 * selectedDays;
 
       /*
         ======================
