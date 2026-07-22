@@ -19,6 +19,9 @@ export default {
   toOrders: (event: string, data: any) => {
     io.to("orders-room").emit(event, data);
   },
+  toScreen: (event: string, data: any) => {
+    io.to("screen-room").emit(event, data);
+  },
   toEveryone: (event: string, data: any) => {
     io.emit(event, data);
   },

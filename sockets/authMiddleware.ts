@@ -1,7 +1,7 @@
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { Socket } from "socket.io";
 import cookie from "cookie";
-import DB from "./socketDB";
+// import DB from "./socketDB";
 
 const roomMapping: Record<string, string> = {
   Administratorius: "admin-room",
@@ -11,6 +11,7 @@ const roomMapping: Record<string, string> = {
   Sandėlys: "warehouse-room",
   Vartonas: "gates-room",
   Tiekėjas: "orders-room",
+  Ekranas: "screen-room",
 };
 
 export default async (socket: Socket): Promise<boolean> => {
@@ -34,16 +35,15 @@ export default async (socket: Socket): Promise<boolean> => {
 
     const user = jwt.verify(token, secret) as JwtPayload;
 
-    await DB.saveNewUser({
-      userID: user.id,
-      socketID: socket.id,
-      accountType: user.accountType,
-      username: user.username,
-      email: user.email,
-    });
+    // await DB.saveNewUser({
+    //   userID: user.id,
+    //   socketID: socket.id,
+    //   accountType: user.accountType,
+    //   username: user.username,
+    //   email: user.email,
+    // });
 
     const room = roomMapping[user.accountType];
-    console.log(user.accountType);
     if (room) {
       socket.join(room);
       console.log(`${user.email} prisijungė prie ${room}`);

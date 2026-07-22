@@ -6,7 +6,6 @@ import {
   SeeThroughSteps,
   ProjectComment,
   User,
-  ProductionEvent,
 } from "../data/interfaces";
 import productionSchema from "../schemas/productionSchema";
 import { findProjectById, updateProjectStatus } from "./projectService";
@@ -17,6 +16,7 @@ import { v4 } from "uuid";
 import productionArchiveSchema from "../schemas/productionArchiveSchema";
 import { deleteFiles } from "./uploadServices";
 import productionEventSchema from "../schemas/productionEventSchema";
+import { buildEventForReport } from "./reportServices";
 
 export async function newProductionService(projectId: Types.ObjectId) {
   const project = await validateProductionStart(projectId);
@@ -496,6 +496,8 @@ export async function findProductionById(_id: string) {
   return production;
 }
 
+//--------------------------------------------------------------------
+
 export async function updateMeasure(data: any, user: User) {
   const { _id, index, measureIndex, value, field, holesCount } = data;
 
@@ -520,7 +522,11 @@ export async function updateMeasure(data: any, user: User) {
 
   if ((field === "cut" || field === "done" || field === "holes") && quantity > 0) {
     const event = buildProductionEvent(data, quantity, savedProject, user, holesCount);
-    await new productionEventSchema(event).save();
+
+    const savedData = await new productionEventSchema(event).save();
+    if (!savedData) throw new Error("Įrašas neišsaugotas");
+
+    buildEventForReport(event);
   }
 
   emit.toAdmin("updateProductionMeasure", data);
@@ -530,6 +536,8 @@ export async function updateMeasure(data: any, user: User) {
 
   return data;
 }
+
+//------------------------------------------------------------------
 
 export async function updateHoles(data: any, user: User) {
   const { _id, index, value, holesCount } = data;
@@ -545,7 +553,11 @@ export async function updateHoles(data: any, user: User) {
 
   if (quantity > 0) {
     const event = buildProductionEvent(data, quantity, savedProject, user, holesCount);
-    await new productionEventSchema(event).save();
+
+    const savedData = await new productionEventSchema(event).save();
+    if (!savedData) throw new Error("Įrašas neišsaugotas");
+
+    buildEventForReport(event);
   }
 
   emit.toAdmin("updateProductionHoles", data);
@@ -555,6 +567,8 @@ export async function updateHoles(data: any, user: User) {
 
   return data;
 }
+
+//----------------------------------------------------------------------
 
 export async function productionDefect(data: any, user: User) {
   const { _id, index, measureIndex } = data;
@@ -573,7 +587,11 @@ export async function productionDefect(data: any, user: User) {
   const savedProject = await project.save();
 
   const event = buildProductionEvent(data, 1, savedProject, user, 0);
-  await new productionEventSchema(event).save();
+
+  const savedData = await new productionEventSchema(event).save();
+  if (!savedData) throw new Error("Įrašas neišsaugotas");
+
+  buildEventForReport(event);
 
   emit.toAdmin("productionDefect", data);
   emit.toProduction("productionDefect", data);
