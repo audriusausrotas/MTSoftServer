@@ -147,8 +147,6 @@ export function getDateRangeDays(start: string, end: string) {
 }
 
 export function getBendCount(elementName: string, settings: ReportSettings[]) {
-  console.log(settings);
-  console.log(elementName);
   const found = settings.find((item) =>
     elementName.toLowerCase().includes(item.keyword.toLowerCase()),
   );

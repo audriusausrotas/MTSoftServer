@@ -9,7 +9,6 @@ import { FenceSetup } from "../data/interfaces";
 import gatePriceSchema from "../schemas/gatePriceSchema";
 import { getFencePrices } from "../services/priceServices";
 import fs from "fs";
-import path from "path";
 import reportSettingsSchema from "../schemas/reportSettingsSchema";
 import reportGeneralSettingsSchema from "../schemas/reportGeneralSettingsSchema";
 
@@ -447,6 +446,7 @@ export default {
         admin,
         warehouse,
         orders,
+        screen,
       } = req.body;
 
       let doesExist = await userRightsSchema.findOne({ accountType });
@@ -460,6 +460,7 @@ export default {
         doesExist.other = other;
         doesExist.admin = admin;
         doesExist.warehouse = warehouse;
+        doesExist.screen = screen;
       } else
         doesExist = new userRightsSchema({
           accountType,
@@ -471,6 +472,7 @@ export default {
           orders,
           admin,
           warehouse,
+          screen,
         });
 
       const responseData = await doesExist.save();

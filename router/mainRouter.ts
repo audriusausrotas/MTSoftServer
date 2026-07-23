@@ -1,11 +1,17 @@
+import checkProductionData from "../middleware/checkProductionData";
 import inputVerification from "../middleware/inputVerification";
 import externalRequests from "../controllers/externalRequests";
 import potentialClient from "../controllers/potentialClient";
 import websiteSettings from "../controllers/websiteSettings";
+import checkSuperAdmin from "../middleware/checkSuperAdmin";
+import { uploadFiles } from "../middleware/uploadFiles";
 import checkPartners from "../middleware/checkPartners";
+import calculations from "../controllers/calculations";
 import installation from "../controllers/installation";
+import checkScreen from "../middleware/checkScreen";
 import production from "../controllers/production";
 import checkAdmin from "../middleware/checkAdmin";
+import suppliers from "../controllers/suppliers";
 import checkUser from "../middleware/checkUser";
 import comments from "../controllers/comments";
 import settings from "../controllers/settings";
@@ -16,18 +22,13 @@ import project from "../controllers/project";
 import uploads from "../controllers/uploads";
 import clients from "../controllers/clients";
 import archive from "../controllers/archive";
+import orders from "../controllers/orders";
 import email from "../controllers/email";
 import gates from "../controllers/gates";
 import offer from "../controllers/offer";
 import auth from "../controllers/auth";
 import user from "../controllers/user";
 import express from "express";
-import suppliers from "../controllers/suppliers";
-import orders from "../controllers/orders";
-import checkSuperAdmin from "../middleware/checkSuperAdmin";
-import calculations from "../controllers/calculations";
-import { uploadFiles } from "../middleware/uploadFiles";
-import checkProductionData from "../middleware/checkProductionData";
 
 const router = express.Router();
 
@@ -227,7 +228,7 @@ router.post("/newProject", checkAdmin, project.newProject);
 
 /////////////////////// Reports/ /////////////////////////
 
-router.post("/getProductionReport", checkAdmin, reports.getProductionReport);
+router.post("/getProductionReport", checkScreen, reports.getProductionReport);
 
 /////////////////////// Schedule /////////////////////////
 

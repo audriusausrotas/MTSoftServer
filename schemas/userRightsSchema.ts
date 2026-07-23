@@ -47,6 +47,12 @@ const userRightsSchema = new mongoose.Schema<UserRights>({
     required: false,
     default: false,
   },
+
+  screen: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
 });
 
 export default mongoose.model("userRights", userRightsSchema, "userRights");
