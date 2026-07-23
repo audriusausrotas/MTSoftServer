@@ -147,8 +147,10 @@ export function getDateRangeDays(start: string, end: string) {
 }
 
 export function getBendCount(elementName: string, settings: ReportSettings[]) {
-  const found = settings.find(
-    (item) => elementName.toLowerCase() === item.keyword.toLowerCase(),
+  console.log(settings);
+  console.log(elementName);
+  const found = settings.find((item) =>
+    elementName.toLowerCase().includes(item.keyword.toLowerCase()),
   );
   if (!found) return 0;
   return +found.bends;
@@ -173,10 +175,7 @@ export function getLithuaniaMinutes(date: Date) {
   return hour * 60 + minute;
 }
 
-export function getShift(
-  timestamp: Date,
-  settings: ReportsGeneral,
-): "shift1" | "shift2" | null {
+export function getShift(timestamp: Date, settings: ReportsGeneral): "shift1" | "shift2" | null {
   const currentMinutes = getLithuaniaMinutes(timestamp);
 
   const shift1Start = timeToMinutes(settings.workStart1);
@@ -184,16 +183,13 @@ export function getShift(
   const shift2Start = timeToMinutes(settings.workStart2);
   const shift2End = timeToMinutes(settings.workEnd2);
 
-  if (currentMinutes >= shift1Start && currentMinutes < shift1End)
-    return "shift1";
-  if (currentMinutes >= shift2Start && currentMinutes < shift2End)
-    return "shift2";
+  if (currentMinutes >= shift1Start && currentMinutes < shift1End) return "shift1";
+  if (currentMinutes >= shift2Start && currentMinutes < shift2End) return "shift2";
   return null;
 }
 
 export async function generateProductionReport(request: any) {
-  const { user, year, month, day, weekStart, weekEnd, machine, search } =
-    request;
+  const { user, year, month, day, weekStart, weekEnd, machine, search } = request;
 
   const filter: any = {};
   let selectedDays = 1;
@@ -246,29 +242,18 @@ export async function generateProductionReport(request: any) {
       const selectedDay = Number(day);
 
       // KONKRETI DIENA
-      if (
-        !isAll(month) &&
-        !isAll(day) &&
-        !isNaN(selectedMonth) &&
-        !isNaN(selectedDay)
-      ) {
+      if (!isAll(month) && !isAll(day) && !isNaN(selectedMonth) && !isNaN(selectedDay)) {
         const monthString = String(selectedMonth).padStart(2, "0");
         const dayString = String(selectedDay).padStart(2, "0");
-        start = new Date(
-          `${selectedYear}-${monthString}-${dayString}T00:00:00+03:00`,
-        );
-        end = new Date(
-          `${selectedYear}-${monthString}-${dayString}T23:59:59.999+03:00`,
-        );
+        start = new Date(`${selectedYear}-${monthString}-${dayString}T00:00:00+03:00`);
+        end = new Date(`${selectedYear}-${monthString}-${dayString}T23:59:59.999+03:00`);
       } else if (!isAll(month) && !isNaN(selectedMonth)) {
         //VISAS MENESIS
         const monthString = String(selectedMonth).padStart(2, "0");
         start = new Date(`${selectedYear}-${monthString}-01T00:00:00+03:00`);
         const nextMonth = selectedMonth === 12 ? 1 : selectedMonth + 1;
         const nextYear = selectedMonth === 12 ? selectedYear + 1 : selectedYear;
-        end = new Date(
-          `${nextYear}-${String(nextMonth).padStart(2, "0")}-01T00:00:00+03:00`,
-        );
+        end = new Date(`${nextYear}-${String(nextMonth).padStart(2, "0")}-01T00:00:00+03:00`);
         end.setMilliseconds(end.getMilliseconds() - 1);
       } else {
         // VISI METAI
@@ -338,12 +323,9 @@ export async function generateProductionReport(request: any) {
       if (event.machine === "Lenkimo staklės 2") machineKey = "M2";
 
       if (machineKey) {
-        const bends =
-          getBendCount(event.element?.name || "", bendSettings) * quantity;
+        const bends = getBendCount(event.element?.name || "", bendSettings) * quantity;
         const bendMeters =
-          getBendCount(event.element?.name || "", bendSettings) *
-          quantity *
-          length;
+          getBendCount(event.element?.name || "", bendSettings) * quantity * length;
 
         production.bend[machineKey].shifts[shift].active = true;
         production.bend[machineKey].shifts[shift].bends += bends;
@@ -417,11 +399,7 @@ export async function generateProductionReport(request: any) {
           elementus ir t.t.
         */
 
-    const key =
-      `${event.orderNumber}_` +
-      `${email}_` +
-      `${event.machine}_` +
-      `${event.operation}`;
+    const key = `${event.orderNumber}_` + `${email}_` + `${event.machine}_` + `${event.operation}`;
 
     if (!detailReport[key]) {
       detailReport[key] = {
@@ -441,9 +419,7 @@ export async function generateProductionReport(request: any) {
     const row = detailReport[key];
 
     const bendCount =
-      event.operation === "done"
-        ? getBendCount(event.element?.name || "", bendSettings)
-        : 0;
+      event.operation === "done" ? getBendCount(event.element?.name || "", bendSettings) : 0;
     row.totalQuantity += quantity;
     row.totalLength += quantity * length;
     row.totalBends += bendCount * quantity;
@@ -482,22 +458,18 @@ export async function generateProductionReport(request: any) {
   // BEND M1
 
   if (production.bend.M1.shifts.shift1.active)
-    production.bend.M1.shifts.shift1.goal =
-      generalSettings.bendGoal1M1 * selectedDays;
+    production.bend.M1.shifts.shift1.goal = generalSettings.bendGoal1M1 * selectedDays;
 
   if (production.bend.M1.shifts.shift2.active)
-    production.bend.M1.shifts.shift2.goal =
-      generalSettings.bendGoal2M1 * selectedDays;
+    production.bend.M1.shifts.shift2.goal = generalSettings.bendGoal2M1 * selectedDays;
 
   // BEND M2
 
   if (production.bend.M2.shifts.shift1.active)
-    production.bend.M2.shifts.shift1.goal =
-      generalSettings.bendGoal1M2 * selectedDays;
+    production.bend.M2.shifts.shift1.goal = generalSettings.bendGoal1M2 * selectedDays;
 
   if (production.bend.M2.shifts.shift2.active)
-    production.bend.M2.shifts.shift2.goal =
-      generalSettings.bendGoal2M2 * selectedDays;
+    production.bend.M2.shifts.shift2.goal = generalSettings.bendGoal2M2 * selectedDays;
 
   /*
         ======================
@@ -512,19 +484,15 @@ export async function generateProductionReport(request: any) {
   let holesMultiplier = 1;
 
   const workersList = Object.values(workers);
-  const hasWorkerWithBend = workersList.some(
-    (worker: any) => worker.didBend && worker.didHoles,
-  );
+  const hasWorkerWithBend = workersList.some((worker: any) => worker.didBend && worker.didHoles);
 
   if (hasWorkerWithBend) holesMultiplier = +generalSettings.holesIndex;
 
   if (production.holes.shifts.shift1.active)
-    production.holes.shifts.shift1.goal =
-      generalSettings.holesGoal1 * selectedDays;
+    production.holes.shifts.shift1.goal = generalSettings.holesGoal1 * selectedDays;
 
   if (production.holes.shifts.shift2.active)
-    production.holes.shifts.shift2.goal =
-      generalSettings.holesGoal2 * selectedDays;
+    production.holes.shifts.shift2.goal = generalSettings.holesGoal2 * selectedDays;
 
   /*
         ======================
@@ -538,9 +506,7 @@ export async function generateProductionReport(request: any) {
   const kpi = {
     total: 0,
     M1: {
-      total:
-        production.kpi.M1.bends +
-        production.kpi.M1.holes * +generalSettings.holesIndex,
+      total: production.kpi.M1.bends + production.kpi.M1.holes * +generalSettings.holesIndex,
       shifts: {
         shift1:
           production.kpi.M1.shifts.shift1.bends +
@@ -552,9 +518,7 @@ export async function generateProductionReport(request: any) {
     },
 
     M2: {
-      total:
-        production.kpi.M2.bends +
-        production.kpi.M2.holes * +generalSettings.holesIndex,
+      total: production.kpi.M2.bends + production.kpi.M2.holes * +generalSettings.holesIndex,
       shifts: {
         shift1:
           production.kpi.M2.shifts.shift1.bends +
@@ -572,8 +536,7 @@ export async function generateProductionReport(request: any) {
     cut: {
       meters: production.cut.meters / 100,
       quantity: production.cut.quantity,
-      goal:
-        production.cut.shifts.shift1.goal + production.cut.shifts.shift2.goal,
+      goal: production.cut.shifts.shift1.goal + production.cut.shifts.shift2.goal,
       shifts: production.cut.shifts,
     },
 
@@ -581,39 +544,31 @@ export async function generateProductionReport(request: any) {
       M1: {
         bends: production.bend.M1.bends,
         meters: production.bend.M1.meters / 100,
-        goal:
-          production.bend.M1.shifts.shift1.goal +
-          production.bend.M1.shifts.shift2.goal,
+        goal: production.bend.M1.shifts.shift1.goal + production.bend.M1.shifts.shift2.goal,
         shifts: production.bend.M1.shifts,
       },
 
       M2: {
         bends: production.bend.M2.bends,
         meters: production.bend.M2.meters / 100,
-        goal:
-          production.bend.M2.shifts.shift1.goal +
-          production.bend.M2.shifts.shift2.goal,
+        goal: production.bend.M2.shifts.shift1.goal + production.bend.M2.shifts.shift2.goal,
         shifts: production.bend.M2.shifts,
       },
 
       total: {
         bends: production.bend.M1.bends + production.bend.M2.bends,
         quantity: production.bend.M1.quantity + production.bend.M2.quantity,
-        meters:
-          production.bend.M1.meters / 100 + production.bend.M2.meters / 100,
+        meters: production.bend.M1.meters / 100 + production.bend.M2.meters / 100,
         goal:
           production.bend.M1.shifts.shift1.goal +
           production.bend.M1.shifts.shift2.goal +
-          (production.bend.M2.shifts.shift1.goal +
-            production.bend.M2.shifts.shift2.goal),
+          (production.bend.M2.shifts.shift1.goal + production.bend.M2.shifts.shift2.goal),
       },
     },
 
     holes: {
       count: production.holes.count,
-      goal:
-        production.holes.shifts.shift1.goal +
-        production.holes.shifts.shift2.goal,
+      goal: production.holes.shifts.shift1.goal + production.holes.shifts.shift2.goal,
       shifts: production.holes.shifts,
     },
 
@@ -622,9 +577,7 @@ export async function generateProductionReport(request: any) {
       target: generalSettings.defectPercentage,
       percentage:
         (production.defects.quantity /
-          (production.bend.M1.bends +
-            production.bend.M2.bends +
-            production.defects.quantity)) *
+          (production.bend.M1.bends + production.bend.M2.bends + production.defects.quantity)) *
         100,
       shifts: production.defects.shifts,
     },
@@ -669,9 +622,7 @@ export async function buildEventForReport(event: any) {
     if (event.machine === "Lenkimo staklės 2") machineKey = "M2";
 
     if (machineKey) {
-      const bends =
-        getBendCount(event.element?.name || "", bendSettings) *
-        event.element.quantity;
+      const bends = getBendCount(event.element?.name || "", bendSettings) * event.element.quantity;
 
       data.machine = event.machine;
       data.operation = event.operation;
@@ -683,10 +634,7 @@ export async function buildEventForReport(event: any) {
     const holes = event.element.quantity * event.element?.holesCount;
     let holesMultiplier = 1;
 
-    if (
-      event.machine === "Lenkimo staklės 1" ||
-      event.machine === "Lenkimo staklės 2"
-    ) {
+    if (event.machine === "Lenkimo staklės 1" || event.machine === "Lenkimo staklės 2") {
       const generalSettings = await reportGeneralSettingsSchema.findOne();
 
       if (generalSettings) {
