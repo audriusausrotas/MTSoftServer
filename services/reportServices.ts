@@ -355,6 +355,7 @@ export async function generateProductionReport(request: any) {
     }
 
     /*
+    .\
           ======================
              SKYLIŲ MUŠIMAS
           ======================
@@ -363,18 +364,17 @@ export async function generateProductionReport(request: any) {
     if (event.operation === "holes") {
       const holes = quantity * holesCount;
 
-      production.holes.shifts[shift].active = true;
-      production.holes.shifts[shift].count += holes;
-      production.holes.count += holes;
-
       if (event.machine === "Lenkimo staklės 1") {
         production.kpi.M1.holes += holes;
         production.kpi.M1.shifts[shift].holes += holes;
-      }
-
-      if (event.machine === "Lenkimo staklės 2") {
+      } else if (event.machine === "Lenkimo staklės 2") {
         production.kpi.M2.holes += holes;
         production.kpi.M2.shifts[shift].holes += holes;
+      } else {
+        production.holes.shifts[shift].active = true;
+        production.holes.shifts[shift].count += holes;
+
+        production.holes.count += holes;
       }
 
       if (email) workers[email].didHoles = true;
