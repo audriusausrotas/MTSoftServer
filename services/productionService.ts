@@ -553,6 +553,7 @@ export async function updateHoles(data: any, user: User) {
   const savedProject = await project.save();
 
   const event = buildProductionEvent(data, quantity, savedProject, user, holesCount);
+  event.element.name = "Koja vienguba";
 
   const savedData = await new productionEventSchema(event).save();
   if (!savedData) throw new Error("Įrašas neišsaugotas");
