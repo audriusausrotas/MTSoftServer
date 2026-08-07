@@ -87,18 +87,15 @@ export default {
         else deliveryDate = schedule.date;
       });
 
-      return response(
-        res,
-        true,
-        {
-          productionData,
-          dates: {
-            productionDate,
-            deliveryDate,
-          },
+      const responseData = {
+        productionData,
+        dates: {
+          productionDate,
+          deliveryDate,
         },
-        "",
-      );
+      };
+
+      return response(res, true, responseData);
     } catch (error: any) {
       console.error("Klaida:", error);
       return response(res, false, null, error.message);
