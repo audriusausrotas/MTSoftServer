@@ -193,44 +193,41 @@ export const checkStatus = async (_id: any) => {
     bindings: production?.bindings || [],
   };
 
-  // if (production) {
-  //   productionData = {
-  //     fences: production.fences.map((fence: any) => ({
-  //       id: fence.id,
-  //       side: fence.side,
-  //       name: fence.name,
-  //       color: fence.color,
-  //       material: fence.material,
-  //       manufacturer: fence.manufacturer,
-  //       holes: fence.holes,
-  //       step: fence.step,
-  //       holesDone: fence.holesDone,
+  if (production) {
+    productionData = {
+      fences: production.fences.map((fence: any) => ({
+        id: fence.id,
+        side: fence.side,
+        name: fence.name,
+        color: fence.color,
+        material: fence.material,
+        manufacturer: fence.manufacturer,
+        holes: fence.holes,
+        step: fence.step,
 
-  //       measures: fence.measures.map((measure: any) => ({
-  //         length: measure.length,
-  //         height: measure.height,
-  //         elements: measure.elements,
-  //         cut: measure.cut,
-  //         done: measure.done,
-  //         holes: measure.holes,
-  //         postone: measure.postone,
-  //         kampas: measure.kampas,
-  //         laiptas: measure.laiptas,
-  //       })),
-  //     })),
+        measures: fence.measures.map((measure: any) => ({
+          length: measure.length,
+          elements: measure.elements,
+          cut: measure.cut,
+          done: measure.done,
+          holes: measure.holes,
+          postone: measure.postone,
+          gates: measure.gates,
+        })),
+      })),
 
-  //     bindings: production.bindings.map((binding: any) => ({
-  //       id: binding.id,
-  //       name: binding.name,
-  //       quantity: binding.quantity,
-  //       height: binding.height,
-  //       color: binding.color,
-  //       cut: binding.cut,
-  //       done: binding.done,
-  //       postone: binding.postone,
-  //     })),
-  //   };
-  // }
+      bindings: production.bindings.map((binding: any) => ({
+        id: binding.id,
+        name: binding.name,
+        quantity: binding.quantity,
+        height: binding.height,
+        color: binding.color,
+        cut: binding.cut,
+        done: binding.done,
+        postone: binding.postone,
+      })),
+    };
+  }
 
   const schedules = await scheduleSchema.find({
     "jobs._id": _id,
