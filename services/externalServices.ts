@@ -66,7 +66,12 @@ export async function orderFence(body: any) {
   emit.toProduction("newExternalProduction", production);
   emit.toWarehouse("newExternalProduction", production);
 
-  return result;
+  const responseData = {
+    projectOrderNr: result._id,
+    orderNumber: result.orderNumber,
+  };
+
+  return responseData;
 }
 
 export async function orderAditionalFence(body: any) {
