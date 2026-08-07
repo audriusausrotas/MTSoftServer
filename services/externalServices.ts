@@ -185,7 +185,7 @@ const formatLithuaniaDate = (date: string) => {
   }).format(new Date(date));
 };
 
-export const checkStatus = async (_id: string) => {
+export const checkStatus = async (_id: any) => {
   const production = await productionSchema.findById(_id);
 
   let productionData: any = null;
