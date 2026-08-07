@@ -175,7 +175,7 @@ export async function orderAditionalFence(body: any) {
 }
 
 const formatLithuaniaDate = (date: string) => {
-  if (!date) return "------";
+  if (!date) return "";
 
   return new Intl.DateTimeFormat("lt-LT", {
     timeZone: "Europe/Vilnius",
@@ -231,8 +231,8 @@ export const checkStatus = async (_id: any) => {
     "jobs._id": _id,
   });
 
-  let productionDate = "------";
-  let deliveryDate = "------";
+  let productionDate = "";
+  let deliveryDate = "";
 
   schedules.forEach((schedule) => {
     const job = schedule.jobs.find((job: any) => String(job._id) === String(_id));
