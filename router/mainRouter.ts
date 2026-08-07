@@ -35,6 +35,7 @@ const router = express.Router();
 /////////////////////// external requests ////////////////
 
 router.get("/getManagers", checkPartners, externalRequests.getManagers);
+router.get("/checkStatus/:_id", checkPartners, externalRequests.checkStatus);
 
 router.post("/orderFence", checkPartners, uploadFiles, externalRequests.orderFence);
 router.post(
