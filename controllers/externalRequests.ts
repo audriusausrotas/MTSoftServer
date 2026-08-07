@@ -31,6 +31,9 @@ export default {
   checkStatus: async (req: Request, res: Response) => {
     try {
       const { _id } = req.params;
+
+      console.log(_id);
+
       const production = await productionSchema.findById(_id);
 
       let productionData;
