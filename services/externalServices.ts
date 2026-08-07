@@ -80,10 +80,10 @@ export async function orderAditionalFence(body: any) {
       creator: production.client.username,
     });
 
-  if (data[0].fences[0].measures.length)
-    production.fences = [...(production?.fences || []), ...data[0].fences];
+  if (data.fences[0].measures.length)
+    production.fences = [...(production?.fences || []), ...data.fences];
 
-  if (data[0].bindings.length > 0)
+  if (data.bindings.length > 0)
     production.bindings = [
       ...(production?.bindings || []),
       {
@@ -94,7 +94,7 @@ export async function orderAditionalFence(body: any) {
         quantity: 0,
         postone: true,
       },
-      ...data[0].bindings,
+      ...data.bindings,
     ];
 
   await production.save();
@@ -104,8 +104,8 @@ export async function orderAditionalFence(body: any) {
   emit.toWarehouse("aditionalOrderedProduction", body);
 
   const estimateData = {
-    fences: data[0].fences || [],
-    bindings: data[0].bindings || [],
+    fences: data.fences || [],
+    bindings: data.bindings || [],
   };
 
   const calculateEstimateResult = await calculateEstimate(estimateData);
