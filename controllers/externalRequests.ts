@@ -95,6 +95,8 @@ export default {
         },
       };
 
+      console.log(responseData);
+
       return response(res, true, responseData);
     } catch (error: any) {
       console.error("Klaida:", error);
