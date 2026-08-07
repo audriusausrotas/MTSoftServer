@@ -1,5 +1,7 @@
 import { calculateEstimate } from "./calculationsServices";
 import { createProductionRecord, findProductionById } from "./productionService";
+import scheduleSchema from "../schemas/scheduleSchema";
+import productionSchema from "../schemas/productionSchema";
 import {
   addProjectComment,
   changeCompletionDate,
@@ -171,3 +173,85 @@ export async function orderAditionalFence(body: any) {
 
   return;
 }
+
+const formatLithuaniaDate = (date: string) => {
+  if (!date) return "------";
+
+  return new Intl.DateTimeFormat("lt-LT", {
+    timeZone: "Europe/Vilnius",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(new Date(date));
+};
+
+export const checkStatus = async (_id: string) => {
+  const production = await productionSchema.findById(_id);
+
+  let productionData: any = null;
+
+  if (production) {
+    productionData = {
+      fences: production.fences.map((fence: any) => ({
+        side: fence.side,
+        name: fence.name,
+        color: fence.color,
+        material: fence.material,
+        manufacturer: fence.manufacturer,
+        holes: fence.holes,
+        step: fence.step,
+        holesDone: fence.holesDone,
+
+        measures: fence.measures.map((measure: any) => ({
+          length: measure.length,
+          height: measure.height,
+          elements: measure.elements,
+          cut: measure.cut,
+          done: measure.done,
+          holes: measure.holes,
+          postone: measure.postone,
+          kampas: measure.kampas,
+          laiptas: measure.laiptas,
+        })),
+      })),
+
+      bindings: production.bindings.map((binding: any) => ({
+        name: binding.name,
+        quantity: binding.quantity,
+        height: binding.height,
+        color: binding.color,
+        cut: binding.cut,
+        done: binding.done,
+        postone: binding.postone,
+      })),
+    };
+  }
+
+  const schedules = await scheduleSchema.find({
+    "jobs._id": _id,
+  });
+
+  let productionDate = "------";
+  let deliveryDate = "------";
+
+  schedules.forEach((schedule) => {
+    const job = schedule.jobs.find((job: any) => String(job._id) === String(_id));
+
+    if (!job) return;
+
+    const date = formatLithuaniaDate(schedule.date);
+
+    if (schedule.worker.lastName === "Gamyba") productionDate = date;
+    else deliveryDate = date;
+  });
+
+  const responseData = {
+    productionData,
+    dates: {
+      productionDate,
+      deliveryDate,
+    },
+  };
+
+  return responseData;
+};
